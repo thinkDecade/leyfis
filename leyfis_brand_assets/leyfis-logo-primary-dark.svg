@@ -1,0 +1,20 @@
+<svg width="320" height="80" viewBox="0 0 320 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="80" fill="#0A0F1C"/>
+  <!-- Gate icon -->
+  <g transform="translate(24, 12)">
+    <!-- Left pillar -->
+    <rect x="0" y="10" width="7" height="32" fill="#E8EEF6"/>
+    <!-- Right pillar -->
+    <rect x="33" y="10" width="7" height="32" fill="#E8EEF6"/>
+    <!-- Lintel / crossbar -->
+    <rect x="0" y="7" width="40" height="6" fill="#E8EEF6"/>
+    <!-- Opening (cutout) -->
+    <rect x="10" y="13" width="20" height="29" fill="#0A0F1C"/>
+    <!-- Threshold hairline -->
+    <rect x="10" y="40" width="20" height="1.5" fill="#3D5070"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="82" y="36" font-family="Arial" font-weight="700" font-size="28" fill="#E8EEF6" letter-spacing="6">LEYFIS</text>
+  <!-- Tagline -->
+  <text x="83" y="56" font-family="Arial" font-weight="400" font-size="9" fill="#3D5070" letter-spacing="3">COMPLIANCE · INFRASTRUCTURE</text>
+</svg>

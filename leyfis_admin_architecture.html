@@ -1,0 +1,224 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+.card{border-radius:10px;border:0.5px solid var(--color-border-tertiary);margin-bottom:14px;overflow:hidden}
+.card-header{padding:12px 16px;background:var(--color-background-secondary);display:flex;align-items:center;justify-content:space-between}
+.card-body{padding:14px 16px}
+.badge{font-size:9px;font-weight:700;letter-spacing:.1em;padding:2px 8px;border-radius:4px;flex-shrink:0}
+.role-row{display:grid;grid-template-columns:28px 140px 1fr;gap:10px;align-items:start;padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.role-row:last-child{border-bottom:none}
+.role-dot{width:10px;height:10px;border-radius:50%;margin-top:4px}
+.cap-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.cap-card{background:var(--color-background-secondary);border-radius:8px;padding:10px 12px}
+.cap-title{font-size:11px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.cap-list{font-size:10px;color:var(--color-text-secondary);line-height:1.8}
+.perm-grid{display:grid;grid-template-columns:1fr repeat(4,auto);gap:0;font-size:10px}
+.perm-header{padding:6px 10px;background:var(--color-background-secondary);font-weight:700;letter-spacing:.08em;color:var(--color-text-secondary);font-size:9px}
+.perm-cell{padding:7px 10px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:center}
+.perm-label{padding:7px 12px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;font-size:11px;color:var(--color-text-primary)}
+.tick{color:var(--color-text-success);font-size:12px;font-weight:700}
+.cross{color:var(--color-text-tertiary);font-size:12px}
+.readonly{color:var(--color-text-warning);font-size:10px;font-weight:700}
+.screen-row{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.screen-row:last-child{border-bottom:none}
+.screen-num{width:20px;height:20px;border-radius:50%;background:var(--color-background-info);color:var(--color-text-info);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+</style>
+
+<div>
+
+<!-- THREE ADMIN ROLES -->
+<div class="card">
+  <div class="card-header">
+    <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Three admin roles — one panel, role-gated by wallet</div>
+    <span class="badge" style="background:var(--color-background-info);color:var(--color-text-info)">ARCHITECTURE</span>
+  </div>
+  <div class="card-body">
+    <div class="role-row">
+      <div class="role-dot" style="background:#0F6E56"></div>
+      <div style="font-size:12px;font-weight:500;color:#0F6E56">Vault Operator</div>
+      <div style="font-size:11px;color:var(--color-text-secondary);line-height:1.6">AMINA Bank or any institution deploying a Leyfis-wrapped vault. Configures the vault: sets minimum clearance tier, manages trusted issuers list, can pause the gate. Full read/write on their vault config. This is the pilot customer role.</div>
+    </div>
+    <div class="role-row">
+      <div class="role-dot" style="background:#378ADD"></div>
+      <div style="font-size:12px;font-weight:500;color:var(--color-text-info)">KYC Issuer</div>
+      <div style="font-size:11px;color:var(--color-text-secondary);line-height:1.6">The entity authorised to issue SAS attestations — could be AMINA Bank's compliance team, Blockpass, or a mock issuer for demo. Issues attestations to wallets, sets tier and expiry, can revoke instantly. This is the compliance officer role.</div>
+    </div>
+    <div class="role-row">
+      <div class="role-dot" style="background:#BA7517"></div>
+      <div style="font-size:12px;font-weight:500;color:var(--color-text-warning)">Compliance Auditor</div>
+      <div style="font-size:11px;color:var(--color-text-secondary);line-height:1.6">Read-only. The regulator, internal audit, or compliance officer who needs to inspect activity. Can filter the audit log, view gate decisions, see attestation status, and export FATF-formatted reports. No write access to anything. This is what you show FINMA.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PERMISSION MATRIX -->
+<div class="card">
+  <div class="card-header">
+    <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Permission matrix — who can do what</div>
+    <span class="badge" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">ACCESS CONTROL</span>
+  </div>
+  <div class="card-body" style="padding:0">
+    <div class="perm-grid">
+      <div class="perm-header" style="border-radius:0">Capability</div>
+      <div class="perm-header" style="text-align:center;color:#0F6E56">Vault Op</div>
+      <div class="perm-header" style="text-align:center;color:var(--color-text-info)">KYC Issuer</div>
+      <div class="perm-header" style="text-align:center;color:var(--color-text-warning)">Auditor</div>
+      <div class="perm-header" style="text-align:center">End User</div>
+
+      <div class="perm-label">Configure vault (tier, issuers)</div>
+      <div class="perm-cell"><span class="tick">✓</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+
+      <div class="perm-label">Issue attestation to wallet</div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+      <div class="perm-cell"><span class="tick">✓</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+
+      <div class="perm-label">Revoke attestation</div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+      <div class="perm-cell"><span class="tick">✓</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+
+      <div class="perm-label">View audit log (all entries)</div>
+      <div class="perm-cell"><span class="tick">✓</span></div>
+      <div class="perm-cell"><span class="tick">✓</span></div>
+      <div class="perm-cell"><span class="readonly">VIEW</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+
+      <div class="perm-label">Filter audit log by wallet/date</div>
+      <div class="perm-cell"><span class="tick">✓</span></div>
+      <div class="perm-cell"><span class="tick">✓</span></div>
+      <div class="perm-cell"><span class="readonly">VIEW</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+
+      <div class="perm-label">Export compliance report</div>
+      <div class="perm-cell"><span class="tick">✓</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+      <div class="perm-cell"><span class="readonly">CSV</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+
+      <div class="perm-label">View real-time gate activity</div>
+      <div class="perm-cell"><span class="tick">✓</span></div>
+      <div class="perm-cell"><span class="tick">✓</span></div>
+      <div class="perm-cell"><span class="readonly">VIEW</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+
+      <div class="perm-label">Pause / unpause the gate</div>
+      <div class="perm-cell"><span class="tick">✓</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+
+      <div class="perm-label">Interact with vault</div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+      <div class="perm-cell"><span class="cross">—</span></div>
+      <div class="perm-cell"><span class="tick">✓</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN SCREENS -->
+<div class="card">
+  <div class="card-header">
+    <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">6 admin screens — what gets built</div>
+    <span class="badge" style="background:var(--color-background-warning);color:var(--color-text-warning)">FRONTEND SCOPE</span>
+  </div>
+  <div class="card-body">
+    <div class="screen-row">
+      <div class="screen-num">1</div>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:500;color:var(--color-text-primary)">Admin gate — wallet-based role detection</div>
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px;line-height:1.5">Connect wallet → system reads which role that wallet holds on-chain → routes to correct dashboard view. No passwords. No user accounts. Wallet IS the identity. Role stored in VaultConfig authority field + KYC issuer registry.</div>
+      </div>
+      <span class="badge" style="background:var(--color-background-danger);color:var(--color-text-danger)">CRITICAL</span>
+    </div>
+    <div class="screen-row">
+      <div class="screen-num">2</div>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:500;color:var(--color-text-primary)">Vault operator dashboard</div>
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px;line-height:1.5">Live stats: total gate calls today, approval rate, denied count. Vault config panel: current min_tier, trusted_issuers list, pause toggle. Quick view of last 10 audit entries.</div>
+      </div>
+      <span class="badge" style="background:var(--color-background-danger);color:var(--color-text-danger)">DEMO DAY</span>
+    </div>
+    <div class="screen-row">
+      <div class="screen-num">3</div>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:500;color:var(--color-text-primary)">KYC issuer panel</div>
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px;line-height:1.5">Issue attestation form: wallet address, tier selector (1/2/3), expiry date, jurisdiction code. Active attestations table with revoke button per row. Revocation is instant on-chain. This is the mock KYC flow for the demo.</div>
+      </div>
+      <span class="badge" style="background:var(--color-background-danger);color:var(--color-text-danger)">DEMO DAY</span>
+    </div>
+    <div class="screen-row">
+      <div class="screen-num">4</div>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:500;color:var(--color-text-primary)">Audit log explorer</div>
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px;line-height:1.5">Full on-chain audit log in a table. Filterable by: wallet address, date range, outcome (approved/denied), tier, reason code. Each row expandable for full entry detail. Solana Explorer link per transaction.</div>
+      </div>
+      <span class="badge" style="background:var(--color-background-danger);color:var(--color-text-danger)">DEMO DAY</span>
+    </div>
+    <div class="screen-row">
+      <div class="screen-num">5</div>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:500;color:var(--color-text-primary)">Compliance report exporter</div>
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px;line-height:1.5">Date range picker + export button. Generates CSV with all FATF R.16 fields: wallet, timestamp, outcome, tier, attestation ID, issuer, jurisdiction. This is the document you hand to a regulator.</div>
+      </div>
+      <span class="badge" style="background:var(--color-background-danger);color:var(--color-text-danger)">DEMO DAY</span>
+    </div>
+    <div class="screen-row">
+      <div class="screen-num">6</div>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:500;color:var(--color-text-primary)">Attestation registry</div>
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px;line-height:1.5">All issued attestations: wallet, tier, issuer, issued_at, expires_at, status (active/expired/revoked). Searchable by wallet address. Gives AMINA Bank a live view of their verified wallet population.</div>
+      </div>
+      <span class="badge" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">POST-MVP</span>
+    </div>
+  </div>
+</div>
+
+<!-- ON-CHAIN ADDITIONS NEEDED -->
+<div class="card">
+  <div class="card-header">
+    <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">On-chain additions needed in the Gate Program</div>
+    <span class="badge" style="background:var(--color-background-info);color:var(--color-text-info)">PRD UPDATES</span>
+  </div>
+  <div class="card-body">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="background:var(--color-background-secondary);border-radius:7px;padding:10px 12px;border-left:2px solid #0F6E56">
+        <div style="font-size:11px;font-weight:500;color:var(--color-text-primary)">Add pause instruction to VaultConfig</div>
+        <div style="font-size:10px;color:var(--color-text-secondary);margin-top:3px;line-height:1.5">VaultConfig needs a <code style="font-family:monospace;background:var(--color-background-primary);padding:1px 4px;border-radius:3px">paused: bool</code> field. Gate checks this first — if paused, all transactions rejected regardless of attestation. Vault operator can toggle. Critical for emergency response.</div>
+      </div>
+      <div style="background:var(--color-background-secondary);border-radius:7px;padding:10px 12px;border-left:2px solid var(--color-border-info)">
+        <div style="font-size:11px;font-weight:500;color:var(--color-text-primary)">Add update_vault_config instruction</div>
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px;line-height:1.5">Vault operator needs to be able to change min_tier and trusted_issuers post-deploy. Currently the PRD only has initialize. Add update instruction, authority-gated.</div>
+      </div>
+      <div style="background:var(--color-background-secondary);border-radius:7px;padding:10px 12px;border-left:2px solid var(--color-border-warning)">
+        <div style="font-size:11px;font-weight:500;color:var(--color-text-primary)">Add KYC issuer registry account</div>
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px;line-height:1.5">A small on-chain account that maps issuer pubkeys to roles. Lets the admin UI detect which wallet is a KYC issuer without hardcoding. Needed for wallet-based role detection in the admin gate.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DEMO DAY SCRIPT — ADMIN ANGLE -->
+<div class="card">
+  <div class="card-header">
+    <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">How admin strengthens the Demo Day story</div>
+    <span class="badge" style="background:var(--color-background-success);color:var(--color-text-success)">PITCH ANGLE</span>
+  </div>
+  <div class="card-body">
+    <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.8">
+      The admin layer turns a technical demo into a complete business product. Without it, judges see a Solana program. With it, they see:<br><br>
+      <span style="color:var(--color-text-primary);font-weight:500">AMINA Bank's compliance officer</span> opens the KYC issuer panel, issues a Tier 3 attestation to a wallet, and it's live on-chain in seconds.<br><br>
+      <span style="color:var(--color-text-primary);font-weight:500">AMINA Bank's vault operator</span> opens the dashboard, sees 12 gate calls today, 11 approved, 1 denied with reason TierInsufficient.<br><br>
+      <span style="color:var(--color-text-primary);font-weight:500">Their regulator</span> opens the compliance export, downloads a CSV with every access attempt timestamped and FATF-formatted. No phone call needed. No manual report.<br><br>
+      That three-role story is worth <span style="color:var(--color-text-success);font-weight:500">$100,000 to AMINA Bank</span>. A lone gate program is not.
+    </div>
+  </div>
+</div>
+
+</div>

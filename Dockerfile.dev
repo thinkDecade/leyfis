@@ -1,0 +1,64 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV HOME=/root
+# Use a separate volume for the Cargo build cache to avoid filling the workspace
+ENV CARGO_TARGET_DIR=/build-cache
+ENV PATH="/root/.cargo/bin:/root/.local/share/solana/install/active_release/bin:/root/.avm/bin:${PATH}"
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    libudev-dev \
+    git \
+    wget \
+    ca-certificates \
+    libzstd-dev \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust stable (currently 1.85+)
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+RUN /root/.cargo/bin/rustup component add rustfmt clippy
+
+# Install Solana CLI 3.1.10 (platform-tools v1.52 — required for Anchor 0.30.x, fixes edition2024)
+# Note: v1.18.26 has a known edition2024 incompatibility with anchor 0.30.x dependencies
+RUN sh -c "$(curl -sSfL https://release.anza.xyz/v3.1.10/install)"
+
+# Install AVM and Anchor 0.30.1
+RUN /root/.cargo/bin/cargo install --git https://github.com/coral-xyz/anchor avm --locked --force \
+    && /root/.cargo/bin/avm install 0.30.1 \
+    && /root/.cargo/bin/avm use 0.30.1
+
+# Fix proc-macro2 1.0.86+ incompatibility with anchor-syn 0.30.1
+# anchor-syn 0.30.1 calls Span::call_site().source_file().path() inside
+# a #[cfg(procmacro2_semver_exempt)] block. proc-macro2 removed source_file()
+# in 1.0.86+. anchor binary bakes in --cfg procmacro2_semver_exempt so we
+# must patch the source rather than suppress the flag.
+RUN for REGISTRY_DIR in /root/.cargo/registry/src/*/anchor-syn-0.30.1/src/idl/defined.rs; do \
+    if [ -f "$REGISTRY_DIR" ]; then \
+        sed -i \
+            's|let source_path = proc_macro2::Span::call_site().source_file().path();|let source_path = std::path::PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap_or_default()).join("src").join("lib.rs");|g' \
+            "$REGISTRY_DIR"; \
+        sed -i \
+            's|let lib_path = find_path("lib.rs", \&source_path).expect("lib.rs should exist");|let lib_path = source_path.clone();|g' \
+            "$REGISTRY_DIR"; \
+        echo "Patched anchor-syn in $REGISTRY_DIR"; \
+    fi; \
+done
+
+RUN npm install -g typescript ts-node yarn
+
+# Pre-warm the build cache directory
+RUN mkdir -p /build-cache
+
+RUN echo 'export PATH="/root/.cargo/bin:/root/.local/share/solana/install/active_release/bin:/root/.avm/bin:$PATH"' >> /root/.bashrc \
+    && echo 'export CARGO_TARGET_DIR=/build-cache' >> /root/.bashrc \
+    && echo 'export TMPDIR=/tmp' >> /root/.bashrc
+
+WORKDIR /workspace
+
+CMD ["bash"]

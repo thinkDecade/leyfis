@@ -1,0 +1,20 @@
+[package]
+name = "test-vault"
+version = "0.1.0"
+description = "Leyfis Test Vault — demo vault for gate wrapping"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "test_vault"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+idl-build = ["anchor-lang/idl-build"]
+default = []
+
+[dependencies]
+anchor-lang = "0.30.1"

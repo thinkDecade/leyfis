@@ -1,0 +1,165 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+.stage{border-radius:10px;overflow:hidden;margin-bottom:12px;border:0.5px solid var(--color-border-tertiary)}
+.s-head{padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.s-body{padding:0 16px 14px}
+.task{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.task:last-child{border-bottom:none}
+.chk{width:17px;height:17px;border-radius:4px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:0.5px solid var(--color-border-secondary)}
+.chk.done{background:var(--color-background-success);border-color:var(--color-border-success)}
+.mk{display:none;width:9px;height:9px}
+.chk.done .mk{display:block}
+.tt{font-size:12px;font-weight:500;color:var(--color-text-primary);line-height:1.4}
+.tt.dn{text-decoration:line-through;color:var(--color-text-success);opacity:.7}
+.ts{font-size:10px;color:var(--color-text-secondary);margin-top:2px;line-height:1.5}
+.bd{font-size:9px;font-weight:700;letter-spacing:.08em;padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:2px}
+.new-tag{font-size:8px;font-weight:700;letter-spacing:.1em;padding:1px 5px;border-radius:3px;background:var(--color-background-warning);color:var(--color-text-warning);margin-left:6px;vertical-align:middle}
+.dl{font-size:10px;padding:7px 16px;border-top:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary);display:flex;align-items:center;gap:5px}
+</style>
+
+<div>
+
+<!-- PROGRESS BAR -->
+<div style="margin-bottom:16px">
+  <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+    <span style="font-size:11px;font-weight:500;color:var(--color-text-primary)">LEYFIS — Full project board v2 (with admin)</span>
+    <span style="font-size:11px;color:var(--color-text-secondary)">6 done · 5 stages to go · Apr 8</span>
+  </div>
+  <div style="height:4px;background:var(--color-background-secondary);border-radius:2px">
+    <div style="width:18%;height:100%;background:var(--color-text-success);border-radius:2px"></div>
+  </div>
+</div>
+
+<!-- STAGE 0: DONE -->
+<div class="stage">
+  <div class="s-head" style="background:var(--color-background-success)">
+    <div><div style="font-size:12px;font-weight:500;color:var(--color-text-success)">Stage 0 — Foundation</div><div style="font-size:10px;color:var(--color-text-success);opacity:.7;margin-top:1px">Complete — March 22</div></div>
+    <span class="bd" style="background:var(--color-background-success);color:var(--color-text-success)">DONE</span>
+  </div>
+  <div class="s-body" style="padding-top:10px">
+    <div class="task"><div class="chk done"><svg class="mk" viewBox="0 0 9 9"><path d="M1 4.5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div><div style="flex:1"><div class="tt dn">Idea validation + competitor research</div></div></div>
+    <div class="task"><div class="chk done"><svg class="mk" viewBox="0 0 9 9"><path d="M1 4.5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div><div style="flex:1"><div class="tt dn">Product name — LEYFIS</div></div></div>
+    <div class="task"><div class="chk done"><svg class="mk" viewBox="0 0 9 9"><path d="M1 4.5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div><div style="flex:1"><div class="tt dn">Pitch deck — 7 slides (PPTX)</div></div></div>
+    <div class="task"><div class="chk done"><svg class="mk" viewBox="0 0 9 9"><path d="M1 4.5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div><div style="flex:1"><div class="tt dn">PRD v1.0 — 16 pages (DOCX)</div></div></div>
+    <div class="task"><div class="chk done"><svg class="mk" viewBox="0 0 9 9"><path d="M1 4.5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div><div style="flex:1"><div class="tt dn">Brand identity — full SVG suite</div></div></div>
+    <div class="task"><div class="chk done"><svg class="mk" viewBox="0 0 9 9"><path d="M1 4.5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div><div style="flex:1"><div class="tt dn">Technical architecture + admin layer designed <span class="new-tag">NEW</span></div></div></div>
+  </div>
+</div>
+
+<!-- STAGE 1: SETUP -->
+<div class="stage">
+  <div class="s-head" style="background:var(--color-background-warning)">
+    <div><div style="font-size:12px;font-weight:500;color:var(--color-text-warning)">Stage 1 — Environment + repo setup</div><div style="font-size:10px;color:var(--color-text-warning);opacity:.8;margin-top:1px">Days 1–2 · Start today</div></div>
+    <span class="bd" style="background:var(--color-background-warning);color:var(--color-text-warning)">NOW</span>
+  </div>
+  <div class="s-body" style="padding-top:10px">
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Secure leyfis.io + leyfis.com + @leyfis socials</div><div class="ts">Domain + X + GitHub + LinkedIn. Do before announcing anything.</div></div><span class="bd" style="background:var(--color-background-warning);color:var(--color-text-warning)">TODAY</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Create GitHub repo: leyfis-protocol</div><div class="ts">Public. Add CLAUDE.md + README with architecture diagram.</div></div><span class="bd" style="background:var(--color-background-warning);color:var(--color-text-warning)">TODAY</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Configure Claude Desktop MCP servers</div><div class="ts">Filesystem + Desktop Commander + GitHub + Memory. Paste config JSON. Test with "read CLAUDE.md".</div></div><span class="bd" style="background:var(--color-background-warning);color:var(--color-text-warning)">TODAY</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Install Rust + Solana CLI + Anchor v0.30+</div><div class="ts">Run `anchor init leyfis-gate` to scaffold. Verify `anchor build` completes.</div></div></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Get Helius/QuickNode devnet RPC endpoint</div><div class="ts">Free tier. Set as default in Anchor.toml. Never use public devnet.</div></div></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Fund 4 devnet wallets</div><div class="ts">Deployer · Demo Wallet A (no attestation) · Demo Wallet B (Tier 3) · Admin wallet (vault operator). 2 SOL each.</div></div><span class="new-tag" style="margin-top:3px">+1 wallet</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Read SAS documentation in full</div><div class="ts">Schema creation, PDA derivation, attestation account structure. Your program depends on this.</div></div></div>
+  </div>
+  <div class="dl">Target: March 24</div>
+</div>
+
+<!-- STAGE 2: GATE PROGRAM -->
+<div class="stage">
+  <div class="s-head" style="background:var(--color-background-secondary)">
+    <div><div style="font-size:12px;font-weight:500;color:var(--color-text-primary)">Stage 2 — Gate program (Rust/Anchor)</div><div style="font-size:10px;color:var(--color-text-secondary);margin-top:1px">Days 3–7 · Core product</div></div>
+    <span class="bd" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">SPRINT 1</span>
+  </div>
+  <div class="s-body" style="padding-top:10px">
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Define account structs <span class="new-tag">UPDATED</span></div><div class="ts">VaultConfig (add paused: bool field), AuditEntry, KYCIssuerRegistry (new — maps issuer pubkeys to roles).</div></div><span class="bd" style="background:var(--color-background-danger);color:var(--color-text-danger)">CRITICAL</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Write initialize_vault_config instruction</div><div class="ts">Sets authority, vault_program, min_tier, trusted_issuers, paused=false.</div></div></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Write update_vault_config instruction <span class="new-tag">NEW</span></div><div class="ts">Authority-gated. Updates min_tier and trusted_issuers post-deploy. Required for admin panel vault config screen.</div></div></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Write pause_gate / unpause_gate instructions <span class="new-tag">NEW</span></div><div class="ts">Authority-gated toggle on VaultConfig.paused. Gate() checks this first. Emergency kill switch for vault operators.</div></div></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Write SAS attestation reader</div><div class="ts">Derive PDA from [wallet_pubkey, issuer_pubkey, schema_uid]. Deserialise attestation struct.</div></div><span class="bd" style="background:var(--color-background-danger);color:var(--color-text-danger)">CRITICAL</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Write gate() instruction with full validation</div><div class="ts">Check paused → exists → not revoked → not expired → trusted issuer → tier. CPI on pass. LeyfisError on fail. AuditEntry always.</div></div><span class="bd" style="background:var(--color-background-danger);color:var(--color-text-danger)">CRITICAL</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Implement all 6 error codes + GatePaused <span class="new-tag">+1</span></div><div class="ts">Add GatePaused to the error enum. Maps to reason_code 6 in AuditEntry.</div></div></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Write Anchor test suite — 8 cases <span class="new-tag">+2</span></div><div class="ts">Original 6 + gate paused test + update_vault_config test. All must pass before Stage 3.</div></div><span class="bd" style="background:var(--color-background-danger);color:var(--color-text-danger)">CRITICAL</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Security review with Claude before deploy</div><div class="ts">Paste full lib.rs. Ask: unauthorised callers? account constraint gaps? CPI safety? Softstack audit readiness?</div></div></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Deploy to devnet + record program ID in CLAUDE.md</div><div class="ts">`anchor deploy --provider.cluster devnet`. Update CLAUDE.md + README immediately.</div></div></div>
+  </div>
+  <div class="dl" style="color:var(--color-text-danger)">Target: March 29 — all tests passing, deployed to devnet</div>
+</div>
+
+<!-- STAGE 3: INTEGRATION -->
+<div class="stage">
+  <div class="s-head" style="background:var(--color-background-secondary)">
+    <div><div style="font-size:12px;font-weight:500;color:var(--color-text-primary)">Stage 3 — Integration layer</div><div style="font-size:10px;color:var(--color-text-secondary);margin-top:1px">Days 8–11</div></div>
+    <span class="bd" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">SPRINT 2A</span>
+  </div>
+  <div class="s-body" style="padding-top:10px">
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Build mock attestation issuer script</div><div class="ts">Node.js. Issues SAS attestations. Wallet B → Tier 3, expiry 12 months. Wallet A → nothing. Run before every demo.</div></div></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Build toy vault program</div><div class="ts">Minimal Anchor program. One deposit() instruction. No economics. Just something real to gate.</div></div></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Wire gate → toy vault via CPI</div><div class="ts">Deploy both. Configure VaultConfig. Verify full chain: attestation → gate call → CPI → audit log.</div></div><span class="bd" style="background:var(--color-background-danger);color:var(--color-text-danger)">CRITICAL</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Test pause flow end-to-end via CLI <span class="new-tag">NEW</span></div><div class="ts">Call pause_gate. Verify even Wallet B (Tier 3) is rejected. Call unpause_gate. Verify Wallet B passes again.</div></div></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Run full demo script manually via CLI</div><div class="ts">Wallet A denied. Wallet B approved. Audit log written. Must work cleanly before touching the frontend.</div></div></div>
+  </div>
+  <div class="dl">Target: April 2 — full flow working via CLI</div>
+</div>
+
+<!-- STAGE 4: FRONTEND + ADMIN -->
+<div class="stage">
+  <div class="s-head" style="background:var(--color-background-secondary)">
+    <div><div style="font-size:12px;font-weight:500;color:var(--color-text-primary)">Stage 4 — Frontend + admin panel (Next.js) <span class="new-tag">EXPANDED</span></div><div style="font-size:10px;color:var(--color-text-secondary);margin-top:1px">Days 12–15 · Two surfaces: demo UI + admin panel</div></div>
+    <span class="bd" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">SPRINT 2B</span>
+  </div>
+  <div class="s-body" style="padding-top:10px">
+
+    <div style="font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--color-text-secondary);padding:6px 0 4px">PUBLIC DEMO UI — /</div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Scaffold Next.js 14 with Leyfis brand</div><div class="ts">Apply brand palette. Wallet adapter. Gate mark in header. Route structure: / (demo) + /admin.</div></div></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Two-wallet demo panel</div><div class="ts">Wallet A (red, ACCESS DENIED) + Wallet B (green, ACCESS GRANTED). "Interact with Vault" button each. Real-time outcome display.</div></div><span class="bd" style="background:var(--color-background-danger);color:var(--color-text-danger)">CRITICAL</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Attestation detail card (Wallet B)</div><div class="ts">Issuer · Tier: Institutional · Expiry · Jurisdiction · Attestation PDA. The card a banker trusts.</div></div></div>
+
+    <div style="font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--color-text-secondary);padding:10px 0 4px">ADMIN PANEL — /admin <span class="new-tag">NEW</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Admin gate — wallet-based role detection</div><div class="ts">Connect wallet → read on-chain role → route to operator / issuer / auditor view. No passwords. Wallet IS identity.</div></div><span class="bd" style="background:var(--color-background-danger);color:var(--color-text-danger)">CRITICAL</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Vault operator dashboard</div><div class="ts">Live stats (calls today, approval rate, denied count). Vault config panel: tier, issuers, pause toggle. Last 10 audit entries.</div></div><span class="bd" style="background:var(--color-background-danger);color:var(--color-text-danger)">DEMO DAY</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">KYC issuer panel</div><div class="ts">Issue form: wallet + tier + expiry + jurisdiction. Active attestations table with revoke button. This replaces the Node.js mock issuer script for live demos.</div></div><span class="bd" style="background:var(--color-background-danger);color:var(--color-text-danger)">DEMO DAY</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Audit log explorer</div><div class="ts">Full on-chain log, filterable by wallet / date / outcome / tier. Expandable rows. Solana Explorer link per tx.</div></div><span class="bd" style="background:var(--color-background-danger);color:var(--color-text-danger)">DEMO DAY</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Compliance report exporter</div><div class="ts">Date range picker → CSV with all FATF R.16 fields. The document you hand to a regulator.</div></div><span class="bd" style="background:var(--color-background-danger);color:var(--color-text-danger)">DEMO DAY</span></div>
+
+    <div style="font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--color-text-secondary);padding:10px 0 4px">DEPLOY</div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Deploy to Vercel — public URL for submission</div><div class="ts">/ for demo, /admin for the panel. Judges will click both. Both must be live and working.</div></div></div>
+  </div>
+  <div class="dl" style="color:var(--color-text-warning)">Target: April 6 — both surfaces live on Vercel</div>
+</div>
+
+<!-- STAGE 5: POLISH -->
+<div class="stage">
+  <div class="s-head" style="background:var(--color-background-secondary)">
+    <div><div style="font-size:12px;font-weight:500;color:var(--color-text-primary)">Stage 5 — Polish, submit, rehearse</div><div style="font-size:10px;color:var(--color-text-secondary);margin-top:1px">Days 16–17 · Freeze + Demo Day</div></div>
+    <span class="bd" style="background:var(--color-background-secondary);color:var(--color-text-secondary)">SPRINT 3</span>
+  </div>
+  <div class="s-body" style="padding-top:10px">
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Test all edge cases including admin flows <span class="new-tag">+admin</span></div><div class="ts">Expired attestation · revoked attestation · wrong tier · gate paused · update vault config · export empty log.</div></div></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Update PRD v1.1 with admin layer <span class="new-tag">NEW</span></div><div class="ts">Add admin architecture, 3 roles, permission matrix, 3 new on-chain instructions to PRD. Version bump to 1.1.</div></div></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Write DoraHacks project submission</div><div class="ts">One-liner · description · track · GitHub URL · Vercel URL · demo video. Submit 24 hrs early.</div></div></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Record 2-minute demo video</div><div class="ts">Screen capture + voiceover. Show full 3-role story: issuer issues attestation → user hits gate → operator sees dashboard → auditor exports report.</div></div></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Code freeze — April 7</div><div class="ts">No new features. Pre-fund wallets. Check RPC. Load slides. Backup screenshots of every screen.</div></div><span class="bd" style="background:var(--color-background-danger);color:var(--color-text-danger)">HARD</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Full rehearsal — 5 times minimum</div><div class="ts">5-minute run with slides + live demo. Must clock under 4:30. Know every judge question cold.</div></div><span class="bd" style="background:var(--color-background-danger);color:var(--color-text-danger)">HARD</span></div>
+    <div class="task"><div class="chk"></div><div style="flex:1"><div class="tt">Demo Day — Zurich, April 8</div><div class="ts">Present. 5 minutes. Win.</div></div><span class="bd" style="background:var(--color-background-danger);color:var(--color-text-danger)">APR 8</span></div>
+  </div>
+  <div class="dl" style="color:var(--color-text-danger)">Hard deadline: April 8 · Zurich Demo Day</div>
+</div>
+
+<!-- FOOTER -->
+<div style="background:var(--color-background-secondary);border-radius:8px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+  <div style="font-size:11px;color:var(--color-text-secondary)">Click any checkbox to mark done · v2 includes full admin layer · 3 new on-chain instructions · 5 new frontend screens</div>
+  <button onclick="sendPrompt('Start Stage 1: give me the Claude Desktop MCP config JSON and CLAUDE.md file for Leyfis, ready to paste')" style="font-size:11px;padding:7px 14px;border-radius:6px;cursor:pointer;font-weight:500;white-space:nowrap">Start Stage 1 ↗</button>
+</div>
+
+</div>
+<script>
+document.querySelectorAll('.chk:not(.done)').forEach(el=>{
+  el.addEventListener('click',()=>{
+    el.classList.add('done');
+    el.innerHTML='<svg class="mk" viewBox="0 0 9 9" style="display:block;width:9px;height:9px"><path d="M1 4.5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+    const t=el.closest('.task').querySelector('.tt');
+    if(t)t.classList.add('dn');
+  });
+});
+</script>

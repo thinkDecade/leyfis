@@ -1,0 +1,350 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif}
+.stage{border-radius:12px;overflow:hidden;margin-bottom:16px;border:0.5px solid var(--color-border-tertiary)}
+.stage-header{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.stage-body{padding:0 18px 16px}
+.task{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.task:last-child{border-bottom:none}
+.check{width:18px;height:18px;border-radius:4px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.check.done{background:var(--color-background-success);border:0.5px solid var(--color-border-success)}
+.check.todo{background:transparent;border:0.5px solid var(--color-border-secondary)}
+.check.active{background:var(--color-background-warning);border:0.5px solid var(--color-border-warning)}
+.checkmark{width:10px;height:10px;display:none}
+.check.done .checkmark{display:block}
+.task-text{flex:1}
+.task-title{font-size:13px;font-weight:500;color:var(--color-text-primary);line-height:1.4}
+.task-title.done-text{color:var(--color-text-success);text-decoration:line-through;opacity:0.7}
+.task-sub{font-size:11px;color:var(--color-text-secondary);margin-top:2px;line-height:1.5}
+.badge{font-size:9px;font-weight:700;letter-spacing:.1em;padding:2px 7px;border-radius:4px;flex-shrink:0;margin-top:2px}
+.badge-done{background:var(--color-background-success);color:var(--color-text-success)}
+.badge-active{background:var(--color-background-warning);color:var(--color-text-warning)}
+.badge-todo{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.badge-critical{background:var(--color-background-danger);color:var(--color-text-danger)}
+.progress-bar{height:4px;background:var(--color-background-secondary);border-radius:2px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;border-radius:2px;transition:width .3s}
+.stage-meta{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+.day-badge{font-size:10px;color:var(--color-text-tertiary);background:var(--color-background-secondary);padding:2px 8px;border-radius:10px;flex-shrink:0}
+.deadline{font-size:11px;font-weight:500;padding:8px 18px;border-top:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:6px}
+</style>
+
+<div style="padding:0 0 8px">
+
+  <!-- Header stats -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px">
+    <div style="background:var(--color-background-success);border-radius:8px;padding:12px 14px">
+      <div style="font-size:10px;color:var(--color-text-success);font-weight:700;letter-spacing:.08em">DONE</div>
+      <div style="font-size:22px;font-weight:500;color:var(--color-text-success);margin-top:2px">6</div>
+      <div style="font-size:10px;color:var(--color-text-success);opacity:.7">deliverables</div>
+    </div>
+    <div style="background:var(--color-background-warning);border-radius:8px;padding:12px 14px">
+      <div style="font-size:10px;color:var(--color-text-warning);font-weight:700;letter-spacing:.08em">IN BUILD</div>
+      <div style="font-size:22px;font-weight:500;color:var(--color-text-warning);margin-top:2px">4</div>
+      <div style="font-size:10px;color:var(--color-text-warning);opacity:.7">stages left</div>
+    </div>
+    <div style="background:var(--color-background-danger);border-radius:8px;padding:12px 14px">
+      <div style="font-size:10px;color:var(--color-text-danger);font-weight:700;letter-spacing:.08em">DEADLINE</div>
+      <div style="font-size:22px;font-weight:500;color:var(--color-text-danger);margin-top:2px">17</div>
+      <div style="font-size:10px;color:var(--color-text-danger);opacity:.7">days left</div>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:8px;padding:12px 14px">
+      <div style="font-size:10px;color:var(--color-text-secondary);font-weight:700;letter-spacing:.08em">DEMO DAY</div>
+      <div style="font-size:22px;font-weight:500;color:var(--color-text-primary);margin-top:2px">Apr 8</div>
+      <div style="font-size:10px;color:var(--color-text-secondary);opacity:.7">Zurich</div>
+    </div>
+  </div>
+
+  <!-- STAGE 0: DONE -->
+  <div class="stage">
+    <div class="stage-header" style="background:var(--color-background-success)">
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--color-text-success)">Stage 0 — Foundation</div>
+        <div class="stage-meta" style="color:var(--color-text-success);opacity:.8">Everything built before writing a single line of code</div>
+      </div>
+      <span class="badge badge-done">COMPLETE</span>
+    </div>
+    <div class="stage-body" style="padding-top:12px">
+      <div class="task">
+        <div class="check done"><svg class="checkmark" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+        <div class="task-text"><div class="task-title done-text">Idea validated + competitor research</div><div class="task-sub">Confirmed gap: no vault-agnostic compliance middleware exists on Solana. Blockpass, TruFin, zkMe all have key weaknesses.</div></div>
+        <span class="badge badge-done">DONE</span>
+      </div>
+      <div class="task">
+        <div class="check done"><svg class="checkmark" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+        <div class="task-text"><div class="task-title done-text">Product name — LEYFIS</div><div class="task-sub">Old Norse: formal grant of clearance. Clean trademark landscape. leyfis.io available.</div></div>
+        <span class="badge badge-done">DONE</span>
+      </div>
+      <div class="task">
+        <div class="check done"><svg class="checkmark" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+        <div class="task-text"><div class="task-title done-text">Pitch deck — 7 slides (PPTX)</div><div class="task-sub">Problem → Why solutions fail → Solution → Demo → Market → Ask. Built for 5 min Zurich presentation.</div></div>
+        <span class="badge badge-done">DONE</span>
+      </div>
+      <div class="task">
+        <div class="check done"><svg class="checkmark" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+        <div class="task-text"><div class="task-title done-text">PRD v1.0 — 16 pages (DOCX)</div><div class="task-sub">10 sections: exec summary, problem, product overview, functional reqs, tech architecture, MVP scope, NFRs, risks, submission checklist, glossary.</div></div>
+        <span class="badge badge-done">DONE</span>
+      </div>
+      <div class="task">
+        <div class="check done"><svg class="checkmark" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+        <div class="task-text"><div class="task-title done-text">Brand identity — full suite (SVG)</div><div class="task-sub">Gate mark, 8 logo variants, 6-stop colour palette, typography system, usage guidelines.</div></div>
+        <span class="badge badge-done">DONE</span>
+      </div>
+      <div class="task">
+        <div class="check done"><svg class="checkmark" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+        <div class="task-text"><div class="task-title done-text">Technical architecture designed</div><div class="task-sub">3-layer system: off-chain KYC → Leyfis Gate Program (SAS) → DeFi vault. Account structs, instruction signatures, error codes all spec'd.</div></div>
+        <span class="badge badge-done">DONE</span>
+      </div>
+    </div>
+    <div class="deadline" style="color:var(--color-text-success)">
+      <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1"/><path d="M6 3v3l2 2" stroke="currentColor" stroke-width="1" stroke-linecap="round" fill="none"/></svg>
+      Completed — March 22, 2026
+    </div>
+  </div>
+
+  <!-- STAGE 1: SETUP -->
+  <div class="stage">
+    <div class="stage-header" style="background:var(--color-background-warning)">
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--color-text-warning)">Stage 1 — Environment setup</div>
+        <div class="stage-meta" style="color:var(--color-text-warning);opacity:.8">Days 1–2 · Do this today before touching any code</div>
+      </div>
+      <span class="badge badge-active">START NOW</span>
+    </div>
+    <div class="stage-body" style="padding-top:12px">
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Secure leyfis.io + leyfis.com domains</div><div class="task-sub">Namecheap or Cloudflare. Do this before announcing anything publicly. Also claim @leyfis on X, GitHub, LinkedIn.</div></div>
+        <span class="badge badge-active">TODAY</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Create GitHub repo: leyfis-protocol</div><div class="task-sub">Public repo. Add README with project description and architecture diagram. This is what judges click on.</div></div>
+        <span class="badge badge-active">TODAY</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Install Rust + Solana CLI + Anchor</div><div class="task-sub">Rust stable, Solana CLI v1.18+, Anchor v0.30+. Run `anchor init leyfis-gate` to scaffold the program.</div></div>
+        <span class="badge badge-todo">DAY 1</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Get Helius/QuickNode devnet RPC endpoint</div><div class="task-sub">Free tier. Never use public devnet — it's unreliable. This is non-negotiable before Demo Day.</div></div>
+        <span class="badge badge-todo">DAY 1</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Fund 3 devnet wallets with SOL</div><div class="task-sub">Deployer wallet (program deploy), Demo Wallet A (no attestation), Demo Wallet B (institutional attestation). 2 SOL each via devnet faucet.</div></div>
+        <span class="badge badge-todo">DAY 2</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Read SAS documentation in full</div><div class="task-sub">docs.solana.com/attestation-service. Understand schema creation, PDA derivation, attestation account structure. Your program depends on this.</div></div>
+        <span class="badge badge-todo">DAY 2</span>
+      </div>
+    </div>
+    <div class="deadline" style="color:var(--color-text-warning)">
+      <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1"/><path d="M6 3v3l2 2" stroke="currentColor" stroke-width="1" stroke-linecap="round" fill="none"/></svg>
+      Target: March 24 — 2 days from now
+    </div>
+  </div>
+
+  <!-- STAGE 2: GATE PROGRAM -->
+  <div class="stage">
+    <div class="stage-header" style="background:var(--color-background-secondary)">
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Stage 2 — Gate program (Rust/Anchor)</div>
+        <div class="stage-meta">Days 3–7 · The hardest stage. The entire product lives here.</div>
+      </div>
+      <span class="badge badge-todo">SPRINT 1</span>
+    </div>
+    <div class="stage-body" style="padding-top:12px">
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Define account structs: VaultConfig + AuditEntry</div><div class="task-sub">Rust structs as spec'd in PRD §5.2. VaultConfig holds authority, vault_program, min_tier, trusted_issuers. AuditEntry holds all gate call data.</div></div>
+        <span class="badge badge-todo">DAY 3</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Write initialize_vault_config instruction</div><div class="task-sub">Sets up vault operator config. Called once at deployment. Stores min_tier, trusted_issuers list, target vault program ID.</div></div>
+        <span class="badge badge-todo">DAY 4</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Write SAS attestation reader</div><div class="task-sub">Derive PDA from [wallet_pubkey, issuer_pubkey, schema_uid]. Deserialise attestation account. This is the most technically complex part — use Claude to generate the Anchor scaffolding.</div></div>
+        <span class="badge badge-critical">CRITICAL</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Write gate() instruction with full validation</div><div class="task-sub">Check: exists → not revoked → not expired → trusted issuer → tier sufficient. On pass: CPI to vault. On fail: return LeyfisError. Write audit entry in both cases.</div></div>
+        <span class="badge badge-critical">CRITICAL</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Implement all 6 error codes</div><div class="task-sub">NoAttestation, AttestationExpired, AttestationRevoked, UntrustedIssuer, TierInsufficient, JurisdictionBlocked. As spec'd in PRD §5.4.</div></div>
+        <span class="badge badge-todo">DAY 5</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Write Anchor test suite</div><div class="task-sub">Test cases: approved wallet, no attestation, expired attestation, revoked attestation, wrong tier, wrong issuer. All must pass before moving to Stage 3.</div></div>
+        <span class="badge badge-critical">CRITICAL</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Deploy to devnet + verify program ID</div><div class="task-sub">`anchor deploy --provider.cluster devnet`. Record program ID. Update README. This is your proof of work.</div></div>
+        <span class="badge badge-todo">DAY 7</span>
+      </div>
+    </div>
+    <div class="deadline" style="color:var(--color-text-danger)">
+      <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1"/><path d="M6 3v3l2 2" stroke="currentColor" stroke-width="1" stroke-linecap="round" fill="none"/></svg>
+      Target: March 29 · Gate on devnet, all tests passing
+    </div>
+  </div>
+
+  <!-- STAGE 3: INTEGRATION -->
+  <div class="stage">
+    <div class="stage-header" style="background:var(--color-background-secondary)">
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Stage 3 — Integration layer</div>
+        <div class="stage-meta">Days 8–11 · Make it real. Wrap the gate around something judges can see.</div>
+      </div>
+      <span class="badge badge-todo">SPRINT 2A</span>
+    </div>
+    <div class="stage-body" style="padding-top:12px">
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Build mock attestation issuer script</div><div class="task-sub">Node.js script using @solana/web3.js. Issues SAS attestations to demo wallets. Wallet B gets Tier 3 institutional, Wallet A gets nothing. Run before every demo.</div></div>
+        <span class="badge badge-todo">DAY 8</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Build toy vault program</div><div class="task-sub">Minimal Anchor program with one instruction: deposit(amount). No real economics. Just something real to wrap with the gate. Judges need to see a vault.</div></div>
+        <span class="badge badge-todo">DAY 9</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Wire gate → toy vault via CPI</div><div class="task-sub">Deploy both programs. Configure VaultConfig pointing to toy vault. Verify end-to-end: attestation issued → gate called → CPI succeeds → audit log written.</div></div>
+        <span class="badge badge-critical">CRITICAL</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Run full demo script manually via CLI</div><div class="task-sub">No UI yet. Wallet A denied, Wallet B approved, audit log written. If this doesn't work cleanly in terminal, the UI won't save you.</div></div>
+        <span class="badge badge-todo">DAY 11</span>
+      </div>
+    </div>
+    <div class="deadline" style="color:var(--color-text-warning)">
+      <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1"/><path d="M6 3v3l2 2" stroke="currentColor" stroke-width="1" stroke-linecap="round" fill="none"/></svg>
+      Target: April 2 · Full flow working end-to-end via CLI
+    </div>
+  </div>
+
+  <!-- STAGE 4: FRONTEND -->
+  <div class="stage">
+    <div class="stage-header" style="background:var(--color-background-secondary)">
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Stage 4 — Demo frontend (Next.js)</div>
+        <div class="stage-meta">Days 12–14 · The face of Leyfis. Must look like a real product.</div>
+      </div>
+      <span class="badge badge-todo">SPRINT 2B</span>
+    </div>
+    <div class="stage-body" style="padding-top:12px">
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Scaffold Next.js 14 app with Leyfis brand</div><div class="task-sub">Apply brand palette (#0A0F1C, #E8EEF6, #0F6E56, #7A1F1F). Import @solana/wallet-adapter-react. Gate mark in header.</div></div>
+        <span class="badge badge-todo">DAY 12</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Build two-wallet demo panel</div><div class="task-sub">Left: Wallet A — no attestation, red ACCESS DENIED. Right: Wallet B — Tier 3, green ACCESS GRANTED. Each has an "Interact with Vault" button. This is the centrepiece of the demo.</div></div>
+        <span class="badge badge-critical">CRITICAL</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Build attestation detail card</div><div class="task-sub">Shows for Wallet B: issuer address, tier (Institutional), expiry date, jurisdiction, attestation PDA. This is what a banker looks at and thinks "this is real".</div></div>
+        <span class="badge badge-todo">DAY 13</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Build live audit log dashboard</div><div class="task-sub">Table: wallet | timestamp | outcome | tier | attestation ID. Fetches on-chain AuditLog account. Auto-refreshes after each gate call. CSV export button.</div></div>
+        <span class="badge badge-todo">DAY 13</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Deploy frontend to Vercel</div><div class="task-sub">Free tier. Get a public URL. This goes in your DoraHacks submission. Judges will click it.</div></div>
+        <span class="badge badge-todo">DAY 14</span>
+      </div>
+    </div>
+    <div class="deadline" style="color:var(--color-text-warning)">
+      <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1"/><path d="M6 3v3l2 2" stroke="currentColor" stroke-width="1" stroke-linecap="round" fill="none"/></svg>
+      Target: April 5 · Live Vercel URL with full working demo
+    </div>
+  </div>
+
+  <!-- STAGE 5: POLISH + SUBMIT -->
+  <div class="stage">
+    <div class="stage-header" style="background:var(--color-background-secondary)">
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Stage 5 — Polish, submit, rehearse</div>
+        <div class="stage-meta">Days 15–16 · Freeze, submit, rehearse. In that order.</div>
+      </div>
+      <span class="badge badge-todo">SPRINT 3</span>
+    </div>
+    <div class="stage-body" style="padding-top:12px">
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Test all edge cases</div><div class="task-sub">Expired attestation, revoked attestation, wrong tier, wrong issuer, empty audit log, low SOL balance. If it can break, break it now.</div></div>
+        <span class="badge badge-todo">APR 5</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Write DoraHacks project submission</div><div class="task-sub">One-liner, full description, track selection, GitHub URL, Vercel URL, demo video link. Submit 24 hours early — never same day.</div></div>
+        <span class="badge badge-todo">APR 6</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Record 2-minute demo video</div><div class="task-sub">Screen capture + voiceover. Show the 7-step demo script from the PRD. Upload to YouTube/Loom. This is your submission backup and your judges' preview.</div></div>
+        <span class="badge badge-todo">APR 6</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Code freeze</div><div class="task-sub">No new features after this point. Bugfixes only. Pre-fund demo wallets. Check RPC endpoint. Load slides on presentation device.</div></div>
+        <span class="badge badge-critical">APR 7</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Full rehearsal — 5 times minimum</div><div class="task-sub">Run the 7-step demo script aloud with slides. Must clock under 4:30. Know every answer to every technical question a judge can ask.</div></div>
+        <span class="badge badge-critical">APR 7</span>
+      </div>
+      <div class="task">
+        <div class="check todo"></div>
+        <div class="task-text"><div class="task-title">Demo Day — Zurich</div><div class="task-sub">Present. 5 minutes. Win.</div></div>
+        <span class="badge badge-critical">APR 8</span>
+      </div>
+    </div>
+    <div class="deadline" style="color:var(--color-text-danger)">
+      <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1"/><path d="M6 3v3l2 2" stroke="currentColor" stroke-width="1" stroke-linecap="round" fill="none"/></svg>
+      Hard deadline: April 8, Demo Day Zurich
+    </div>
+  </div>
+
+  <!-- Next action CTA -->
+  <div style="background:var(--color-background-secondary);border-radius:10px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <div>
+      <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Next action right now</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);margin-top:3px">Secure the domain. Create the GitHub repo. Start Stage 1 today.</div>
+    </div>
+    <button onclick="sendPrompt('Start Stage 2 — write the Leyfis Gate Program Rust code with Anchor')" style="font-size:12px;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:500;white-space:nowrap">Build the Gate Program ↗</button>
+  </div>
+
+</div>
+<script>
+document.querySelectorAll('.check.todo').forEach(el=>{
+  el.addEventListener('click',()=>{
+    el.classList.remove('todo');
+    el.classList.add('done');
+    el.innerHTML='<svg class="checkmark" viewBox="0 0 10 10" style="display:block;width:10px;height:10px"><path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+    const title=el.closest('.task').querySelector('.task-title');
+    if(title){title.classList.add('done-text');}
+  });
+});
+</script>

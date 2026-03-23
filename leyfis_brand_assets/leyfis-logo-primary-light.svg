@@ -1,0 +1,13 @@
+<svg width="320" height="80" viewBox="0 0 320 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="80" fill="#F7F8FA"/>
+  <!-- Gate icon -->
+  <g transform="translate(24, 12)">
+    <rect x="0" y="10" width="7" height="32" fill="#0A0F1C"/>
+    <rect x="33" y="10" width="7" height="32" fill="#0A0F1C"/>
+    <rect x="0" y="7" width="40" height="6" fill="#0A0F1C"/>
+    <rect x="10" y="13" width="20" height="29" fill="#F7F8FA"/>
+    <rect x="10" y="40" width="20" height="1.5" fill="#6B7F9E"/>
+  </g>
+  <text x="82" y="36" font-family="Arial" font-weight="700" font-size="28" fill="#0A0F1C" letter-spacing="6">LEYFIS</text>
+  <text x="83" y="56" font-family="Arial" font-weight="400" font-size="9" fill="#8899BB" letter-spacing="3">COMPLIANCE · INFRASTRUCTURE</text>
+</svg>

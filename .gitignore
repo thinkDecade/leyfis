@@ -1,0 +1,10 @@
+node_modules/
+target/
+.anchor/
+keys/
+*.so
+*.keypair
+.env
+.env.local
+dist/
+.next/
