@@ -14,7 +14,7 @@ test_vault  = "88x1hxWW6mMDpQQwuR3sCDgnmbHwHmQBdWYZQhcedNaJ"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "/workspace/keys/deployer.json"
 
 [scripts]

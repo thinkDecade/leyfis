@@ -3,7 +3,7 @@ use anchor_lang::solana_program::program::invoke;
 use anchor_lang::solana_program::instruction::Instruction;
 use anchor_lang::solana_program::system_program;
 
-declare_id!("7jyP2jp8ozmGSeXpyLm9gbpghKA3qgAu2hWVhigh63Gj");
+declare_id!("Cskp4zg7aDHvY4u2M7FyceqqcbvGThgo8WahvQCkQZVP");
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SEEDS
