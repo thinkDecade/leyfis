@@ -1,8 +1,0 @@
-{
-  "name": "21st-dev",
-  "type": "url",
-  "url": "https://mcp.21st.dev/api/mcp",
-  "headers": {
-    "Authorization": "3a0688d5276f42c8bcbed3107221eed64f9a4394d5b95e3bf4e818a39e71b227"
-  }
-}

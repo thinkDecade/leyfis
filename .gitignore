@@ -8,3 +8,10 @@ keys/
 .env.local
 dist/
 .next/
+
+# Sensitive / unnecessary
+*.pptx
+*.docx
+*.mp4
+*.bak
+21st-dev.txt
