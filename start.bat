@@ -6,9 +6,8 @@ docker start leyfis-dev 2>nul || docker run -d ^
   -v leyfis-build-cache:/build-cache ^
   -p 8899:8899 ^
   -p 8900:8900 ^
+  -p 3000:3000 ^
+  -p 3001:3001 ^
   leyfis-dev ^
   tail -f /dev/null
-echo.
 echo Container running.
-echo Run commands with: docker exec -it leyfis-dev bash -c "COMMAND"
-echo Open a shell with: shell.bat

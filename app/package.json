@@ -1,0 +1,12 @@
+{
+  "name": "leyfis-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev:app":     "yarn workspace @leyfis/app dev",
+    "dev:admin":   "yarn workspace @leyfis/admin dev",
+    "build:app":   "yarn workspace @leyfis/app build",
+    "build:admin": "yarn workspace @leyfis/admin build"
+  }
+}

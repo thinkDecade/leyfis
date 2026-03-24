@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd ../.. && yarn workspace @leyfis/admin build",
+  "outputDirectory": "apps/admin/.next",
+  "framework": "nextjs"
+}
