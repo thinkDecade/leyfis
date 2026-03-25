@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude mcp:*)",
+      "Bash(where claude:*)",
+      "Read(//usr/local/bin/**)",
+      "Read(//c/Users/mnt50/leyfis-protocol/$APPDATA/npm/**)",
+      "Read(//c/Users/mnt50/leyfis-protocol/$LOCALAPPDATA/Programs/claude/**)",
+      "Bash(cmd.exe /c \"where claude 2>nul\")",
+      "Bash(cmd.exe /c \"npm list -g --depth=0 2>nul | findstr claude\")",
+      "Bash(cmd.exe /c \"dir /s /b %LOCALAPPDATA%\\\\Programs\\\\claude.exe 2>nul & dir /s /b %APPDATA%\\\\npm\\\\claude* 2>nul\")"
+    ]
+  }
+}

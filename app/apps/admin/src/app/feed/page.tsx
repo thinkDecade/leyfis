@@ -1,4 +1,5 @@
 "use client";
+import { AdminShell } from "../../components/AdminShell";
 import { useState, useEffect, useRef } from "react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { shortAddr, GATE_PROGRAM_ID, REASON_CODES } from "@leyfis/shared";
