@@ -1,25 +1,32 @@
 "use client";
-import { AdminShell } from "../../components/AdminShell";
 import { useState, useEffect } from "react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { AdminShell } from "@/components/AdminShell";
 import { VAULT_PROGRAM_ID, REASON_CODES } from "@leyfis/shared";
 import { MOCK_AUDIT, AuditEntry } from "../../hooks/useLeyfis";
+import { Download, FileText, Calendar, Filter } from "lucide-react";
+
 const m = {fontFamily:"'DM Mono',monospace"};
+const f = {fontFamily:"'Inter',sans-serif"};
+const sep = "\n";
+
 const EXTRA: AuditEntry[] = Array.from({length:20},(_,i)=>({wallet:i%3===0?"64je9DfojWKRt3EoxXPcq1DCWqyFNknQ7XWTxF7ekxfb":"5t1okyeKtcRDQwiq3LT3uSBKQgUEuPTZBBSj15is9fjS",vault:VAULT_PROGRAM_ID,timestamp:Math.floor(Date.now()/1000)-(i+1)*400,slot:450558600-i*50,outcome:(i%3===0?"approved":"denied") as any,reasonCode:i%3===0?0:i%5===0?2:1,attestationId:i%3===0?"Ax7mPqR9kLw3":"11111111111111111111111111111111",tier:i%3===0?3:0}));
 const ALL: AuditEntry[] = [...MOCK_AUDIT,...EXTRA];
-function toCSV(es: AuditEntry[]): string {
-  const sep = "\n";
-  const hdr = "timestamp_utc,wallet_address,vault_address,outcome,reason_code,reason,tier,attestation_id,slot";
-  const rows = es.map(e=>[new Date(e.timestamp*1000).toISOString(),e.wallet,e.vault,e.outcome,e.reasonCode,REASON_CODES[e.reasonCode]||"Unknown",e.tier,e.attestationId,e.slot].join(","));
+
+function toCSV(es:AuditEntry[]):string {
+  const hdr="timestamp_utc,wallet_address,vault_address,outcome,reason_code,reason,tier,attestation_id,slot";
+  const rows=es.map(e=>[new Date(e.timestamp*1000).toISOString(),e.wallet,e.vault,e.outcome,e.reasonCode,REASON_CODES[e.reasonCode]||"Unknown",e.tier,e.attestationId,e.slot].join(","));
   return [hdr,...rows].join(sep);
 }
+
+const FATF_FIELDS = ["timestamp_utc","wallet_address","vault_address","outcome","reason_code","reason","tier","attestation_id","slot"];
+
 export default function ExportPage() {
   const [mounted,setMounted]=useState(false); useEffect(()=>setMounted(true),[]);
   const [from,setFrom]=useState(new Date(Date.now()-7*86400000).toISOString().slice(0,10));
   const [to,setTo]=useState(new Date().toISOString().slice(0,10));
   const [outcomeF,setOutcomeF]=useState<"all"|"approved"|"denied">("all");
   const [exporting,setExporting]=useState(false);
-  const inp:any={...m,fontSize:"12px",background:"rgba(232,238,246,0.04)",border:"1px solid rgba(232,238,246,0.12)",color:"#E8EEF6",padding:"12px 16px",width:"100%",outline:"none",colorScheme:"dark"};
+  const inp:any={...m,fontSize:"12px",background:"var(--bg-2)",border:"1px solid var(--border)",color:"var(--text-1)",padding:"10px 14px",width:"100%",outline:"none",colorScheme:"dark"};
   const filtered=ALL.filter(e=>{
     const d=new Date(e.timestamp*1000).toISOString().slice(0,10);
     if(d<from||d>to)return false;
@@ -37,51 +44,71 @@ export default function ExportPage() {
     URL.revokeObjectURL(url);
     setExporting(false);
   };
-  if(!mounted)return null;
+  if(!mounted) return null;
   return (
-    <main style={{minHeight:"100vh"}}>
-      <div style={{position:"fixed",inset:"16px",border:"1px solid rgba(232,238,246,0.1)",pointerEvents:"none",zIndex:500}}/>
-      <nav style={{position:"fixed",top:"16px",left:"16px",right:"16px",zIndex:400,padding:"18px 40px",display:"flex",alignItems:"center",justifyContent:"space-between",background:"rgba(0,0,0,0.92)",backdropFilter:"blur(12px)",borderBottom:"1px solid rgba(232,238,246,0.1)"}}>
-        <div style={{display:"flex",alignItems:"center",gap:"20px"}}>
-          <a href="/" style={{...m,fontSize:"10px",color:"rgba(232,238,246,0.4)",letterSpacing:"0.1em"}}>? Back</a>
-          <span style={{fontFamily:"Arial,sans-serif",fontSize:"14px",fontWeight:700,letterSpacing:"0.22em"}}>LEYFIS</span>
-          <span style={{...m,fontSize:"9px",color:"rgba(232,238,246,0.3)",border:"1px solid rgba(232,238,246,0.15)",padding:"3px 8px",textTransform:"uppercase"}}>/07 Export</span>
-        </div>
-        <WalletMultiButton/>
-      </nav>
-      <section style={{padding:"120px 60px 60px",maxWidth:"900px"}}>
-        <div style={{...m,fontSize:"9px",color:"rgba(232,238,246,0.3)",letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:"24px"}}>/07 ? Compliance Export</div>
-        <h1 style={{fontSize:"clamp(32px,4vw,56px)",fontWeight:700,letterSpacing:"-0.02em",marginBottom:"8px"}}>Compliance Export</h1>
-        <p style={{...m,fontSize:"11px",color:"rgba(232,238,246,0.35)",lineHeight:1.8,marginBottom:"40px"}}>Export FATF R.16 aligned audit records for regulatory reporting.</p>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"16px",marginBottom:"28px"}}>
-          <div><div style={{...m,fontSize:"9px",color:"rgba(232,238,246,0.3)",letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:"8px"}}>From</div><input type="date" value={from} onChange={e=>setFrom(e.target.value)} style={inp}/></div>
-          <div><div style={{...m,fontSize:"9px",color:"rgba(232,238,246,0.3)",letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:"8px"}}>To</div><input type="date" value={to} onChange={e=>setTo(e.target.value)} style={inp}/></div>
-          <div><div style={{...m,fontSize:"9px",color:"rgba(232,238,246,0.3)",letterSpacing:"0.14em",textTransform:"uppercase",marginBottom:"8px"}}>Outcome</div>
-            <select value={outcomeF} onChange={e=>setOutcomeF(e.target.value as any)} style={inp}><option value="all">All</option><option value="approved">Approved</option><option value="denied">Denied</option></select></div>
-        </div>
-        <div style={{border:"1px solid rgba(232,238,246,0.1)",padding:"24px",marginBottom:"28px"}}>
-          <div style={{...m,fontSize:"9px",color:"rgba(232,238,246,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:"16px"}}>Preview ? {filtered.length} records</div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:"8px",...m,fontSize:"9px",color:"rgba(232,238,246,0.25)",letterSpacing:"0.08em",textTransform:"uppercase",borderBottom:"1px solid rgba(232,238,246,0.08)",paddingBottom:"8px",marginBottom:"8px"}}>
-            <span>timestamp</span><span>wallet</span><span>outcome</span><span>tier</span><span>reason</span>
+    <AdminShell current="/export">
+      <div style={{marginBottom:"28px"}}>
+        <div style={{...m,fontSize:"9px",color:"var(--text-4)",letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:"10px"}}>/07 ? Compliance Export</div>
+        <h1 style={{...f,fontSize:"26px",fontWeight:700,letterSpacing:"-0.02em",marginBottom:"4px",color:"var(--text-1)"}}>Compliance Export</h1>
+        <p style={{...m,fontSize:"11px",color:"var(--text-3)"}}>Export FATF R.16 aligned audit records for regulatory reporting.</p>
+      </div>
+
+      <div style={{display:"grid",gridTemplateColumns:"1fr 320px",gap:"20px",alignItems:"start"}}>
+        <div style={{display:"flex",flexDirection:"column",gap:"16px"}}>
+          <div style={{border:"1px solid var(--border)",background:"var(--bg-1)",padding:"24px"}}>
+            <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"20px"}}>
+              <Calendar size={14} color="var(--text-3)"/>
+              <span style={{...m,fontSize:"9px",color:"var(--text-4)",letterSpacing:"0.1em",textTransform:"uppercase"}}>Date Range & Filters</span>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"14px"}}>
+              <div><label style={{...m,fontSize:"9px",color:"var(--text-3)",letterSpacing:"0.1em",textTransform:"uppercase",display:"block",marginBottom:"7px"}}>From</label><input type="date" value={from} onChange={e=>setFrom(e.target.value)} style={inp}/></div>
+              <div><label style={{...m,fontSize:"9px",color:"var(--text-3)",letterSpacing:"0.1em",textTransform:"uppercase",display:"block",marginBottom:"7px"}}>To</label><input type="date" value={to} onChange={e=>setTo(e.target.value)} style={inp}/></div>
+              <div><label style={{...m,fontSize:"9px",color:"var(--text-3)",letterSpacing:"0.1em",textTransform:"uppercase",display:"block",marginBottom:"7px"}}>Outcome</label>
+                <select value={outcomeF} onChange={e=>setOutcomeF(e.target.value as any)} style={inp}><option value="all">All outcomes</option><option value="approved">Approved only</option><option value="denied">Denied only</option></select></div>
+            </div>
           </div>
-          {filtered.slice(0,5).map((e,i)=>(
-            <div key={i} style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:"8px",padding:"6px 0",borderBottom:"1px solid rgba(232,238,246,0.04)",...m,fontSize:"9px",color:"rgba(232,238,246,0.45)"}}>
-              <span>{new Date(e.timestamp*1000).toISOString().slice(0,19)}</span>
-              <span>{e.wallet.slice(0,12)}...</span>
-              <span style={{color:e.outcome==="approved"?"#1B4FD8":"#C44444",fontWeight:700}}>{e.outcome.toUpperCase()}</span>
-              <span>{e.tier>0?`T${e.tier}`:"?"}</span>
-              <span>{REASON_CODES[e.reasonCode]}</span>
+
+          <div style={{border:"1px solid var(--border)",background:"var(--bg-1)"}}>
+            <div style={{padding:"16px 20px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
+                <FileText size={13} color="var(--text-3)"/>
+                <span style={{...m,fontSize:"9px",color:"var(--text-4)",letterSpacing:"0.1em",textTransform:"uppercase"}}>Preview ? {filtered.length} records</span>
+              </div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:"8px",padding:"10px 16px",...m,fontSize:"9px",color:"var(--text-4)",letterSpacing:"0.08em",textTransform:"uppercase",borderBottom:"1px solid var(--border)"}}>
+              <span>Timestamp</span><span>Wallet</span><span>Outcome</span><span>Tier</span><span>Reason</span>
+            </div>
+            {filtered.slice(0,6).map((e,i)=>(
+              <div key={i} style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:"8px",padding:"10px 16px",borderBottom:i<5?"1px solid var(--border)":"none",...m,fontSize:"9px",color:"var(--text-2)",alignItems:"center",borderLeft:`2px solid ${e.outcome==="approved"?"var(--accent)":"var(--danger)"}`}}>
+                <span>{new Date(e.timestamp*1000).toISOString().slice(0,19)}</span>
+                <span>{e.wallet.slice(0,12)}...</span>
+                <span style={{color:e.outcome==="approved"?"var(--accent)":"var(--danger)",fontWeight:700,textTransform:"uppercase"}}>{e.outcome}</span>
+                <span>{e.tier>0?`T${e.tier}`:"?"}</span>
+                <span style={{color:"var(--text-3)"}}>{REASON_CODES[e.reasonCode]}</span>
+              </div>
+            ))}
+            {filtered.length>6&&<div style={{padding:"10px 16px",...m,fontSize:"9px",color:"var(--text-4)"}}>+{filtered.length-6} more records in export</div>}
+          </div>
+
+          <button onClick={doExport} disabled={exporting||filtered.length===0} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"10px",...m,fontSize:"11px",letterSpacing:"0.1em",textTransform:"uppercase",background:filtered.length===0?"var(--accent-bg)":"var(--accent)",color:filtered.length===0?"var(--accent)":"white",border:"1px solid var(--accent)",padding:"14px 28px",cursor:filtered.length===0?"not-allowed":"pointer",fontWeight:700}}>
+            <Download size={14}/>{exporting?"Generating CSV...":`Export ${filtered.length} Records`}
+          </button>
+        </div>
+
+        <div style={{border:"1px solid var(--border)",background:"var(--bg-1)",padding:"24px",position:"sticky",top:"80px"}}>
+          <div style={{...m,fontSize:"9px",color:"var(--text-4)",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"16px"}}>FATF R.16 Fields</div>
+          {FATF_FIELDS.map((field,i)=>(
+            <div key={i} style={{display:"flex",alignItems:"center",gap:"8px",padding:"8px 0",borderBottom:i<FATF_FIELDS.length-1?"1px solid var(--border)":"none"}}>
+              <div style={{width:"5px",height:"5px",borderRadius:"50%",background:"var(--accent)",flexShrink:0}}/>
+              <span style={{...m,fontSize:"10px",color:"var(--text-2)"}}>{field}</span>
             </div>
           ))}
-          {filtered.length>5&&<div style={{...m,fontSize:"9px",color:"rgba(232,238,246,0.2)",marginTop:"10px"}}>+{filtered.length-5} more in export</div>}
+          <div style={{marginTop:"16px",padding:"12px",background:"var(--bg-2)",border:"1px solid var(--border)"}}>
+            <div style={{...m,fontSize:"9px",color:"var(--text-4)",letterSpacing:"0.08em",marginBottom:"6px"}}>FORMAT</div>
+            <div style={{...m,fontSize:"10px",color:"var(--text-2)"}}>UTF-8 CSV ? ISO 8601 timestamps</div>
+          </div>
         </div>
-        <div style={{display:"flex",alignItems:"center",gap:"16px",flexWrap:"wrap"}}>
-          <button onClick={doExport} disabled={exporting||filtered.length===0} style={{...m,fontSize:"12px",letterSpacing:"0.12em",textTransform:"uppercase",background:filtered.length===0?"rgba(27,79,216,0.3)":"#1B4FD8",color:"#E8EEF6",border:"none",padding:"16px 32px",cursor:"pointer",fontWeight:700}}>
-            {exporting?"Generating...":`Export ${filtered.length} Records ?`}
-          </button>
-          <div style={{...m,fontSize:"10px",color:"rgba(232,238,246,0.3)",lineHeight:1.7}}>FATF R.16: wallet ? timestamp ? outcome ? tier ? attestation_id ? jurisdiction ? tx_hash</div>
-        </div>
-      </section>
-    </main>
+      </div>
+    </AdminShell>
   );
 }
