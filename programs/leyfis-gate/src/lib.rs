@@ -18,12 +18,15 @@ pub const ATTESTATION_SEED:     &[u8] = b"attestation";
 // ACCOUNT STRUCTS
 // ═══════════════════════════════════════════════════════════════════════════
 
+#[derive(InitSpace)]
 #[account]
 pub struct VaultConfig {
     pub authority:             Pubkey,
     pub vault_program:         Pubkey,
     pub min_tier:              u8,
+    #[max_len(20)]
     pub trusted_issuers:       Vec<Pubkey>,
+    #[max_len(20)]
     pub allowed_jurisdictions: Vec<[u8; 3]>,
     pub paused:                bool,
     pub registered_at:         i64,
@@ -40,6 +43,7 @@ impl VaultConfig {
     }
 }
 
+#[derive(InitSpace)]
 #[account]
 pub struct AuditEntry {
     pub wallet:         Pubkey,
@@ -57,9 +61,11 @@ impl AuditEntry {
     pub const SPACE: usize = 8 + 32 + 32 + 8 + 8 + 1 + 1 + 32 + 1 + 1;
 }
 
+#[derive(InitSpace)]
 #[account]
 pub struct IssuerRegistry {
     pub authority: Pubkey,
+    #[max_len(50)]
     pub issuers:   Vec<IssuerEntry>,
     pub bump:      u8,
 }
@@ -70,7 +76,7 @@ impl IssuerRegistry {
     }
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, InitSpace)]
 pub struct IssuerEntry {
     pub pubkey:     Pubkey,
     pub vault:      Pubkey,
@@ -82,6 +88,7 @@ impl IssuerEntry {
     pub const SIZE: usize = 32 + 32 + 8 + 1;
 }
 
+#[derive(InitSpace)]
 #[account]
 pub struct LeyfisAttestation {
     pub wallet:       Pubkey,
@@ -103,7 +110,7 @@ impl LeyfisAttestation {
 // ENUMS
 // ═══════════════════════════════════════════════════════════════════════════
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Debug, InitSpace)]
 pub enum GateOutcome {
     Approved,
     Denied,
