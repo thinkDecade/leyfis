@@ -836,9 +836,10 @@ footer {
   <div class="hero-top">
     <div class="hero-tag">Compliance infrastructure for institutional DeFi</div>
     <div class="hero-top-right">
-      Your institution verified the user.<br>
-      Your vault had no way to know.<br>
-      Leyfis makes compliance readable on-chain.
+      You spent years verifying clients.<br>
+      Your vault still can&#x27;t tell the difference<br>
+      between a Tier 3 institutional investor<br>
+      and a sanctioned wallet. Leyfis fixes that.
     </div>
   </div>
 
@@ -921,7 +922,7 @@ footer {
   <div class="how-head reveal">
     <div class="how-h2">Compliance<br>enforced at<br>the source.</div>
     <div class="how-desc">
-Every vault interaction passes through the Leyfis Gate. No off-chain roundtrip. No database call. The gate reads a cryptographic credential stored on Solana, validates it in milliseconds, and either executes or rejects. Every outcome is written to chain.
+Every vault interaction passes through the Leyfis Gate. No off-chain roundtrip. No compliance team intervention. No database call that can fail, be hacked, or go stale. The gate reads a cryptographic attestation stored permanently on Solana, validates it in under 400ms, and either executes or rejects. Every outcome &#x2014; approved or denied &#x2014; is written immutably to chain. No exceptions.
     </div>
   </div>
 
@@ -941,13 +942,13 @@ Every vault interaction passes through the Leyfis Gate. No off-chain roundtrip. 
     <div class="step-row">
       <span class="step-n">03</span>
       <div class="step-title">Authorize</div>
-      <div class="step-detail">All seven checks pass. Leyfis cross-program-invokes the target vault directly, forwarding the original instruction data unchanged. The transaction executes atomically. No wrapping. No proxy. No custody. Your users interact with the vault directly. Leyfis is invisible once cleared..</div>
+      <div class="step-detail">All seven checks pass. Leyfis cross-program-invokes the vault directly, forwarding the original instruction data unchanged. The transaction executes atomically on Solana. No wrapping. No proxy. No custody. Your compliance enforcement is invisible to compliant users &#x2014; they just transact. Everyone else is stopped before they touch a single lamport..</div>
       <div class="step-tag">Atomic · trustless</div>
     </div>
     <div class="step-row">
       <span class="step-n">04</span>
       <div class="step-title">Audit</div>
-      <div class="step-detail">Every gate call, approved or denied, writes an immutable AuditEntry on-chain. Wallet, vault, timestamp, slot, outcome, reason code. Your compliance team exports FATF R.16 aligned CSV on demand. No manual logging. No version control. The ledger is the record.</div>
+      <div class="step-detail">Every gate call &#x2014; approved or denied &#x2014; writes an immutable AuditEntry on-chain. Wallet. Vault. Timestamp. Slot. Outcome. Reason code. Attestation ID. Your compliance team exports FATF R.16 aligned CSV in one click. A regulator can independently verify every record directly on Solana without asking your institution for access. No manual logging. No version control. The ledger is the record. The record cannot be altered.</div>
       <div class="step-tag">Append-only · forever</div>
     </div>
   </div>
@@ -1123,7 +1124,7 @@ Connect a wallet. Leyfis reads your on-chain role and routes you to the right su
 
     <div class="cta-right">
       <div class="cta-sub">
-Your compliance team issues the credentials. Your vault operators set the rules. Your auditors read the log. Leyfis enforces access between them, on-chain, without discretion, without exceptions.<br><br>Protocol-level enforcement. Permanent audit trail. FATF R.16 aligned. Auditable by any regulator, at any time, without asking anyone for permission.
+Your KYC team issues credentials on-chain. Your vault operators set tier and jurisdiction rules. Your auditors and regulators read the immutable log &#x2014; directly from Solana, no permission required. Leyfis enforces access between them, at the protocol level, without discretion, without exceptions, without anyone in the middle.<br><br>Banks and asset managers deploy compliant vaults in hours, not quarters. Vault operators stop saying they&#x27;re compliant and start proving it. KYC providers turn their database into on-chain infrastructure. Regulators get real-time, independently verifiable audit trails. FATF R.16 aligned. FINMA, FCA, MAS ready. Live on Solana devnet now.
       </div>
       <div class="cta-links">
         <a href="https://app.leyfis.io" class="cta-a">
