@@ -1,9 +1,5 @@
 import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "LEYFIS — The Compliance Layer for Institutional DeFi",
-};
-
+export const metadata: Metadata = { title: "LEYFIS — The Compliance Layer for Institutional DeFi" };
 export default function LandingPage() {
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -893,8 +889,8 @@ footer {
 
   <div class="prob-body reveal">
     <div class="prob-left">
-      Banks spend millions on KYC. That data lives in spreadsheets, PDFs, and internal systems. None of it is readable on-chain.<br><br>      DeFi vaults are permissionless by design. They cannot distinguish a verified institutional investor from a sanctioned wallet. One wrong transaction creates regulatory exposure for the entire institution.<br><br>
-      The problem is structural. It cannot be solved with better spreadsheets. Compliance must exist at the protocol layer, where the transaction actually happens.
+      Banks and asset managers have spent years building KYC/AML infrastructure. That compliance data lives in spreadsheets, PDFs, and siloed internal systems. None of it can be read on-chain.<br><br>      DeFi vaults are permissionless by design. They cannot tell a verified institutional investor from a sanctioned wallet. One wrong transaction &mdash; one wallet that slips through &mdash; and the entire institution faces regulatory exposure.<br><br>
+      The problem is not your compliance team. The problem is that compliance has no on-chain address. Leyfis gives it one.
     </div>
 
     <div class="prob-right">
@@ -1212,10 +1208,5 @@ setTimeout(() => {
 </body>
 </html>
 `;
-  return (
-    <div
-      dangerouslySetInnerHTML={{ __html: html }}
-      style={{ all: "unset" }}
-    />
-  );
+  return <div dangerouslySetInnerHTML={{ __html: html }} style={{ all: "unset" }} />;
 }
