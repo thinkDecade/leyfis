@@ -84,7 +84,7 @@ export default function IssuePage() {
       // Real path: build Anchor instruction
       const provider = new anchor.AnchorProvider(
         connection,
-        { publicKey, signTransaction, signAllTransactions: async (txs) => txs } as any,
+        { publicKey, signTransaction, signAllTransactions: async (txs: any[]) => txs } as any,
         { commitment: "confirmed" }
       );
       const program = new anchor.Program(idl, provider);
