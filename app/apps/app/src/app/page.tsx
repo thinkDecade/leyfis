@@ -278,7 +278,7 @@ export default function LandingPage() {
               <span style={{ display:"block", color:D.ice }}>On-Chain.</span>
             </h1>
             <p style={{ fontFamily:D.serif, fontSize:"19px", color:D.ice50, lineHeight:1.7, maxWidth:"380px", marginBottom:"40px", fontStyle:"italic" }}>
-              KYC/AML access control enforced at the protocol level. Not in a spreadsheet. Not in a PDF.
+              On-chain compliance middleware for institutional DeFi vaults. Verifies KYC/AML attestations before execution — at the protocol layer, not in a spreadsheet.
             </p>
             <div style={{ display:"flex", gap:"12px", flexWrap:"wrap" }}>
               <Link href="/portal" style={{ fontFamily:D.mono, fontSize:"10px", letterSpacing:"0.12em", background:D.blue, color:"#fff", padding:"13px 28px", transition:"opacity 0.15s" }}
@@ -367,13 +367,45 @@ export default function LandingPage() {
       {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
       <section id="how" style={{ padding:"96px 10vw", borderTop:`1px solid ${D.rule}`, background:D.bg1 }}>
         <Fade>
-          <div style={{ fontFamily:D.mono, fontSize:"8px", letterSpacing:"0.2em", color:D.ice30, marginBottom:"48px" }}>/02 HOW IT WORKS</div>
-          <h2 style={{ fontFamily:D.display, fontSize:"clamp(22px,3vw,38px)", fontWeight:900, lineHeight:1.05, color:D.ice, marginBottom:"16px", letterSpacing:"-0.02em" }}>
-            Four steps. Enforced at the protocol layer.
-          </h2>
-          <p style={{ fontFamily:D.serif, fontSize:"17px", color:D.ice50, lineHeight:1.7, maxWidth:"520px", marginBottom:"56px", fontStyle:"italic" }}>
-            No off-chain roundtrip. No compliance team intervention. Every vault interaction checked against an immutable on-chain credential in under 400ms.
-          </p>
+          <div style={{ fontFamily:D.mono, fontSize:"8px", letterSpacing:"0.2em", color:D.ice30, marginBottom:"48px" }}>/02 THE SOLUTION</div>
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"6vw", alignItems:"start", marginBottom:"56px" }}>
+            <div>
+              <h2 style={{ fontFamily:D.display, fontSize:"clamp(22px,3vw,38px)", fontWeight:900, lineHeight:1.0, color:D.ice, marginBottom:"20px", letterSpacing:"-0.02em" }}>
+                A gate between the wallet and the vault.
+              </h2>
+              <p style={{ fontFamily:D.serif, fontSize:"17px", color:D.ice50, lineHeight:1.75, marginBottom:"32px", fontStyle:"italic" }}>
+                Leyfis enforces compliance at the point of execution using cryptographic attestations stored on-chain.
+              </p>
+              <div style={{ display:"flex", flexDirection:"column", gap:"0" }}>
+                {["Attestation-based access control","Issuer verification","Tiered permissions","Real-time enforcement"].map((b,i) => (
+                  <div key={i} style={{ display:"flex", gap:"12px", alignItems:"center", padding:"11px 0", borderBottom:`1px solid ${D.rule}` }}>
+                    <div style={{ width:4, height:4, borderRadius:"50%", background:D.blue, flexShrink:0 }}/>
+                    <span style={{ fontFamily:D.mono, fontSize:"12px", color:D.ice, fontWeight:300 }}>{b}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ paddingTop:"8px" }}>
+              {/* Attestation flow SVG — inline */}
+              <div style={{ fontFamily:D.mono, fontSize:"8px", letterSpacing:"0.14em", color:D.ice30, marginBottom:"16px" }}>EXECUTION FLOW</div>
+              <div style={{ display:"flex", flexDirection:"column", gap:"2px" }}>
+                {[
+                  { from:"WALLET", arrow:"→", to:"LEYFIS GATE", note:"intercepts every call" },
+                  { from:"LEYFIS GATE", arrow:"→", to:"SAS ATTESTATION", note:"reads on-chain credential" },
+                  { from:"LEYFIS GATE", arrow:"→", to:"7 CHECKS", note:"tier · issuer · expiry · jurisdiction" },
+                  { from:"PASS", arrow:"→", to:"VAULT", note:"CPI forwarded, executes atomically" },
+                  { from:"FAIL", arrow:"→", to:"REJECTED", note:"reason code written to audit log" },
+                ].map(({from,arrow,to,note},i) => (
+                  <div key={i} style={{ display:"grid", gridTemplateColumns:"120px 16px 120px 1fr", gap:"8px", padding:"10px 16px", border:`1px solid ${D.rule}`, background:D.bg2, alignItems:"center" }}>
+                    <span style={{ fontFamily:D.mono, fontSize:"9px", color: from === "PASS" ? D.teal : from === "FAIL" ? "rgba(200,80,80,0.7)" : D.blue, letterSpacing:"0.06em" }}>{from}</span>
+                    <span style={{ fontFamily:D.mono, fontSize:"10px", color:D.ice30 }}>{arrow}</span>
+                    <span style={{ fontFamily:D.mono, fontSize:"9px", color: to === "VAULT" ? D.teal : to === "REJECTED" ? "rgba(200,80,80,0.7)" : D.ice, letterSpacing:"0.06em", fontWeight: to === "VAULT" || to === "REJECTED" ? 500 : 300 }}>{to}</span>
+                    <span style={{ fontFamily:D.mono, fontSize:"8px", color:D.ice15, letterSpacing:"0.04em" }}>{note}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </Fade>
 
         {/* Steps */}
@@ -607,14 +639,10 @@ export default function LandingPage() {
       {/* ── FINAL CTA ─────────────────────────────────────────────────────── */}
       <section style={{ padding:"120px 10vw", borderTop:`1px solid ${D.rule}`, display:"flex", flexDirection:"column", alignItems:"center", textAlign:"center", background:D.bg1 }}>
         <Fade>
-          <div style={{ fontFamily:D.mono, fontSize:"8px", letterSpacing:"0.2em", color:D.ice30, marginBottom:"32px" }}>THE INFRASTRUCTURE EXISTS</div>
-          <h2 style={{ fontFamily:D.display, fontSize:"clamp(36px,6vw,80px)", fontWeight:900, lineHeight:0.92, letterSpacing:"-0.025em", marginBottom:"40px" }}>
-            <span style={{ display:"block", color:D.ice }}>Your institutional vault</span>
-            <span style={{ display:"block", color:D.blue }}>goes live today.</span>
+          <h2 style={{ fontFamily:D.display, fontSize:"clamp(28px,4.5vw,64px)", fontWeight:900, lineHeight:0.95, letterSpacing:"-0.025em", marginBottom:"48px", maxWidth:"820px" }}>
+            <span style={{ color:D.ice }}>Leyfis enables institutional capital to access DeFi </span>
+            <span style={{ color:D.blue }}>without compromising compliance.</span>
           </h2>
-          <p style={{ fontFamily:D.serif, fontSize:"18px", color:D.ice50, lineHeight:1.7, maxWidth:"420px", marginBottom:"48px", fontStyle:"italic" }}>
-            Not after your legal review. Not after a six-month audit. With credentials your KYC provider already issued.
-          </p>
           <div style={{ display:"flex", gap:"12px", justifyContent:"center", flexWrap:"wrap" }}>
             <Link href="/portal" style={{ fontFamily:D.mono, fontSize:"11px", letterSpacing:"0.12em", background:D.blue, color:"#fff", padding:"14px 36px", transition:"opacity 0.15s" }}
               onMouseEnter={e => ((e.currentTarget as HTMLElement).style.opacity="0.85")}
