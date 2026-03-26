@@ -238,7 +238,7 @@ export default function VaultPage() {
         <div>
           <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "8px" }}>/02 — Vault Operator</div>
           <h1 style={{ ...f, fontSize: "26px", fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text-1)", marginBottom: "10px" }}>Vault Dashboard</h1>
-          <div style={{ display: "flex", align: "center", gap: "16px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
               <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: gateActive ? "var(--success)" : gatePaused ? "var(--danger)" : "var(--text-4)" }} />
               <span style={{ ...m, fontSize: "11px", color: gateActive ? "var(--success)" : gatePaused ? "var(--danger)" : "var(--text-4)", fontWeight: 500 }}>
