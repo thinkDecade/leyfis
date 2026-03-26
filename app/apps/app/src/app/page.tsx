@@ -424,75 +424,185 @@ export default function LandingPage() {
         </Fade>
       </section>
 
-      {/* ── AUDIENCE HEADER ──────────────────────────────────────────────── */}
-      <div id="for" style={{ padding:"64px 10vw 0", borderTop:`1px solid ${D.rule}` }}>
+      {/* ── BUILT FOR EVERY ACTOR ─────────────────────────────────────────── */}
+      <section id="for" style={{ padding: "96px 10vw", borderTop: `1px solid ${D.rule}` }}>
         <Fade>
-          <div style={{ fontFamily:D.mono, fontSize:"8px", letterSpacing:"0.2em", color:D.ice30, marginBottom:"16px" }}>/03 BUILT FOR</div>
-          <h2 style={{ fontFamily:D.display, fontSize:"clamp(22px,3vw,38px)", fontWeight:900, lineHeight:1.05, color:D.ice, letterSpacing:"-0.02em" }}>
-            Every institution that needs to prove compliance — not just promise it.
-          </h2>
+          <div style={{ fontFamily: D.mono, fontSize: "8px", letterSpacing: "0.2em", color: D.ice30, marginBottom: "16px" }}>/03 BUILT FOR EVERY ACTOR IN THE STACK</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "40px", alignItems: "end", marginBottom: "64px" }}>
+            <div>
+              <h2 style={{ fontFamily: D.display, fontSize: "clamp(22px,3vw,40px)", fontWeight: 900, lineHeight: 1.0, color: D.ice, letterSpacing: "-0.02em", marginBottom: "16px" }}>
+                One system.<br/>Four stakeholders.<br/><span style={{ color: D.blue }}>Aligned.</span>
+              </h2>
+              <p style={{ fontFamily: D.serif, fontSize: "17px", color: D.ice50, lineHeight: 1.75, maxWidth: "520px", fontStyle: "italic" }}>
+                Leyfis connects institutions, operators, issuers, and users — enforcing compliance without breaking execution.
+              </p>
+            </div>
+            <div style={{ fontFamily: D.mono, fontSize: "9px", color: D.ice30, letterSpacing: "0.12em", textAlign: "right", whiteSpace: "nowrap" }}>
+              Each role operates independently.<br/>
+              <span style={{ color: D.blue }}>Leyfis ensures they operate in sync.</span>
+            </div>
+          </div>
         </Fade>
-      </div>
 
-      {/* ── BANKS ────────────────────────────────────────────────────────── */}
-      <AudienceSection
-        id="banks" index="03.1" label="Banks & Asset Managers"
-        heading={"Your compliance work\nalready happened.\nYour vault can't read it."}
-        pain="You've spent years and millions on KYC. That data is locked in internal systems. Every DeFi vault interaction requires manual review. One wrong wallet creates regulatory exposure for the entire institution."
-        solution="Leyfis connects your KYC infrastructure to on-chain access control. Your verified clients transact immediately. Unverified wallets never reach the vault. FATF R.16 audit trail exportable in one click."
-        outcomes={[
-          "Verified clients get immediate vault access — no manual whitelist management",
-          "Sanctioned wallets blocked before any transaction executes",
-          "FATF R.16 compliant CSV for regulators — independently verifiable on Solana",
-        ]}
-        stat="<2s" statLabel="Time to verify any wallet"
-        cta="Access Vaults" href="/portal" accent={D.blue}
-      />
+        {/* 2×2 Card grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2px" }}>
 
-      {/* ── VAULT OPERATORS ──────────────────────────────────────────────── */}
-      <AudienceSection
-        id="operators" index="03.2" label="Vault Operators"
-        heading={"You say your vault\nis compliant.\nProve it."}
-        pain="You've written a whitepaper about compliance. You have a legal opinion. But your vault contract has no compliance logic. Any wallet can interact. You have no on-chain evidence of anything."
-        solution="Leyfis gates every vault interaction. Seven checks, in order, every time. Change rules without touching the contract. Pause instantly. The audit log is on-chain and immutable — even you can't alter it."
-        outcomes={[
-          "Seven compliance checks on every single vault interaction, no exceptions",
-          "Pause in one transaction — documented reason, permanent on-chain record",
-          "Change min tier and jurisdiction rules without a contract upgrade",
-        ]}
-        stat="7" statLabel="Checks on every vault interaction"
-        cta="See the Dashboard" href="/admin" accent={D.teal} flip
-      />
+          {/* ── 1. Financial Institutions ── */}
+          <Fade delay={0}>
+            <div style={{ padding: "40px", border: `1px solid ${D.rule}`, background: D.bg2, display: "flex", flexDirection: "column", gap: "0" }}>
+              {/* Icon + label */}
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={D.blue} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M8 10v11M12 10v11M16 10v11M20 10v11"/>
+                </svg>
+                <span style={{ fontFamily: D.mono, fontSize: "8px", letterSpacing: "0.16em", color: D.blue, textTransform: "uppercase" }}>Financial Institutions</span>
+              </div>
+              {/* Headline */}
+              <h3 style={{ fontFamily: D.display, fontSize: "clamp(16px,2vw,22px)", fontWeight: 900, lineHeight: 1.1, color: D.ice, letterSpacing: "-0.01em", marginBottom: "12px" }}>
+                Enter DeFi without<br/>regulatory exposure.
+              </h3>
+              {/* Value */}
+              <p style={{ fontFamily: D.serif, fontSize: "15px", color: D.ice50, lineHeight: 1.7, fontStyle: "italic", marginBottom: "24px" }}>
+                Deploy capital into on-chain strategies while maintaining full compliance with KYC/AML requirements.
+              </p>
+              {/* Bullets */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0", marginBottom: "28px", flex: 1 }}>
+                {[
+                  "Enforce access control at transaction level",
+                  "Eliminate exposure to sanctioned or unknown wallets",
+                  "Generate regulator-ready audit trails automatically",
+                  "Align with FATF and MiCA requirements",
+                ].map((b, i) => (
+                  <div key={i} style={{ display: "flex", gap: "12px", alignItems: "flex-start", padding: "9px 0", borderBottom: `1px solid ${D.rule}` }}>
+                    <div style={{ width: 4, height: 4, borderRadius: "50%", background: D.blue, flexShrink: 0, marginTop: 6 }}/>
+                    <span style={{ fontFamily: D.mono, fontSize: "11px", color: D.ice30, lineHeight: 1.7, fontWeight: 300 }}>{b}</span>
+                  </div>
+                ))}
+              </div>
+              {/* Outcome */}
+              <div style={{ paddingTop: "16px", borderTop: `1px solid rgba(27,79,216,0.2)` }}>
+                <span style={{ fontFamily: D.mono, fontSize: "10px", color: D.blue, letterSpacing: "0.06em" }}>
+                  → DeFi access becomes deployable, not experimental.
+                </span>
+              </div>
+            </div>
+          </Fade>
 
-      {/* ── KYC PROVIDERS ────────────────────────────────────────────────── */}
-      <AudienceSection
-        id="kyc" index="03.3" label="KYC / AML Providers"
-        heading={"Your KYC database\nis infrastructure.\nNobody knows it yet."}
-        pain="You've verified thousands of clients. That work sits in your system. Vault operators can't query it. Your clients have to be re-verified for every new DeFi product. Your value stops at the edge of your platform."
-        solution="Leyfis lets you issue your KYC decisions as signed on-chain attestations. Your verified clients carry their credentials to any Leyfis-gated vault. Revoke instantly if circumstances change."
-        outcomes={[
-          "Issue signed attestations on Solana — one transaction per client",
-          "Tier 1 Basic, Tier 2 Enhanced, Tier 3 Institutional — with jurisdiction and expiry",
-          "Revoke any credential immediately — access changes in the next block",
-        ]}
-        stat="∞" statLabel="Vaults your credentials can unlock"
-        cta="Issue Credentials" href="/admin" accent="#8899BB"
-      />
+          {/* ── 2. Vault Operators ── */}
+          <Fade delay={80}>
+            <div style={{ padding: "40px", border: `1px solid ${D.rule}`, background: D.bg2, display: "flex", flexDirection: "column" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={D.teal} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                  <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                <span style={{ fontFamily: D.mono, fontSize: "8px", letterSpacing: "0.16em", color: D.teal, textTransform: "uppercase" }}>Vault Operators</span>
+              </div>
+              <h3 style={{ fontFamily: D.display, fontSize: "clamp(16px,2vw,22px)", fontWeight: 900, lineHeight: 1.1, color: D.ice, letterSpacing: "-0.01em", marginBottom: "12px" }}>
+                Control who accesses<br/>your vault — on-chain.
+              </h3>
+              <p style={{ fontFamily: D.serif, fontSize: "15px", color: D.ice50, lineHeight: 1.7, fontStyle: "italic", marginBottom: "24px" }}>
+                Define and enforce compliance rules without modifying your vault architecture.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0", marginBottom: "28px", flex: 1 }}>
+                {[
+                  "Set minimum KYC tiers per vault",
+                  "Whitelist trusted issuers",
+                  "Pause/unpause access instantly",
+                  "Monitor live gate activity and approvals",
+                ].map((b, i) => (
+                  <div key={i} style={{ display: "flex", gap: "12px", alignItems: "flex-start", padding: "9px 0", borderBottom: `1px solid ${D.rule}` }}>
+                    <div style={{ width: 4, height: 4, borderRadius: "50%", background: D.teal, flexShrink: 0, marginTop: 6 }}/>
+                    <span style={{ fontFamily: D.mono, fontSize: "11px", color: D.ice30, lineHeight: 1.7, fontWeight: 300 }}>{b}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ paddingTop: "16px", borderTop: `1px solid rgba(15,110,86,0.2)` }}>
+                <span style={{ fontFamily: D.mono, fontSize: "10px", color: D.teal, letterSpacing: "0.06em" }}>
+                  → Permissioned vaults with zero manual overhead.
+                </span>
+              </div>
+            </div>
+          </Fade>
 
-      {/* ── REGULATORS ───────────────────────────────────────────────────── */}
-      <AudienceSection
-        id="regulators" index="03.4" label="Regulators & Auditors"
-        heading={"You asked for\nan audit trail.\nThey sent a PDF."}
-        pain="Institutions tell you they're compliant. You receive PDFs, spreadsheets, and reports that can be edited. You have no way to independently verify that access control was enforced on any given transaction."
-        solution="Leyfis writes every gate call to Solana. Every outcome. Every reason code. Every wallet. Read it directly — no access request, no intermediary. Tamper-proof by protocol, not by policy."
-        outcomes={[
-          "Every gate call recorded on Solana — read it independently, no permission needed",
-          "FATF R.16 fields: timestamp, wallet, vault, outcome, reason code, attestation ID",
-          "Tamper-proof by protocol — not by IT security controls, not by anyone's word",
-        ]}
-        stat="0" statLabel="Databases you need to trust"
-        cta="View Audit Log" href="/admin" accent={D.ice}
-      />
+          {/* ── 3. KYC Issuers ── */}
+          <Fade delay={120}>
+            <div style={{ padding: "40px", border: `1px solid ${D.rule}`, background: D.bg2, display: "flex", flexDirection: "column" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8899BB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <polyline points="9 12 11 14 15 10"/>
+                </svg>
+                <span style={{ fontFamily: D.mono, fontSize: "8px", letterSpacing: "0.16em", color: "#8899BB", textTransform: "uppercase" }}>KYC Issuers</span>
+              </div>
+              <h3 style={{ fontFamily: D.display, fontSize: "clamp(16px,2vw,22px)", fontWeight: 900, lineHeight: 1.1, color: D.ice, letterSpacing: "-0.01em", marginBottom: "12px" }}>
+                Turn KYC into a usable<br/>on-chain primitive.
+              </h3>
+              <p style={{ fontFamily: D.serif, fontSize: "15px", color: D.ice50, lineHeight: 1.7, fontStyle: "italic", marginBottom: "24px" }}>
+                Issue verifiable credentials that directly control access to financial infrastructure.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0", marginBottom: "28px", flex: 1 }}>
+                {[
+                  "Issue signed attestations tied to wallets",
+                  "Set tiers, expiries, and jurisdictions",
+                  "Revoke access in real time",
+                  "Maintain a clear issuance registry",
+                ].map((b, i) => (
+                  <div key={i} style={{ display: "flex", gap: "12px", alignItems: "flex-start", padding: "9px 0", borderBottom: `1px solid ${D.rule}` }}>
+                    <div style={{ width: 4, height: 4, borderRadius: "50%", background: "#8899BB", flexShrink: 0, marginTop: 6 }}/>
+                    <span style={{ fontFamily: D.mono, fontSize: "11px", color: D.ice30, lineHeight: 1.7, fontWeight: 300 }}>{b}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ paddingTop: "16px", borderTop: "1px solid rgba(136,153,187,0.2)" }}>
+                <span style={{ fontFamily: D.mono, fontSize: "10px", color: "#8899BB", letterSpacing: "0.06em" }}>
+                  → KYC becomes enforceable, not just recorded.
+                </span>
+              </div>
+            </div>
+          </Fade>
+
+          {/* ── 4. End Users ── */}
+          <Fade delay={160}>
+            <div style={{ padding: "40px", border: `1px solid ${D.rule}`, background: D.bg2, display: "flex", flexDirection: "column" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={D.ice} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2"/>
+                  <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+                  <line x1="12" y1="12" x2="12.01" y2="12"/>
+                  <path d="M8 12h.01M16 12h.01"/>
+                </svg>
+                <span style={{ fontFamily: D.mono, fontSize: "8px", letterSpacing: "0.16em", color: D.ice50, textTransform: "uppercase" }}>End Users</span>
+              </div>
+              <h3 style={{ fontFamily: D.display, fontSize: "clamp(16px,2vw,22px)", fontWeight: 900, lineHeight: 1.1, color: D.ice, letterSpacing: "-0.01em", marginBottom: "12px" }}>
+                Access compliant DeFi —<br/>once verified.
+              </h3>
+              <p style={{ fontFamily: D.serif, fontSize: "15px", color: D.ice50, lineHeight: 1.7, fontStyle: "italic", marginBottom: "24px" }}>
+                Complete KYC once and interact with multiple vaults seamlessly.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0", marginBottom: "28px", flex: 1 }}>
+                {[
+                  "One attestation unlocks multiple protocols",
+                  "No repeated onboarding across platforms",
+                  "Transparent approval or rejection at transaction time",
+                  "Faster, predictable access to capital",
+                ].map((b, i) => (
+                  <div key={i} style={{ display: "flex", gap: "12px", alignItems: "flex-start", padding: "9px 0", borderBottom: `1px solid ${D.rule}` }}>
+                    <div style={{ width: 4, height: 4, borderRadius: "50%", background: D.ice50, flexShrink: 0, marginTop: 6 }}/>
+                    <span style={{ fontFamily: D.mono, fontSize: "11px", color: D.ice30, lineHeight: 1.7, fontWeight: 300 }}>{b}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ paddingTop: "16px", borderTop: `1px solid rgba(232,238,246,0.1)` }}>
+                <span style={{ fontFamily: D.mono, fontSize: "10px", color: D.ice50, letterSpacing: "0.06em" }}>
+                  → A single identity gives you portable access across DeFi.
+                </span>
+              </div>
+            </div>
+          </Fade>
+
+        </div>
+      </section>
 
       {/* ── FINAL CTA ─────────────────────────────────────────────────────── */}
       <section style={{ padding:"120px 10vw", borderTop:`1px solid ${D.rule}`, display:"flex", flexDirection:"column", alignItems:"center", textAlign:"center", background:D.bg1 }}>
