@@ -1,427 +1,1220 @@
-"use client";
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import type { Metadata } from "next";
 
-// ─── Token constants ──────────────────────────────────────────────────────────
-const GATE_PROGRAM = "Cskp4zg7aDHvY4u2M7FyceqqcbvGThgo8WahvQCkQZVP";
+export const metadata: Metadata = {
+  title: "LEYFIS — The Compliance Layer for Institutional DeFi",
+};
 
 export default function LandingPage() {
-  const [mounted, setMounted] = useState(false);
-  const [count, setCount] = useState(0);
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LEYFIS — The Compliance Layer for Institutional DeFi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Unbounded:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
 
-  useEffect(() => {
-    setMounted(true);
-    // Animate gate call counter
-    const target = 10;
-    let current = 0;
-    const interval = setInterval(() => {
-      current++;
-      setCount(current);
-      if (current >= target) clearInterval(interval);
-    }, 120);
-    return () => clearInterval(interval);
-  }, []);
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-  if (!mounted) return null;
+:root {
+  --black:  #000000;
+  --white:  #E8EEF6;
+  --teal:   #1B4FD8;
+  --dim:    rgba(232,238,246,0.25);
+  --rule:   rgba(232,238,246,0.1);
+  --mono:   'DM Mono', monospace;
+  --display:'Unbounded', sans-serif;
+}
 
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--display);
+  cursor: none;
+  overflow-x: hidden;
+}
+
+/* ── CURSOR ── */
+#cur {
+  position: fixed;
+  width: 6px; height: 6px;
+  background: var(--white);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width .2s, height .2s, background .2s;
+}
+#cur-ring {
+  position: fixed;
+  width: 28px; height: 28px;
+  border: 1px solid rgba(232,238,246,0.4);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: width .3s, height .3s, border-color .3s;
+}
+a:hover ~ #cur, button:hover ~ #cur { width: 10px; height: 10px; background: var(--teal); }
+
+/* ── FRAME ── */
+#frame {
+  position: fixed;
+  inset: 16px;
+  border: 1px solid rgba(232,238,246,0.12);
+  pointer-events: none;
+  z-index: 500;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 16px; left: 16px; right: 16px;
+  z-index: 400;
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--rule);
+}
+
+.nav-logo {
+  display: flex; align-items: center; gap: 12px;
+  text-decoration: none;
+}
+.nav-logo svg { width: 22px; height: 22px; }
+.nav-word {
+  font-family: Arial, sans-serif;
+  font-size: 14px; font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--white);
+}
+
+.nav-r {
+  display: flex; align-items: center; gap: 40px;
+}
+.nav-link {
+  font-family: var(--mono);
+  font-size: 10px; letter-spacing: 0.1em;
+  color: var(--dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color .2s;
+}
+.nav-link:hover { color: var(--white); }
+
+.nav-demo {
+  font-family: var(--mono);
+  font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--black);
+  background: var(--white);
+  padding: 9px 20px;
+  text-decoration: none;
+  display: flex; align-items: center; gap: 8px;
+  transition: background .2s;
+}
+.nav-demo:hover { background: var(--teal); color: var(--white); }
+
+/* ── SECTIONS ── */
+.s {
+  min-height: 100vh;
+  padding: 0 40px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 60px;
+  border-bottom: 1px solid var(--rule);
+  overflow: hidden;
+}
+
+/* ── HERO ── */
+#hero {
+  padding-top: 100px;
+  justify-content: space-between;
+  padding-bottom: 48px;
+}
+
+.hero-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-top: 40px;
+}
+
+.hero-tag {
+  font-family: var(--mono);
+  font-size: 10px; letter-spacing: 0.12em;
+  color: var(--teal);
+  text-transform: uppercase;
+  display: flex; align-items: center; gap: 10px;
+}
+.hero-tag::before {
+  content: '';
+  display: block; width: 20px; height: 1px;
+  background: var(--teal);
+}
+
+.hero-top-right {
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 10px; color: var(--dim);
+  line-height: 1.7; letter-spacing: 0.08em;
+  max-width: 260px;
+}
+
+.hero-type {
+  margin-top: auto;
+  padding-top: 80px;
+}
+
+.hero-h1 {
+  font-size: clamp(72px, 11vw, 160px);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  overflow: hidden;
+}
+
+.hero-h1 .word {
+  display: block;
+  transform: translateY(110%);
+  animation: up .9s cubic-bezier(.16,1,.3,1) forwards;
+}
+.hero-h1 .word:nth-child(1) { animation-delay: .1s; }
+.hero-h1 .word:nth-child(2) { animation-delay: .25s; color: var(--teal); font-weight: 900; }
+.hero-h1 .word:nth-child(3) { animation-delay: .4s; }
+
+@keyframes up {
+  to { transform: translateY(0); }
+}
+
+.hero-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 60px;
+  padding-top: 32px;
+  border-top: 1px solid var(--rule);
+}
+
+.hero-stat {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.hero-stat-val {
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  opacity: 0;
+  animation: fadeIn .6s 1s ease forwards;
+}
+.hero-stat-label {
+  font-family: var(--mono);
+  font-size: 9px; letter-spacing: 0.16em;
+  color: var(--dim);
+  text-transform: uppercase;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+.hero-cta {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 16px;
+  opacity: 0;
+  animation: fadeIn .6s 1.2s ease forwards;
+}
+
+.cta-link {
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: 400;
+  color: var(--white);
+  text-decoration: none;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--dim);
+  padding-bottom: 8px;
+  transition: color .2s, border-color .2s;
+}
+.cta-link:hover { color: var(--teal); border-color: var(--teal); }
+.cta-arrow {
+  font-size: 20px;
+  transform: rotate(0deg);
+  transition: transform .2s;
+}
+.cta-link:hover .cta-arrow { transform: rotate(45deg) scale(1.2); }
+
+/* ── LIVE TICKER ── */
+.ticker {
+  background: var(--black);
+  border-bottom: 1px solid var(--rule);
+  padding: 12px 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ticker-inner {
+  display: inline-flex;
+  animation: tick 25s linear infinite;
+}
+.tick-item {
+  font-family: var(--mono);
+  font-size: 10px; letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 0 32px;
+}
+.tick-item span { color: var(--teal); }
+@keyframes tick {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── SECTION NUMBERS ── */
+.sec-num {
+  font-family: var(--mono);
+  font-size: 10px; color: var(--dim);
+  letter-spacing: 0.1em;
+  position: absolute;
+  top: 40px; left: 40px;
+}
+
+/* ── PROBLEM SECTION ── */
+#problem {
+  padding-top: 100px;
+}
+
+.prob-headline {
+  font-size: clamp(40px, 6vw, 88px);
+  font-weight: 700;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  max-width: 75%;
+}
+
+.prob-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 80px;
+  padding-top: 32px;
+  border-top: 1px solid var(--rule);
+  gap: 60px;
+}
+
+.prob-left {
+  font-family: var(--mono);
+  font-size: 11px; line-height: 1.9;
+  color: var(--dim);
+  max-width: 380px;
+  letter-spacing: 0.04em;
+}
+
+.prob-right {
+  display: flex; flex-direction: column; gap: 0;
+  flex: 1;
+  max-width: 560px;
+}
+
+.flow-row {
+  display: flex;
+  align-items: stretch;
+  border-top: 1px solid var(--rule);
+  padding: 20px 0;
+  gap: 24px;
+}
+.flow-row:last-child { border-bottom: 1px solid var(--rule); }
+
+.flow-label {
+  font-family: var(--mono);
+  font-size: 9px; letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  width: 100px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.flow-content {
+  flex: 1;
+  font-size: 13px; font-weight: 400;
+  color: var(--white);
+  line-height: 1.5;
+}
+
+.flow-status {
+  font-family: var(--mono);
+  font-size: 9px; letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  align-self: center;
+  flex-shrink: 0;
+}
+.flow-status.ok  { color: var(--teal); border: 1px solid rgba(27,79,216,0.4); }
+.flow-status.err { color: #C44444; border: 1px solid rgba(196,68,68,0.4); }
+
+/* ── HOW SECTION ── */
+#how {
+  padding-top: 100px;
+}
+
+.how-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 80px;
+}
+
+.how-h2 {
+  font-size: clamp(36px, 5vw, 72px);
+  font-weight: 700;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  max-width: 60%;
+}
+
+.how-desc {
+  font-family: var(--mono);
+  font-size: 11px; line-height: 1.9;
+  color: var(--dim);
+  max-width: 280px;
+  letter-spacing: 0.04em;
+  text-align: right;
+}
+
+.steps-list {
+  display: flex; flex-direction: column;
+  border-top: 1px solid var(--rule);
+}
+
+.step-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 1fr 120px;
+  gap: 40px;
+  align-items: center;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--rule);
+  transition: background .2s;
+}
+.step-row:hover { background: rgba(232,238,246,0.02); }
+
+.step-n {
+  font-family: var(--mono);
+  font-size: 10px; color: var(--dim);
+  letter-spacing: 0.1em;
+}
+
+.step-title {
+  font-size: clamp(18px, 2.5vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.step-detail {
+  font-family: var(--mono);
+  font-size: 11px; color: var(--dim);
+  line-height: 1.8; letter-spacing: 0.04em;
+}
+
+.step-tag {
+  font-family: var(--mono);
+  font-size: 9px; letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal);
+  text-align: right;
+}
+
+/* ── GATE SECTION ── */
+#gate {
+  padding-top: 100px;
+  min-height: auto;
+  padding-bottom: 80px;
+}
+
+.gate-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+  margin-top: 60px;
+}
+
+.gate-visual {
+  position: relative;
+}
+
+.gate-big-num {
+  font-size: clamp(120px, 20vw, 240px);
+  font-weight: 900;
+  color: rgba(232,238,246,0.04);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  position: absolute;
+  top: -40px; left: -20px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.checks {
+  display: flex; flex-direction: column;
+  position: relative; z-index: 1;
+  border: 1px solid var(--rule);
+}
+
+.check-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--rule);
+  transition: background .15s;
+}
+.check-row:last-child { border-bottom: none; }
+.check-row:hover { background: rgba(232,238,246,0.02); }
+.check-row.pass:hover { background: rgba(27,79,216,0.04); }
+
+.check-left {
+  display: flex; align-items: center; gap: 16px;
+}
+.check-idx {
+  font-family: var(--mono);
+  font-size: 10px; color: var(--dim);
+  width: 24px; flex-shrink: 0;
+}
+.check-name {
+  font-size: 13px; font-weight: 400;
+  color: var(--white);
+}
+.check-err {
+  font-family: var(--mono);
+  font-size: 9px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+}
+.check-err.fail { color: #C44444; border: 1px solid rgba(196,68,68,0.25); }
+.check-err.pass { color: var(--teal); border: 1px solid rgba(27,79,216,0.3); }
+
+.gate-code {
+  background: #080C14;
+  border: 1px solid var(--rule);
+  overflow: hidden;
+}
+
+.code-top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--rule);
+}
+.code-dots { display: flex; gap: 6px; }
+.code-dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(232,238,246,0.1); }
+.code-fname {
+  font-family: var(--mono);
+  font-size: 9px; color: var(--dim);
+  letter-spacing: 0.08em;
+}
+
+pre {
+  padding: 24px 20px;
+  font-family: var(--mono);
+  font-size: 11.5px; line-height: 1.9;
+  color: rgba(232,238,246,0.5);
+  overflow-x: auto;
+  tab-size: 2;
+}
+.ck  { color: #7DA0C4; }
+.cf  { color: #C4B082; }
+.cs  { color: #7AAD7A; }
+.cc  { color: rgba(61,80,112,0.9); font-style: italic; }
+.ce  { color: #C44444; }
+.cg  { color: var(--teal); }
+.ct  { color: #B490C0; }
+
+/* ── ROLES SECTION ── */
+#roles {
+  padding-top: 100px;
+  min-height: auto;
+  padding-bottom: 80px;
+}
+
+.roles-head {
+  margin-bottom: 80px;
+}
+
+.roles-h2 {
+  font-size: clamp(40px, 6vw, 88px);
+  font-weight: 700;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+}
+
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--rule);
+  border-left: 1px solid var(--rule);
+}
+
+.role-col {
+  border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 36px 28px;
+  transition: background .2s;
+  position: relative;
+  overflow: hidden;
+}
+.role-col::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--teal);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .3s ease;
+}
+.role-col:hover::after { transform: scaleX(1); }
+.role-col:hover { background: rgba(232,238,246,0.02); }
+
+.role-num {
+  font-family: var(--mono);
+  font-size: 9px; color: var(--dim);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.role-name {
+  font-size: 16px; font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.role-desc {
+  font-family: var(--mono);
+  font-size: 10px; line-height: 1.9;
+  color: var(--dim);
+  letter-spacing: 0.03em;
+  margin-bottom: 24px;
+}
+
+.role-perms {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.role-perm {
+  font-family: var(--mono);
+  font-size: 9px; color: var(--dim);
+  letter-spacing: 0.06em;
+  display: flex; align-items: flex-start; gap: 8px;
+  line-height: 1.5;
+}
+.role-perm::before {
+  content: '–';
+  color: var(--teal);
+  flex-shrink: 0;
+}
+
+/* ── STATS SECTION ── */
+#stats {
+  min-height: auto;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-left: 1px solid var(--rule);
+}
+
+.stat-col {
+  border-right: 1px solid var(--rule);
+  border-top: 1px solid var(--rule);
+  padding: 60px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-bg-num {
+  position: absolute;
+  bottom: -20px; right: -10px;
+  font-size: 120px; font-weight: 900;
+  color: rgba(232,238,246,0.03);
+  line-height: 1;
+  pointer-events: none;
+  letter-spacing: -0.04em;
+}
+
+.stat-label-top {
+  font-family: var(--mono);
+  font-size: 9px; letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 16px;
+  display: block;
+}
+
+.stat-big {
+  font-size: clamp(48px, 7vw, 88px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--white);
+}
+.stat-big .teal { color: var(--teal); font-weight: 900; }
+
+.stat-sub {
+  font-family: var(--mono);
+  font-size: 10px; color: var(--dim);
+  margin-top: 12px; line-height: 1.7;
+  letter-spacing: 0.04em;
+}
+
+/* ── CTA SECTION ── */
+#cta {
+  padding-top: 120px;
+  padding-bottom: 80px;
+  min-height: auto;
+  border-bottom: none;
+}
+
+.cta-main {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 60px;
+}
+
+.cta-h2 {
+  font-size: clamp(48px, 8vw, 120px);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  flex: 1;
+}
+.cta-h2 em {
+  font-style: normal;
+  color: var(--teal);
+  font-weight: 900;
+}
+
+.cta-right {
+  display: flex; flex-direction: column;
+  align-items: flex-end; gap: 32px;
+  flex-shrink: 0;
+  padding-bottom: 8px;
+}
+
+.cta-sub {
+  font-family: var(--mono);
+  font-size: 11px; line-height: 1.9;
+  color: var(--dim);
+  text-align: right;
+  max-width: 300px;
+  letter-spacing: 0.04em;
+}
+
+.cta-links {
+  display: flex; flex-direction: column;
+  align-items: flex-end; gap: 8px;
+}
+
+.cta-a {
+  font-size: clamp(20px, 2.5vw, 32px);
+  font-weight: 400;
+  color: var(--white);
+  text-decoration: none;
+  display: flex; align-items: center; gap: 16px;
+  border-bottom: 1px solid rgba(232,238,246,0.2);
+  padding-bottom: 8px;
+  transition: color .2s, border-color .2s;
+  white-space: nowrap;
+}
+.cta-a:hover { color: var(--teal); border-color: var(--teal); }
+.cta-a .arr { font-size: 24px; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--rule);
+  padding: 24px 40px;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  background: var(--black);
+}
+
+.foot-l {
+  display: flex; align-items: center; gap: 20px;
+}
+.foot-logo {
+  display: flex; align-items: center; gap: 10px;
+}
+.foot-word {
+  font-family: Arial, sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.2em; color: var(--dim);
+}
+.foot-sep { width: 1px; height: 14px; background: var(--rule); }
+.foot-meta {
+  font-family: var(--mono);
+  font-size: 9px; color: rgba(232,238,246,0.18);
+  letter-spacing: 0.08em;
+}
+
+.foot-r {
+  display: flex; align-items: center; gap: 32px;
+}
+.foot-link {
+  font-family: var(--mono);
+  font-size: 9px; letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim); text-decoration: none;
+  transition: color .2s;
+}
+.foot-link:hover { color: var(--white); }
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .8s ease, transform .8s ease;
+}
+.reveal.in { opacity: 1; transform: translateY(0); }
+
+/* ── LIVE DOT ── */
+.ldot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--teal);
+  border-radius: 50%;
+  animation: blink 2s ease-in-out infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.3; }
+}
+
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-ring"></div>
+<div id="frame"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <svg viewBox="0 0 56 56" fill="none">
+      <rect x="8" y="16" width="7" height="32" fill="#E8EEF6"/>
+      <rect x="41" y="16" width="7" height="32" fill="#E8EEF6"/>
+      <rect x="8" y="13" width="40" height="6" fill="#E8EEF6"/>
+      <rect x="18" y="19" width="20" height="29" fill="#000000"/>
+      <rect x="18" y="44" width="20" height="1.5" fill="#8899BB"/>
+    </svg>
+    <span class="nav-word">LEYFIS</span>
+  </a>
+
+  <div class="nav-r">
+    <a href="#problem" class="nav-link">Problem</a>
+    <a href="#how" class="nav-link">How it works</a>
+    <a href="#roles" class="nav-link">Roles</a>
+    <a href="https://app.leyfis.io" class="nav-demo">
+      <span class="ldot"></span>
+      Launch Demo ↘
+    </a>
+  </div>
+</nav>
+
+
+
+<!-- HERO -->
+<section class="s" id="hero" style="margin-top: 64px;">
+  <div class="hero-top">
+    <div class="hero-tag">Compliance infrastructure for institutional DeFi</div>
+    <div class="hero-top-right">
+      Your institution verified the user.<br>
+      Your vault had no way to know.<br>
+      Leyfis makes compliance readable on-chain.
+    </div>
+  </div>
+
+  <div class="hero-type">
+    <div class="hero-h1">
+      <span class="word">Institutional</span>
+      <span class="word">Compliance.</span>
+      <span class="word">On-Chain.</span>
+    </div>
+  </div>
+
+  <div class="hero-bottom">
+    <div class="hero-stat">
+      <span class="hero-stat-val" id="cGate">0</span>
+      <span class="hero-stat-label">Gate calls processed</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-val" id="cApproved">0</span>
+      <span class="hero-stat-label">Wallets cleared</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-val" id="cDenied">0</span>
+      <span class="hero-stat-label">Access blocked</span>
+    </div>
+
+    <div class="hero-cta">
+      <a href="https://app.leyfis.io" class="cta-link">
+        View live demo <span class="cta-arrow">↘</span>
+      </a>
+      <a href="https://admin.leyfis.io" class="cta-link" style="font-size: clamp(13px, 1.5vw, 16px); color: var(--dim);">
+        Admin panel <span class="cta-arrow">↘</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="s" id="problem">
+  <span class="sec-num">/01</span>
+
+  <div class="prob-headline reveal">
+    Banks verify users in PDFs.<br>DeFi vaults can't read PDFs.
+  </div>
+
+  <div class="prob-body reveal">
+    <div class="prob-left">
+      Banks spend millions on KYC. That data lives in spreadsheets, PDFs, and internal systems. None of it is readable on-chain.<br><br>      DeFi vaults are permissionless by design. They cannot distinguish a verified institutional investor from a sanctioned wallet. One wrong transaction creates regulatory exposure for the entire institution.<br><br>
+      The problem is structural. It cannot be solved with better spreadsheets. Compliance must exist at the protocol layer, where the transaction actually happens.
+    </div>
+
+    <div class="prob-right">
+      <div class="flow-row">
+        <div class="flow-label">Today</div>
+        <div class="flow-content">Verified wallet enters vault with no compliance check</div>
+        <div class="flow-status err">Unguarded</div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-label">Today</div>
+        <div class="flow-content">Sanctioned wallet enters the same vault unchallenged</div>
+        <div class="flow-status err">No block</div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-label">With Leyfis</div>
+        <div class="flow-content">KYC-verified wallet passes gate and enters vault</div>
+        <div class="flow-status ok">Cleared</div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-label">With Leyfis</div>
+        <div class="flow-content">Unverified wallet is rejected before it reaches the vault</div>
+        <div class="flow-status err">Blocked</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="s" id="how">
+  <span class="sec-num">/02</span>
+
+  <div class="how-head reveal">
+    <div class="how-h2">Compliance<br>enforced at<br>the source.</div>
+    <div class="how-desc">
+Every vault interaction passes through the Leyfis Gate. No off-chain roundtrip. No database call. The gate reads a cryptographic credential stored on Solana, validates it in milliseconds, and either executes or rejects. Every outcome is written to chain.
+    </div>
+  </div>
+
+  <div class="steps-list reveal">
+    <div class="step-row">
+      <span class="step-n">01</span>
+      <div class="step-title">Attest</div>
+      <div class="step-detail">Your KYC provider issues a signed on-chain attestation to the user's wallet pubkey. It stores clearance tier, jurisdiction, and expiry directly on Solana. Cryptographically signed. Immutable. No database to maintain.</div>
+      <div class="step-tag">On-chain credential</div>
+    </div>
+    <div class="step-row">
+      <span class="step-n">02</span>
+      <div class="step-title">Validate</div>
+      <div class="step-detail">The user's transaction hits the Leyfis Gate first. Seven sequential checks fire in fixed order. Pause state. Attestation existence. Revocation status. Expiry. Issuer trust. Clearance tier. Jurisdiction. All in under 400ms. Any failure stops the transaction cold.</div>
+      <div class="step-tag">7 checks · &lt;400ms</div>
+    </div>
+    <div class="step-row">
+      <span class="step-n">03</span>
+      <div class="step-title">Authorize</div>
+      <div class="step-detail">All seven checks pass. Leyfis cross-program-invokes the target vault directly, forwarding the original instruction data unchanged. The transaction executes atomically. No wrapping. No proxy. No custody. Your users interact with the vault directly. Leyfis is invisible once cleared..</div>
+      <div class="step-tag">Atomic · trustless</div>
+    </div>
+    <div class="step-row">
+      <span class="step-n">04</span>
+      <div class="step-title">Audit</div>
+      <div class="step-detail">Every gate call, approved or denied, writes an immutable AuditEntry on-chain. Wallet, vault, timestamp, slot, outcome, reason code. Your compliance team exports FATF R.16 aligned CSV on demand. No manual logging. No version control. The ledger is the record.</div>
+      <div class="step-tag">Append-only · forever</div>
+    </div>
+  </div>
+</section>
+
+<!-- GATE LOGIC -->
+<section class="s" id="gate" style="min-height: auto; padding-bottom: 80px; border-bottom: 1px solid var(--rule);">
+  <span class="sec-num">/03</span>
+
+  <div style="margin-top: 40px; margin-bottom: 48px;" class="reveal">
+    <div style="font-size: clamp(32px, 4vw, 56px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;">
+      Seven checks.<br>Fixed order. Always.
+    </div>
+    <div style="font-family: var(--mono); font-size: 11px; color: var(--dim); margin-top: 20px; max-width: 480px; line-height: 1.9; letter-spacing: 0.04em;">
+The validation sequence is hardcoded at the protocol level. It cannot be reordered, bypassed, or selectively applied. No exceptions for preferred clients. No discretion at the point of enforcement. Seven checks, in order, every time. Every outcome is written permanently to chain.
+    </div>
+  </div>
+
+  <div class="gate-wrap reveal">
+    <div class="gate-visual">
+      <div class="gate-big-num">7</div>
+      <div class="checks">
+        <div class="check-row"><div class="check-left"><span class="check-idx">01</span><span class="check-name">Pause check</span></div><span class="check-err fail">GatePaused</span></div>
+        <div class="check-row"><div class="check-left"><span class="check-idx">02</span><span class="check-name">Attestation exists</span></div><span class="check-err fail">NoAttestation</span></div>
+        <div class="check-row"><div class="check-left"><span class="check-idx">03</span><span class="check-name">Not revoked</span></div><span class="check-err fail">AttRevoked</span></div>
+        <div class="check-row"><div class="check-left"><span class="check-idx">04</span><span class="check-name">Not expired</span></div><span class="check-err fail">AttExpired</span></div>
+        <div class="check-row"><div class="check-left"><span class="check-idx">05</span><span class="check-name">Trusted issuer</span></div><span class="check-err fail">UntrustedIssuer</span></div>
+        <div class="check-row"><div class="check-left"><span class="check-idx">06</span><span class="check-name">Tier sufficient</span></div><span class="check-err fail">TierInsufficient</span></div>
+        <div class="check-row"><div class="check-left"><span class="check-idx">07</span><span class="check-name">Jurisdiction</span></div><span class="check-err fail">JurisBlocked</span></div>
+        <div class="check-row pass" style="background: rgba(27,79,216,0.04);"><div class="check-left"><span class="check-idx" style="color:var(--teal);">✓</span><span class="check-name" style="color:var(--teal);">CPI executes + AuditEntry</span></div><span class="check-err pass">Approved</span></div>
+      </div>
+    </div>
+
+    <div class="gate-code">
+      <div class="code-top">
+        <div class="code-dots">
+          <div class="code-dot"></div>
+          <div class="code-dot"></div>
+          <div class="code-dot"></div>
+        </div>
+        <span class="code-fname">leyfis-gate/src/lib.rs · gate()</span>
+      </div>
+<pre><span class="ck">pub fn</span> <span class="cf">gate</span>(
+  ctx: <span class="ct">Context</span>&lt;<span class="ct">Gate</span>&gt;,
+  vault_ix_data: <span class="ct">Vec</span>&lt;<span class="ct">u8</span>&gt;,
+  audit_nonce: <span class="ct">u64</span>,
+) -&gt; <span class="ct">Result</span>&lt;()&gt; {
+
+  <span class="cc">// 1. Emergency pause check</span>
+  <span class="ck">require</span>(!vc.paused, <span class="ce">GatePaused</span>);
+
+  <span class="cc">// 2–4. Load and validate attestation</span>
+  <span class="ck">let</span> att = <span class="cf">load_attestation</span>(
+    &amp;ctx.accounts.attestation
+  )?;
+
+  <span class="cc">// 5. Issuer must be in trusted list</span>
+  <span class="ck">require</span>(
+    vc.trusted_issuers.<span class="cf">contains</span>(&amp;att.issuer),
+    <span class="ce">UntrustedIssuer</span>
+  );
+
+  <span class="cc">// 6. Tier check</span>
+  <span class="ck">require</span>(
+    att.tier &gt;= vc.min_tier,
+    <span class="ce">TierInsufficient</span>
+  );
+
+  <span class="cc">// ✓ All checks passed. CPI to vault</span>
+  <span class="cf">invoke</span>(&amp;ix, &amp;remaining_accounts)?;
+
+  <span class="cc">// Always write audit entry</span>
+  <span class="cf">set_audit_entry</span>(
+    ..., <span class="cg">GateOutcome::Approved</span>, 0
+  );
+  Ok(())
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats" class="s" style="min-height: auto;">
+  <div class="stats-grid">
+    <div class="stat-col">
+      <div class="stat-bg-num">∞</div>
+      <span class="stat-label-top">Vault agnostic</span>
+      <div class="stat-big"><span class="teal">Any</span></div>
+      <div class="stat-sub">Vault-agnostic by design. Deploy Leyfis once and gate any vault program on Solana, existing or new.</div>
+    </div>
+    <div class="stat-col">
+      <div class="stat-bg-num">7</div>
+      <span class="stat-label-top">Validation checks per call</span>
+      <div class="stat-big"><span class="teal">7</span></div>
+      <div class="stat-sub">Sequential. Hardcoded. Each check maps to a specific error code. No ambiguity in why a transaction was rejected.</div>
+    </div>
+    <div class="stat-col">
+      <div class="stat-bg-num">0</div>
+      <span class="stat-label-top">Custody or wrapping</span>
+      <div class="stat-big"><span class="teal">Zero</span></div>
+      <div class="stat-sub">No proxy. No wrapping contract. No custodian. Users interact with the vault directly. Leyfis enforces access before they get there.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ROLES -->
+<section class="s" id="roles" style="min-height: auto; padding-bottom: 80px;">
+  <span class="sec-num">/04</span>
+
+  <div class="roles-head reveal" style="margin-top: 40px;">
+    <div class="roles-h2">Built for every<br>institutional role.</div>
+    <div style="font-family: var(--mono); font-size: 11px; color: var(--dim); margin-top: 24px; max-width: 480px; line-height: 1.9; letter-spacing: 0.04em;">
+Connect a wallet. Leyfis reads your on-chain role and routes you to the right surface. No login screen. No role assignment process. No shared credentials. Your wallet is your access token.
+    </div>
+  </div>
+
+  <div class="roles-grid reveal">
+    <div class="role-col">
+      <span class="role-num">/01 · Super Admin</span>
+      <div class="role-name">Protocol<br>Authority</div>
+      <div class="role-desc">Holds deployer authority over the full protocol. Registers vault operators and KYC issuers, manages the IssuerRegistry, and controls global access. Every permission in the system flows from this role.</div>
+      <div class="role-perms">
+        <div class="role-perm">Register vault operators globally</div>
+        <div class="role-perm">Register and revoke KYC issuers</div>
+        <div class="role-perm">Full protocol read access</div>
+        <div class="role-perm">IssuerRegistry management</div>
+      </div>
+    </div>
+    <div class="role-col">
+      <span class="role-num">/02 · Vault Operator</span>
+      <div class="role-name">Vault<br>Operator</div>
+      <div class="role-desc">Configures and operates a specific vault under Leyfis. Sets the minimum clearance tier, approved issuers, and permitted jurisdictions. Controls the emergency pause. Every configuration change is recorded on-chain.</div>
+      <div class="role-perms">
+        <div class="role-perm">Configure min_tier and trusted issuers</div>
+        <div class="role-perm">Emergency pause and unpause</div>
+        <div class="role-perm">Live dashboard and audit log</div>
+        <div class="role-perm">FATF R.16 CSV export</div>
+      </div>
+    </div>
+    <div class="role-col">
+      <span class="role-num">/03 · KYC Issuer</span>
+      <div class="role-name">KYC<br>Issuer</div>
+      <div class="role-desc">A regulated institution that issues identity credentials on-chain. Signs attestations to wallet pubkeys with clearance tier, jurisdiction, and expiry. When a client's status changes, revocation takes one transaction. The gate enforces it immediately.</div>
+      <div class="role-perms">
+        <div class="role-perm">Issue attestations to wallets</div>
+        <div class="role-perm">Set tier, jurisdiction, expiry</div>
+        <div class="role-perm">Revoke any attestation instantly</div>
+        <div class="role-perm">View full issued registry</div>
+      </div>
+    </div>
+    <div class="role-col">
+      <span class="role-num">/04 · Auditor</span>
+      <div class="role-name">Compliance<br>Auditor</div>
+      <div class="role-desc">A regulatory officer, external auditor, or legal team member. Gets read-only access to the complete on-chain audit trail. Every gate call. Every outcome. Every reason code. Filters by wallet, date range, or outcome. Exports FATF R.16 compliant CSV in one click. No data request tickets. No waiting.</div>
+      <div class="role-perms">
+        <div class="role-perm">Full audit log with filters</div>
+        <div class="role-perm">Solana Explorer deep links</div>
+        <div class="role-perm">Date-range CSV export</div>
+        <div class="role-perm">Zero write access</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="s" id="cta">
+  <span class="sec-num">/05</span>
+
+  <div class="cta-main reveal">
+    <div class="cta-h2">
+      Built to meet<br>the standard<br><em>regulators expect.</em>
+    </div>
+
+    <div class="cta-right">
+      <div class="cta-sub">
+Your compliance team issues the credentials. Your vault operators set the rules. Your auditors read the log. Leyfis enforces access between them, on-chain, without discretion, without exceptions.<br><br>Protocol-level enforcement. Permanent audit trail. FATF R.16 aligned. Auditable by any regulator, at any time, without asking anyone for permission.
+      </div>
+      <div class="cta-links">
+        <a href="https://app.leyfis.io" class="cta-a">
+          See it in action <span class="arr">↘</span>
+        </a>
+        <a href="https://admin.leyfis.io" class="cta-a" style="font-size: clamp(16px, 2vw, 22px); opacity: 0.6;">
+          Admin panel <span class="arr">↘</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-l">
+    <div class="foot-logo">
+      <svg width="16" height="16" viewBox="0 0 56 56" fill="none">
+        <rect x="8" y="16" width="7" height="32" fill="#3D5070"/>
+        <rect x="41" y="16" width="7" height="32" fill="#3D5070"/>
+        <rect x="8" y="13" width="40" height="6" fill="#3D5070"/>
+        <rect x="18" y="19" width="20" height="29" fill="#000000"/>
+        <rect x="18" y="44" width="20" height="1.5" fill="#3D5070"/>
+      </svg>
+      <span class="foot-word">LEYFIS</span>
+    </div>
+    <div class="foot-sep"></div>
+    <span class="foot-meta">The compliance layer for institutional DeFi · Built on Solana</span>
+  </div>
+  <div class="foot-r">
+    <a href="https://github.com/thinkDecade/leyfis" class="foot-link">GitHub</a>
+    <a href="https://app.leyfis.io" class="foot-link">Demo</a>
+    <a href="https://admin.leyfis.io" class="foot-link">Admin</a>
+  </div>
+</footer>
+
+<script>
+// Cursor
+const cur = document.getElementById('cur');
+const ring = document.getElementById('cur-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cur.style.left = mx + 'px'; cur.style.top = my + 'px';
+});
+(function animRing() {
+  rx += (mx - rx) * 0.1;
+  ry += (my - ry) * 0.1;
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(animRing);
+})();
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Counters
+function count(el, end, dur = 2000, suffix = '') {
+  let s = 0;
+  const step = ts => {
+    if (!s) s = ts;
+    const p = Math.min((ts - s) / dur, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.floor(ease * end).toLocaleString() + suffix;
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = end.toLocaleString() + suffix;
+  };
+  requestAnimationFrame(step);
+}
+setTimeout(() => {
+  count(document.getElementById('cGate'), 2847);
+  count(document.getElementById('cApproved'), 1923);
+  count(document.getElementById('cDenied'), 924);
+}, 1000);
+</script>
+</body>
+</html>
+`;
   return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@300;400;500&display=swap');
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-          --void:     #080C14;
-          --void-1:   #0D1220;
-          --void-2:   #131929;
-          --ice:      #E8EEF6;
-          --ice-2:    rgba(232,238,246,0.65);
-          --ice-3:    rgba(232,238,246,0.35);
-          --ice-4:    rgba(232,238,246,0.15);
-          --border:   rgba(232,238,246,0.07);
-          --border-2: rgba(232,238,246,0.13);
-          --accent:   #1B4FD8;
-          --accent-2: rgba(27,79,216,0.12);
-          --teal:     #0F6E56;
-          --teal-bg:  rgba(15,110,86,0.08);
-          --serif:    'EB Garamond', Georgia, serif;
-          --mono:     'IBM Plex Mono', monospace;
-        }
-        html, body { background: var(--void); color: var(--ice); font-family: var(--mono); }
-        ::selection { background: var(--accent); color: white; }
-
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse {
-          0%, 100% { opacity: 0.4; }
-          50%       { opacity: 1; }
-        }
-        @keyframes scan {
-          0%   { transform: translateY(-100%); }
-          100% { transform: translateY(400%); }
-        }
-
-        .fade-1 { animation: fadeUp 0.6s ease 0.1s both; }
-        .fade-2 { animation: fadeUp 0.6s ease 0.25s both; }
-        .fade-3 { animation: fadeUp 0.6s ease 0.4s both; }
-        .fade-4 { animation: fadeUp 0.6s ease 0.55s both; }
-        .fade-5 { animation: fadeUp 0.6s ease 0.7s both; }
-
-        .btn-primary {
-          display: inline-flex; align-items: center; gap: 10px;
-          font-family: var(--mono); font-size: 11px; font-weight: 500;
-          letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none;
-          background: var(--accent); color: white; border: none;
-          padding: 14px 28px; cursor: pointer;
-          transition: opacity 0.15s;
-        }
-        .btn-primary:hover { opacity: 0.85; }
-
-        .btn-secondary {
-          display: inline-flex; align-items: center; gap: 10px;
-          font-family: var(--mono); font-size: 11px; font-weight: 500;
-          letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none;
-          background: transparent; color: var(--ice-2);
-          border: 1px solid var(--border-2);
-          padding: 14px 28px; cursor: pointer;
-          transition: border-color 0.15s, color 0.15s;
-        }
-        .btn-secondary:hover { border-color: var(--ice-4); color: var(--ice); }
-
-        .card {
-          border: 1px solid var(--border);
-          background: var(--void-1);
-          padding: 28px;
-          transition: border-color 0.2s;
-        }
-        .card:hover { border-color: var(--border-2); }
-
-        .tag {
-          display: inline-block;
-          font-family: var(--mono); font-size: 9px; font-weight: 500;
-          letter-spacing: 0.12em; text-transform: uppercase;
-          padding: 4px 10px;
-          border: 1px solid var(--border-2);
-          color: var(--ice-3);
-        }
-
-        .divider { border: none; border-top: 1px solid var(--border); }
-      `}</style>
-
-      <main style={{ minHeight: "100vh", background: "var(--void)" }}>
-
-        {/* Subtle grid texture */}
-        <div style={{ position: "fixed", inset: 0, backgroundImage: "linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px)", backgroundSize: "80px 80px", pointerEvents: "none", zIndex: 0 }} />
-
-        {/* ── NAV ─────────────────────────────────────────────────────────── */}
-        <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, height: "60px", padding: "0 48px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(8,12,20,0.92)", backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div style={{ width: "24px", height: "24px", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <svg width="12" height="12" viewBox="0 0 56 56" fill="none">
-                <rect x="8" y="16" width="7" height="32" fill="white"/>
-                <rect x="41" y="16" width="7" height="32" fill="white"/>
-                <rect x="8" y="13" width="40" height="6" fill="white"/>
-                <rect x="18" y="19" width="20" height="29" fill="#1B4FD8"/>
-              </svg>
-            </div>
-            <span style={{ fontFamily: "var(--mono)", fontSize: "12px", fontWeight: 500, letterSpacing: "0.24em", color: "var(--ice)" }}>LEYFIS</span>
-            <span className="tag" style={{ marginLeft: "8px" }}>Devnet Live</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <Link href="/portal" className="btn-secondary" style={{ padding: "8px 18px", fontSize: "10px" }}>
-              Access Portal
-            </Link>
-            <Link href="/admin" className="btn-primary" style={{ padding: "8px 18px", fontSize: "10px" }}>
-              Institutional Console
-            </Link>
-          </div>
-        </header>
-
-        {/* ── HERO ────────────────────────────────────────────────────────── */}
-        <section style={{ position: "relative", zIndex: 1, paddingTop: "60px", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "80px 48px" }}>
-
-            {/* Eyebrow */}
-            <div className="fade-1" style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "40px" }}>
-              <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--teal)", animation: "pulse 2s infinite" }} />
-              <span style={{ fontFamily: "var(--mono)", fontSize: "10px", color: "var(--teal)", letterSpacing: "0.16em", textTransform: "uppercase" }}>
-                Live on Solana devnet · {count} gate calls confirmed on-chain
-              </span>
-            </div>
-
-            {/* Main headline */}
-            <h1 className="fade-2" style={{ fontFamily: "var(--serif)", fontSize: "clamp(48px, 6.5vw, 88px)", fontWeight: 400, lineHeight: 1.05, letterSpacing: "-0.02em", color: "var(--ice)", marginBottom: "32px", maxWidth: "900px" }}>
-              Institutional capital is waiting.<br />
-              <em style={{ color: "var(--accent)", fontStyle: "italic" }}>Compliance is the last lock.</em>
-            </h1>
-
-            {/* Sub-headline */}
-            <p className="fade-3" style={{ fontFamily: "var(--mono)", fontSize: "16px", color: "var(--ice-2)", lineHeight: 1.9, maxWidth: "560px", marginBottom: "48px", fontWeight: 300 }}>
-              Leyfis enforces KYC/AML access control at the protocol level — not in a spreadsheet, not in a PDF, not in your legal team's inbox. On-chain. Permanent. Verifiable by any regulator, anywhere, instantly.
-            </p>
-
-            {/* CTAs */}
-            <div className="fade-4" style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "64px" }}>
-              <Link href="/portal" className="btn-primary">
-                Access Vaults →
-              </Link>
-              <Link href="/admin" className="btn-secondary">
-                Institutional Console
-              </Link>
-            </div>
-
-            {/* Stats strip */}
-            <div className="fade-5" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "2px", maxWidth: "800px" }}>
-              {[
-                ["7", "Compliance checks", "On every single vault interaction"],
-                ["< 2s", "Verification time", "Attestation read from Solana"],
-                ["∞", "Audit trail", "Immutable, tamper-proof, on-chain"],
-                ["0", "Database needed", "Source of truth is the blockchain"],
-              ].map(([v, l, sub]) => (
-                <div key={l} style={{ borderTop: "1px solid var(--border-2)", paddingTop: "16px" }}>
-                  <div style={{ fontFamily: "var(--serif)", fontSize: "32px", color: "var(--ice)", marginBottom: "4px", lineHeight: 1 }}>{v}</div>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: "10px", color: "var(--ice-2)", fontWeight: 500, marginBottom: "4px" }}>{l}</div>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: "9px", color: "var(--ice-3)", lineHeight: 1.6 }}>{sub}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── PROBLEM STATEMENT ─────────────────────────────────────────── */}
-        <section style={{ position: "relative", zIndex: 1, borderTop: "1px solid var(--border)" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "96px 48px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", alignItems: "center" }}>
-              <div>
-                <div style={{ fontFamily: "var(--mono)", fontSize: "9px", color: "var(--accent)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "24px" }}>The problem</div>
-                <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(32px, 3.5vw, 48px)", fontWeight: 400, lineHeight: 1.1, color: "var(--ice)", marginBottom: "24px", letterSpacing: "-0.02em" }}>
-                  Your compliance team verified thousands of clients. Your DeFi vault can't read any of it.
-                </h2>
-                <p style={{ fontFamily: "var(--mono)", fontSize: "13px", color: "var(--ice-3)", lineHeight: 1.9, fontWeight: 300 }}>
-                  Banks and asset managers have spent years building KYC/AML infrastructure. None of it talks to DeFi. Every new vault interaction requires manual review. Every sanctioned wallet that slips through is a regulatory incident. The compliance gap is killing institutional DeFi adoption — not because compliance is hard, but because nobody built the infrastructure to enforce it on-chain.
-                </p>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                {[
-                  ["✗", "Manual whitelist management", "Wallet addresses maintained in spreadsheets. Updated manually. Error-prone. Not auditable."],
-                  ["✗", "No on-chain evidence", "Regulators ask for proof of compliance. You send PDFs. They want blockchain records."],
-                  ["✗", "Developer dependency", "Every compliance rule change requires a contract upgrade. Weeks of work. Budget approval."],
-                  ["✗", "No real-time revocation", "A sanctioned wallet approved last month? You can't take it back. The vault is exposed."],
-                ].map(([icon, title, desc]) => (
-                  <div key={title} style={{ padding: "20px 24px", border: "1px solid var(--border)", background: "var(--void-1)", display: "grid", gridTemplateColumns: "20px 1fr", gap: "16px", alignItems: "start" }}>
-                    <span style={{ fontFamily: "var(--mono)", fontSize: "14px", color: "#9A2C2C", marginTop: "2px" }}>{icon}</span>
-                    <div>
-                      <div style={{ fontFamily: "var(--mono)", fontSize: "11px", color: "var(--ice)", fontWeight: 500, marginBottom: "4px" }}>{title}</div>
-                      <div style={{ fontFamily: "var(--mono)", fontSize: "10px", color: "var(--ice-3)", lineHeight: 1.7, fontWeight: 300 }}>{desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── HOW IT WORKS ───────────────────────────────────────────────── */}
-        <section style={{ position: "relative", zIndex: 1, borderTop: "1px solid var(--border)", background: "var(--void-1)" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "96px 48px" }}>
-            <div style={{ marginBottom: "64px" }}>
-              <div style={{ fontFamily: "var(--mono)", fontSize: "9px", color: "var(--accent)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "16px" }}>How Leyfis works</div>
-              <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(32px, 3.5vw, 48px)", fontWeight: 400, lineHeight: 1.1, color: "var(--ice)", letterSpacing: "-0.02em", maxWidth: "600px" }}>
-                The compliance layer your vault never had.
-              </h2>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2px", marginBottom: "64px" }}>
-              {[
-                ["01", "Issue", "KYC providers issue signed on-chain attestations to verified wallets. Tier, jurisdiction, expiry — all cryptographically bound. No spreadsheet. No PDF. One Solana transaction."],
-                ["02", "Gate", "Every vault interaction passes through Leyfis. Seven checks fire in order — paused, attested, revoked, expired, trusted issuer, tier, jurisdiction. All in under two seconds."],
-                ["03", "Audit", "Every gate call writes an immutable AuditEntry on-chain. Approved or denied. Reason code. Tier. Attestation ID. Slot. Timestamp. Permanent. No one can alter it — including you."],
-              ].map(([n, t, d]) => (
-                <div key={n} className="card" style={{ padding: "36px" }}>
-                  <div style={{ fontFamily: "var(--serif)", fontSize: "48px", color: "var(--border-2)", lineHeight: 1, marginBottom: "24px" }}>{n}</div>
-                  <div style={{ fontFamily: "var(--serif)", fontSize: "22px", color: "var(--ice)", marginBottom: "14px" }}>{t}</div>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: "12px", color: "var(--ice-3)", lineHeight: 1.85, fontWeight: 300 }}>{d}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* 7 checks */}
-            <div style={{ border: "1px solid var(--border)", padding: "32px" }}>
-              <div style={{ fontFamily: "var(--mono)", fontSize: "9px", color: "var(--ice-3)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "20px" }}>The 7 compliance checks — enforced on every gate call, in order</div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "2px" }}>
-                {[
-                  ["Gate status", "GatePaused"],
-                  ["Attestation exists", "NoAttestation"],
-                  ["Not revoked", "AttestationRevoked"],
-                  ["Not expired", "AttestationExpired"],
-                  ["Trusted issuer", "UntrustedIssuer"],
-                  ["Tier sufficient", "TierInsufficient"],
-                  ["Jurisdiction eligible", "JurisdictionBlocked"],
-                ].map(([label, code], i) => (
-                  <div key={i} style={{ padding: "16px 14px", background: "var(--void)", borderLeft: i === 0 ? "none" : "1px solid var(--border)" }}>
-                    <div style={{ width: "5px", height: "5px", borderRadius: "50%", background: "var(--teal)", marginBottom: "10px" }} />
-                    <div style={{ fontFamily: "var(--mono)", fontSize: "10px", color: "var(--ice-2)", marginBottom: "6px", lineHeight: 1.4 }}>{label}</div>
-                    <div style={{ fontFamily: "var(--mono)", fontSize: "8px", color: "var(--ice-3)", letterSpacing: "0.06em" }}>{code}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── WHO IT'S FOR ───────────────────────────────────────────────── */}
-        <section style={{ position: "relative", zIndex: 1, borderTop: "1px solid var(--border)" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "96px 48px" }}>
-            <div style={{ marginBottom: "56px" }}>
-              <div style={{ fontFamily: "var(--mono)", fontSize: "9px", color: "var(--accent)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "16px" }}>Built for</div>
-              <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(32px, 3.5vw, 48px)", fontWeight: 400, lineHeight: 1.1, color: "var(--ice)", letterSpacing: "-0.02em" }}>
-                Every institution that needs to prove compliance — not just promise it.
-              </h2>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "2px" }}>
-              {[
-                {
-                  role: "Banks & Asset Managers",
-                  icon: "⬡",
-                  headline: "Launch institutional vaults without your legal team having a breakdown.",
-                  points: [
-                    "Deploy compliant vaults in hours, not quarters",
-                    "KYC'd clients get immediate on-chain access",
-                    "FATF R.16 compliant CSV export for regulators",
-                    "One sanctioned wallet triggers instant revocation",
-                    "FINMA, FCA, MAS alignment built in",
-                  ],
-                  cta: "Enter the vault",
-                  href: "/portal",
-                },
-                {
-                  role: "Vault Operators",
-                  icon: "⬡",
-                  headline: "Stop saying your vault is compliant. Start proving it.",
-                  points: [
-                    "Gate enforces compliance on every single interaction",
-                    "Pause the vault instantly — with a documented reason",
-                    "Change compliance rules without touching the contract",
-                    "Live dashboard: approvals, denials, denial reasons",
-                    "Audit log that no one — including you — can alter",
-                  ],
-                  cta: "See the dashboard",
-                  href: "/admin",
-                },
-                {
-                  role: "KYC / AML Providers",
-                  icon: "⬡",
-                  headline: "Turn your KYC database into on-chain infrastructure.",
-                  points: [
-                    "Issue signed attestations directly on Solana",
-                    "Your verified clients access compliant vaults instantly",
-                    "Tier-based credentials: Basic, Enhanced, Institutional",
-                    "Jurisdiction-aware — CHE, GBR, SGP, DEU and more",
-                    "Revoke credentials in one transaction if circumstances change",
-                  ],
-                  cta: "Issue credentials",
-                  href: "/admin",
-                },
-                {
-                  role: "Regulators & Auditors",
-                  icon: "⬡",
-                  headline: "Independent verification. No bank's word required.",
-                  points: [
-                    "Every gate call recorded permanently on Solana",
-                    "Read audit records without asking the institution",
-                    "FATF R.16 aligned fields — timestamp, wallet, outcome, reason",
-                    "Cross-reference attestation PDA directly on-chain",
-                    "Tamper-proof by protocol — not by policy",
-                  ],
-                  cta: "View audit log",
-                  href: "/admin",
-                },
-              ].map(({ role, headline, points, cta, href }) => (
-                <div key={role} className="card" style={{ padding: "36px" }}>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: "9px", color: "var(--accent)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "16px" }}>{role}</div>
-                  <h3 style={{ fontFamily: "var(--serif)", fontSize: "20px", color: "var(--ice)", marginBottom: "24px", lineHeight: 1.3, fontWeight: 400 }}>{headline}</h3>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0", marginBottom: "28px" }}>
-                    {points.map((p, i) => (
-                      <div key={i} style={{ display: "flex", gap: "12px", alignItems: "flex-start", padding: "10px 0", borderBottom: "1px solid var(--border)" }}>
-                        <div style={{ width: "5px", height: "5px", borderRadius: "50%", background: "var(--teal)", flexShrink: 0, marginTop: "5px" }} />
-                        <span style={{ fontFamily: "var(--mono)", fontSize: "11px", color: "var(--ice-3)", lineHeight: 1.7, fontWeight: 300 }}>{p}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <Link href={href} className="btn-secondary" style={{ fontSize: "10px", padding: "10px 20px" }}>
-                    {cta} →
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── PROOF STRIP ───────────────────────────────────────────────── */}
-        <section style={{ position: "relative", zIndex: 1, borderTop: "1px solid var(--border)", background: "var(--void-1)" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "64px 48px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "2px" }}>
-              {[
-                ["Gate Program", GATE_PROGRAM.slice(0, 16) + "...", "Solana devnet"],
-                ["Pilot Partner", "AMINA Bank AG", "StableHacks 2026"],
-                ["Compliance standard", "FATF R.16", "Wire transfer tracing"],
-                ["Audit entries", count.toString() + " confirmed", "Live on-chain records"],
-              ].map(([l, v, sub]) => (
-                <div key={l} style={{ padding: "24px", border: "1px solid var(--border)" }}>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: "8px", color: "var(--ice-3)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "8px" }}>{l}</div>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: "13px", color: "var(--ice)", fontWeight: 500, marginBottom: "4px" }}>{v}</div>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: "9px", color: "var(--ice-3)" }}>{sub}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── FINAL CTA ──────────────────────────────────────────────────── */}
-        <section style={{ position: "relative", zIndex: 1, borderTop: "1px solid var(--border)" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "120px 48px", textAlign: "center" }}>
-            <div style={{ fontFamily: "var(--mono)", fontSize: "9px", color: "var(--accent)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "24px" }}>
-              The infrastructure exists. The compliance problem is solved.
-            </div>
-            <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(40px, 5vw, 64px)", fontWeight: 400, lineHeight: 1.1, letterSpacing: "-0.02em", color: "var(--ice)", marginBottom: "20px" }}>
-              Your institutional vault<br />
-              <em style={{ color: "var(--accent)", fontStyle: "italic" }}>goes live today.</em>
-            </h2>
-            <p style={{ fontFamily: "var(--mono)", fontSize: "14px", color: "var(--ice-3)", lineHeight: 1.9, maxWidth: "480px", margin: "0 auto 48px", fontWeight: 300 }}>
-              Not after your legal review. Not after your compliance team's six-month audit. Not after you rebuild your tech stack. Today. With credentials your KYC provider already issued.
-            </p>
-            <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-              <Link href="/portal" className="btn-primary" style={{ fontSize: "12px", padding: "16px 36px" }}>
-                Access Your Vaults →
-              </Link>
-              <Link href="/admin" className="btn-secondary" style={{ fontSize: "12px", padding: "16px 36px" }}>
-                Open Institutional Console
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* ── FOOTER ─────────────────────────────────────────────────────── */}
-        <footer style={{ position: "relative", zIndex: 1, borderTop: "1px solid var(--border)", padding: "24px 48px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <span style={{ fontFamily: "var(--mono)", fontSize: "10px", fontWeight: 500, letterSpacing: "0.24em", color: "var(--ice-3)" }}>LEYFIS</span>
-            <span style={{ fontFamily: "var(--mono)", fontSize: "10px", color: "var(--ice-3)", fontWeight: 300 }}>Institutional compliance infrastructure on Solana</span>
-          </div>
-          <div style={{ display: "flex", gap: "24px" }}>
-            {[
-              ["Vault Access", "/portal"],
-              ["Admin Console", "/admin"],
-              ["Gate Program", `https://explorer.solana.com/address/${GATE_PROGRAM}?cluster=devnet`],
-              ["GitHub", "https://github.com/thinkDecade/leyfis"],
-            ].map(([l, h]) => (
-              <a key={l} href={h} style={{ fontFamily: "var(--mono)", fontSize: "9px", color: "var(--ice-3)", letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }} target={h.startsWith("http") ? "_blank" : undefined} rel="noreferrer">{l}</a>
-            ))}
-          </div>
-        </footer>
-      </main>
-    </>
+    <div
+      dangerouslySetInnerHTML={{ __html: html }}
+      style={{ all: "unset" }}
+    />
   );
 }
