@@ -110,6 +110,18 @@
   dependencies:
     merge-options "^3.0.4"
 
+"@rive-app/canvas@2.35.4":
+  version "2.35.4"
+  resolved "https://registry.yarnpkg.com/@rive-app/canvas/-/canvas-2.35.4.tgz#c4e89c8463dcae60ede94bab5917aab8ef654cfb"
+  integrity sha512-Blyi0jeBnRvgU9JQsFW3MZkmAdhKakSmqp6lZeOupFENjd8OGt4YrR1E0btH7soO9lae7m8N76MtnBwupNzxSw==
+
+"@rive-app/react-canvas@^4.27.3":
+  version "4.27.3"
+  resolved "https://registry.yarnpkg.com/@rive-app/react-canvas/-/react-canvas-4.27.3.tgz#f5c591fa7e6675848de219900206dec0e79ade5c"
+  integrity sha512-DpxtvuRAtXWmS6sM+thuatKrRy1fT79GpShPe6sXxzKRLI1ZhNEOk+VRqawCZxNfedTf5B03ZDoEFxtCeRYphg==
+  dependencies:
+    "@rive-app/canvas" "2.35.4"
+
 "@solana-mobile/mobile-wallet-adapter-protocol-web3js@^2.2.6":
   version "2.2.6"
   resolved "https://registry.yarnpkg.com/@solana-mobile/mobile-wallet-adapter-protocol-web3js/-/mobile-wallet-adapter-protocol-web3js-2.2.6.tgz#f55ce2feb1b271efddbed544b095c0de350d14ce"
