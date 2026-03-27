@@ -90,7 +90,7 @@ export default function AdminHome() {
           <div style={{textAlign:"center"}}>
             <p style={{...m,fontSize:"9px",color:"var(--text-4)",lineHeight:1.8}}>Your wallet is your credential. No passwords.<br/>Role detection via on-chain registry.</p>
             <div style={{height:"1px",background:"var(--border)",margin:"14px 0"}}/>
-            <a href="http://localhost:3000" style={{...m,fontSize:"9px",color:"var(--accent)",letterSpacing:"0.08em",textTransform:"uppercase"}}>View Public Demo</a>
+            <a href="https://leyfis-app.netlify.app" style={{...m,fontSize:"9px",color:"var(--accent)",letterSpacing:"0.08em",textTransform:"uppercase"}}>View Public Demo</a>
           </div>
         </div>
       </div>
@@ -116,7 +116,7 @@ export default function AdminHome() {
           <p style={{...m,fontSize:"11px",color:"var(--text-3)",lineHeight:1.8,marginBottom:"16px"}}>{ROLE_DESCS["none"]}</p>
           <div style={{...m,fontSize:"10px",color:"var(--text-4)"}}>Connected: {shortAddr(publicKey.toBase58(),8)}</div>
         </div>
-        <a href="http://localhost:3000" style={{...m,fontSize:"10px",letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--accent)",border:"1px solid var(--accent-border)",padding:"10px 16px",display:"inline-block"}}>View Public Demo</a>
+        <a href="https://leyfis-app.netlify.app" style={{...m,fontSize:"10px",letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--accent)",border:"1px solid var(--accent-border)",padding:"10px 16px",display:"inline-block"}}>View Public Demo</a>
       </div>
     </AdminShell>
   );

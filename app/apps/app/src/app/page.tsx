@@ -311,7 +311,7 @@ export default function LandingPage() {
           <div style={{ display:"flex", animation:"ticker 22s linear infinite", width:"max-content" }}>
             {[...Array(2)].map((_,i) => (
               <span key={i} style={{ display:"contents" }}>
-                {["7 COMPLIANCE CHECKS","FATF R.16 ALIGNED","<400MS VALIDATION","AMINA BANK PILOT","SOLANA DEVNET","8/8 ANCHOR TESTS PASSING","IMMUTABLE AUDIT LOG","FINMA · FCA · MAS READY","TIER-GATED ACCESS"].map((t,j) => (
+                {["7 COMPLIANCE CHECKS","FATF R.16 ALIGNED","<400MS VALIDATION","SOLANA DEVNET","8/8 ANCHOR TESTS PASSING","IMMUTABLE AUDIT LOG","FINMA · FCA · MAS READY","TIER-GATED ACCESS"].map((t,j) => (
                   <span key={j} style={{ fontFamily:D.mono, fontSize:"8px", letterSpacing:"0.16em", color:D.ice15, padding:"0 36px", borderRight:`1px solid ${D.rule}`, whiteSpace:"nowrap" }}>{t}</span>
                 ))}
               </span>

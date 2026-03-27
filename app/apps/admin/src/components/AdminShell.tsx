@@ -2,6 +2,7 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { AdminRole, shortAddr, GATE_PROGRAM_ID, RPC_ENDPOINT, SEEDS } from "@leyfis/shared";
 import {
@@ -121,7 +122,11 @@ export function AdminShell({ children, current }: { children: React.ReactNode; c
   const { publicKey, disconnect } = useWallet();
   const [mounted, setMounted] = useState(false);
   const [showDisconnect, setShowDisconnect] = useState(false);
+  const router = useRouter();
   useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    if (mounted && !publicKey) router.push("/");
+  }, [publicKey, mounted, router]);
   const { role, loading } = useRole();
   const { theme, toggle } = useTheme();
 
