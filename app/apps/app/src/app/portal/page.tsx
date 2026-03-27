@@ -420,7 +420,7 @@ export default function Home() {
 
                 {/* Large headline */}
                 <h1 style={{ fontFamily: "var(--f-serif)", fontSize: "clamp(52px,5.5vw,76px)", fontWeight: 400, lineHeight: 1.05, letterSpacing: "-0.02em", color: c.text1, marginBottom: "28px" }}>
-                  Private capital.<br />
+                  Institutional capital.<br />
                   Verified access.<br />
                   <em style={{ color: c.accent, fontStyle: "italic" }}>On-chain.</em>
                 </h1>

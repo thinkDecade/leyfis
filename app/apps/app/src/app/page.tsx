@@ -278,7 +278,7 @@ export default function LandingPage() {
               <span style={{ display:"block", color:D.ice }}>On-Chain.</span>
             </h1>
             <p style={{ fontFamily:D.serif, fontSize:"19px", color:D.ice50, lineHeight:1.7, maxWidth:"380px", marginBottom:"40px", fontStyle:"italic" }}>
-              On-chain compliance middleware for institutional DeFi vaults. Verifies KYC/AML attestations before execution — at the protocol layer, not in a spreadsheet.
+              On-chain compliance middleware for institutional DeFi vaults. Verifies KYC/AML attestations before execution.
             </p>
             <div style={{ display:"flex", gap:"12px", flexWrap:"wrap" }}>
               <Link href="/portal" style={{ fontFamily:D.mono, fontSize:"10px", letterSpacing:"0.12em", background:D.blue, color:"#fff", padding:"13px 28px", transition:"opacity 0.15s" }}
