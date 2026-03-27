@@ -109,13 +109,13 @@ const ROLE_COLORS: Record<AdminRole, string> = {
 };
 
 const NAV = [
-  { label: "Overview",  href: "/",        icon: LayoutDashboard, roles: ["vault_operator","kyc_issuer","compliance_auditor"] },
-  { label: "Vault",     href: "/vault",    icon: Vault,           roles: ["vault_operator"] },
-  { label: "Issue",     href: "/issue",    icon: BadgeCheck,      roles: ["kyc_issuer"] },
-  { label: "Registry",  href: "/registry", icon: BookOpen,        roles: ["kyc_issuer"] },
-  { label: "Audit Log", href: "/audit",    icon: ScrollText,      roles: ["vault_operator","kyc_issuer","compliance_auditor"] },
-  { label: "Live Feed", href: "/feed",     icon: Radio,           roles: ["vault_operator","kyc_issuer","compliance_auditor"] },
-  { label: "Export",    href: "/export",   icon: Download,        roles: ["vault_operator","compliance_auditor"] },
+  { label: "Overview",  href: "/",        icon: LayoutDashboard, roles: ["super_admin","vault_operator","kyc_issuer","compliance_auditor"] },
+  { label: "Vault",     href: "/vault",    icon: Vault,           roles: ["super_admin","vault_operator"] },
+  { label: "Issue",     href: "/issue",    icon: BadgeCheck,      roles: ["super_admin","kyc_issuer"] },
+  { label: "Registry",  href: "/registry", icon: BookOpen,        roles: ["super_admin","kyc_issuer"] },
+  { label: "Audit Log", href: "/audit",    icon: ScrollText,      roles: ["super_admin","vault_operator","kyc_issuer","compliance_auditor"] },
+  { label: "Live Feed", href: "/feed",     icon: Radio,           roles: ["super_admin","vault_operator","kyc_issuer","compliance_auditor"] },
+  { label: "Export",    href: "/export",   icon: Download,        roles: ["super_admin","vault_operator","compliance_auditor"] },
 ];
 
 export function AdminShell({ children, current }: { children: React.ReactNode; current: string }) {

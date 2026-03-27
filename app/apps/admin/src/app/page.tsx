@@ -10,12 +10,12 @@ const m = { fontFamily:"DM Mono,monospace" };
 const f = { fontFamily:"Inter,sans-serif" };
 
 const SCREENS = [
-  { icon:Vault,      title:"Vault Dashboard",      role:"Vault Operator",   href:"/vault",    roles:["vault_operator"] },
-  { icon:BadgeCheck, title:"Issue Attestation",    role:"KYC Issuer",       href:"/issue",    roles:["kyc_issuer"] },
-  { icon:BookOpen,   title:"Attestation Registry", role:"KYC Issuer",       href:"/registry", roles:["kyc_issuer"] },
-  { icon:ScrollText, title:"Audit Log",            role:"All Roles",        href:"/audit",    roles:["vault_operator","kyc_issuer","compliance_auditor"] },
-  { icon:Radio,      title:"Live Feed",            role:"All Roles",        href:"/feed",     roles:["vault_operator","kyc_issuer","compliance_auditor"] },
-  { icon:Download,   title:"Compliance Export",    role:"Operator/Auditor", href:"/export",   roles:["vault_operator","compliance_auditor"] },
+  { icon:Vault,      title:"Vault Dashboard",      role:"Vault Operator",   href:"/vault",    roles:["super_admin","vault_operator"] },
+  { icon:BadgeCheck, title:"Issue Attestation",    role:"KYC Issuer",       href:"/issue",    roles:["super_admin","kyc_issuer"] },
+  { icon:BookOpen,   title:"Attestation Registry", role:"KYC Issuer",       href:"/registry", roles:["super_admin","kyc_issuer"] },
+  { icon:ScrollText, title:"Audit Log",            role:"All Roles",        href:"/audit",    roles:["super_admin","vault_operator","kyc_issuer","compliance_auditor"] },
+  { icon:Radio,      title:"Live Feed",            role:"All Roles",        href:"/feed",     roles:["super_admin","vault_operator","kyc_issuer","compliance_auditor"] },
+  { icon:Download,   title:"Compliance Export",    role:"Operator/Auditor", href:"/export",   roles:["super_admin","vault_operator","compliance_auditor"] },
 ];
 
 const ROLE_DESCS: Record<string,string> = {
