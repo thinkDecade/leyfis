@@ -107,7 +107,7 @@ export default function AuditPage() {
           <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "8px" }}>/05 — Audit Log</div>
           <h1 style={{ ...f, fontSize: "26px", fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text-1)", marginBottom: "8px" }}>On-Chain Audit Log</h1>
           <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-            <span style={{ ...m, fontSize: "11px", color: "var(--text-3)" }}>Immutable. Every gate call permanently recorded on Solana.</span>
+            <span style={{ ...m, fontSize: "11px", color: "var(--text-3)" }}>Approved interactions recorded permanently on Solana. Rejected calls leave no on-chain footprint — by design.</span>
             {lastRefresh && <span style={{ ...m, fontSize: "10px", color: "var(--text-4)" }}>· {timeAgo(Math.floor(lastRefresh.getTime() / 1000))}</span>}
             <button onClick={refresh} disabled={loading} style={{ ...m, fontSize: "9px", color: "var(--accent)", background: "none", border: "none", cursor: "pointer", padding: 0, letterSpacing: "0.08em", textTransform: "uppercase", opacity: loading ? 0.4 : 1 }}>
               {loading ? "Loading..." : "↻ Refresh"}
@@ -124,7 +124,7 @@ export default function AuditPage() {
         {[
           { label: "Total Records", value: loading ? "—" : entries.length.toString(), color: "var(--text-1)" },
           { label: "Approved", value: loading ? "—" : approved.toString(), color: "var(--success)" },
-          { label: "Denied", value: loading ? "—" : denied.toString(), color: "var(--danger)" },
+          { label: "Rejected at Gate", value: loading ? "—" : denied.toString(), color: "var(--danger)" },
           { label: "Approval Rate", value: loading || entries.length === 0 ? "—" : `${Math.round(approved / entries.length * 100)}%`, color: "var(--text-1)" },
         ].map((s, i) => (
           <div key={i} style={{ border: "1px solid var(--border)", padding: "18px 24px", background: "var(--bg-1)" }}>
@@ -134,6 +134,11 @@ export default function AuditPage() {
         ))}
       </div>
 
+      {/* Atomicity note */}
+      <div style={{ ...m, fontSize: "10px", color: "var(--text-4)", padding: "10px 16px", background: "var(--bg-1)", border: "1px solid var(--border)", marginBottom: "12px", lineHeight: 1.6 }}>
+        <span style={{ color: "var(--text-3)" }}>ℹ︎ </span>
+        Solana transactions are atomic. Rejected wallets are stopped before any state is committed — no on-chain footprint is created. Denials are visible in transaction logs on Solana Explorer.
+      </div>
       {/* Filters */}
       <div style={{ display: "flex", gap: "8px", marginBottom: "12px", alignItems: "center" }}>
         <div style={{ position: "relative", flex: 1, maxWidth: "320px" }}>
@@ -147,7 +152,7 @@ export default function AuditPage() {
         <div style={{ display: "flex", gap: "2px" }}>
           {(["all", "approved", "denied"] as const).map(f2 => (
             <button key={f2} onClick={() => setFilter(f2)} style={{ ...m, fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase", padding: "9px 16px", background: filter === f2 ? "var(--accent)" : "var(--bg-1)", color: filter === f2 ? "white" : "var(--text-3)", border: `1px solid ${filter === f2 ? "var(--accent)" : "var(--border)"}`, cursor: "pointer" }}>
-              {f2}
+              {f2 === "denied" ? "rejected" : f2}
             </button>
           ))}
         </div>

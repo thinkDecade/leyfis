@@ -163,7 +163,7 @@ export default function FeedPage() {
         {[
           { label: "Lifetime Calls", value: totalSeen.toString(), color: "var(--text-1)", sub: "Total audit nonce" },
           { label: "Approved", value: approved.toString(), color: "var(--success)", sub: `${approvalRate}% of visible` },
-          { label: "Denied", value: denied.toString(), color: "var(--danger)", sub: `${100 - approvalRate}% of visible` },
+          { label: "Rejected at Gate", value: denied.toString(), color: "var(--danger)", sub: `${100 - approvalRate}% of visible` },
           { label: "Showing", value: entries.length.toString(), color: "var(--text-1)", sub: "Last 50 on-chain" },
         ].map((s, i) => (
           <div key={i} style={{ border: "1px solid var(--border)", padding: "18px 24px", background: "var(--bg-1)" }}>
