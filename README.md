@@ -2,9 +2,13 @@
 
 **On-chain compliance middleware for institutional DeFi vaults.**
 
-Leyfis is a Solana program that sits between any wallet and any DeFi vault. It reads cryptographically signed KYC/AML attestations stored on-chain, enforces a fixed sequence of compliance checks, and either forwards the vault instruction or rejects it with a reason code. Every outcome is written to an immutable, publicly readable audit log.
+Overview
+Leyfis is an onchain compliance middleware that enables institutional capital to interact with Defi vaults under enforceable regulatory constraints. It acts as a cryptographic gate in front of any vault, verifying identity and compliance before execution.
 
-No off-chain API. No compliance team in the loop. No manual review. Just protocol.
+
+<img width="788" height="464" alt="user_flow" src="https://github.com/user-attachments/assets/2e0ff43b-52da-4ba6-affe-a8a5849f28c9" />
+
+
 
 ---
 
