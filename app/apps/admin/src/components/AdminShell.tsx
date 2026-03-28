@@ -123,16 +123,28 @@ export function AdminShell({ children, current }: { children: React.ReactNode; c
   const [mounted, setMounted] = useState(false);
   const [showDisconnect, setShowDisconnect] = useState(false);
   const router = useRouter();
-  const [wasConnected, setWasConnected] = useState(false);
   useEffect(() => setMounted(true), []);
-  // Track when wallet was actually connected
+  // Persist connection across navigations using localStorage
   useEffect(() => {
-    if (publicKey) setWasConnected(true);
+    if (publicKey) {
+      localStorage.setItem("leyfis-wallet-connected", "true");
+    }
   }, [publicKey]);
-  // Only redirect if wallet was connected and then disconnected - not on initial load
+  // Only redirect if user explicitly disconnected (localStorage flag was set)
   useEffect(() => {
-    if (mounted && wasConnected && !publicKey) router.push("/");
-  }, [publicKey, mounted, wasConnected, router]);
+    if (!mounted) return;
+    const wasConnected = localStorage.getItem("leyfis-wallet-connected") === "true";
+    if (wasConnected && !publicKey) {
+      // Give wallet adapter 800ms to re-hydrate before deciding to redirect
+      const timer = setTimeout(() => {
+        if (!publicKey) {
+          localStorage.removeItem("leyfis-wallet-connected");
+          router.push("/");
+        }
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [publicKey, mounted, router]);
   const { role, loading } = useRole();
   const { theme, toggle } = useTheme();
 
