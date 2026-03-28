@@ -418,4 +418,8 @@ leyfis-protocol/
 
 ---
 
-*Leyfis (Old Norse) — formal grant of clearance. Permission to proceed.*
+
+
+https://github.com/user-attachments/assets/6f7bf7f2-bb9a-4a38-8b77-17d106502fe6
+
+
