@@ -1,6 +1,8 @@
-﻿export default function AdminRedirect() {
-  if (typeof window !== "undefined") {
-    window.location.href = "https://leyfis-admin.netlify.app";
-  }
+"use client";
+import { useEffect } from "react";
+export default function AdminRedirect() {
+  useEffect(() => {
+    window.location.replace("https://leyfis-admin.netlify.app");
+  }, []);
   return null;
 }

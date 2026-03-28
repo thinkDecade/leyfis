@@ -123,10 +123,16 @@ export function AdminShell({ children, current }: { children: React.ReactNode; c
   const [mounted, setMounted] = useState(false);
   const [showDisconnect, setShowDisconnect] = useState(false);
   const router = useRouter();
+  const [wasConnected, setWasConnected] = useState(false);
   useEffect(() => setMounted(true), []);
+  // Track when wallet was actually connected
   useEffect(() => {
-    if (mounted && !publicKey) router.push("/");
-  }, [publicKey, mounted, router]);
+    if (publicKey) setWasConnected(true);
+  }, [publicKey]);
+  // Only redirect if wallet was connected and then disconnected - not on initial load
+  useEffect(() => {
+    if (mounted && wasConnected && !publicKey) router.push("/");
+  }, [publicKey, mounted, wasConnected, router]);
   const { role, loading } = useRole();
   const { theme, toggle } = useTheme();
 
