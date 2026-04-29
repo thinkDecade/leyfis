@@ -5,7 +5,9 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import { AdminShell } from "@/components/AdminShell";
 import {
   GATE_PROGRAM_ID, VAULT_PROGRAM_ID, RPC_ENDPOINT,
-  SEEDS, shortAddr, addressUrl, REASON_CODES
+  SEEDS, shortAddr, addressUrl, REASON_CODES,
+  buildPauseGateIx, buildUnpauseGateIx, buildUpdateVaultConfigIx,
+  findVaultConfigPDA, sendAdminTx,
 } from "@leyfis/shared";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -181,7 +183,7 @@ function SectionLabel({ children }: { children: string }) {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function VaultPage() {
-  const { publicKey } = useWallet();
+  const { publicKey, signTransaction } = useWallet();
   const [mounted, setMounted] = useState(false);
   const [config, setConfig] = useState<VaultConfig | null>(null);
   const [entries, setEntries] = useState<AuditEntry[]>([]);
@@ -221,9 +223,41 @@ export default function VaultPage() {
   entries.filter(e => e.outcome === "denied").forEach(e => { denialMap[e.reasonCode] = (denialMap[e.reasonCode] || 0) + 1; });
   const sortedDenials = Object.entries(denialMap).sort(([, a], [, b]) => b - a).slice(0, 5);
 
-  const handlePause   = async (r: string, n: string) => { setProcessing(true); setShowPause(false); await new Promise(x => setTimeout(x, 800)); setConfig(p => p ? { ...p, paused: true } : null); setProcessing(false); };
-  const handleUnpause = async () => { setProcessing(true); setShowUnpause(false); await new Promise(x => setTimeout(x, 800)); setConfig(p => p ? { ...p, paused: false } : null); setProcessing(false); };
-  const handleTier    = async () => { setSavingTier(true); await new Promise(x => setTimeout(x, 800)); setConfig(p => p ? { ...p, minTier: pendingTier } : null); setSavingTier(false); };
+  const handlePause = async (_reason: string, _notes: string) => {
+    if (!publicKey || !signTransaction) return;
+    setProcessing(true); setShowPause(false);
+    try {
+      const conn = new Connection(RPC_ENDPOINT, "confirmed");
+      const [vcPDA] = findVaultConfigPDA(new PublicKey(VAULT_PROGRAM_ID), new PublicKey(GATE_PROGRAM_ID));
+      const sig = await sendAdminTx(conn, buildPauseGateIx(new PublicKey(GATE_PROGRAM_ID), vcPDA, publicKey), publicKey, signTransaction);
+      console.log("Paused:", sig); await refresh();
+    } catch (e: any) { alert("Pause failed: " + (e?.message || "unknown")); }
+    finally { setProcessing(false); }
+  };
+
+  const handleUnpause = async () => {
+    if (!publicKey || !signTransaction) return;
+    setProcessing(true); setShowUnpause(false);
+    try {
+      const conn = new Connection(RPC_ENDPOINT, "confirmed");
+      const [vcPDA] = findVaultConfigPDA(new PublicKey(VAULT_PROGRAM_ID), new PublicKey(GATE_PROGRAM_ID));
+      const sig = await sendAdminTx(conn, buildUnpauseGateIx(new PublicKey(GATE_PROGRAM_ID), vcPDA, publicKey), publicKey, signTransaction);
+      console.log("Unpaused:", sig); await refresh();
+    } catch (e: any) { alert("Unpause failed: " + (e?.message || "unknown")); }
+    finally { setProcessing(false); }
+  };
+
+  const handleTier = async () => {
+    if (!publicKey || !signTransaction) return;
+    setSavingTier(true);
+    try {
+      const conn = new Connection(RPC_ENDPOINT, "confirmed");
+      const [vcPDA] = findVaultConfigPDA(new PublicKey(VAULT_PROGRAM_ID), new PublicKey(GATE_PROGRAM_ID));
+      const sig = await sendAdminTx(conn, buildUpdateVaultConfigIx(new PublicKey(GATE_PROGRAM_ID), vcPDA, publicKey, pendingTier, null), publicKey, signTransaction);
+      console.log("Updated:", sig); await refresh();
+    } catch (e: any) { alert("Update failed: " + (e?.message || "unknown")); }
+    finally { setSavingTier(false); }
+  };
 
   const gateActive = !loading && config && !config.paused;
   const gatePaused = !loading && config?.paused;
