@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { AdminShell } from "@/components/AdminShell";
 import { GATE_PROGRAM_ID, VAULT_PROGRAM_ID, RPC_ENDPOINT, SEEDS, shortAddr, REASON_CODES } from "@leyfis/shared";
@@ -91,6 +91,8 @@ function SectionLabel({ children }: { children: string }) {
   return <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>{children}</div>;
 }
 
+type ReportStatus = "idle" | "generating" | "done" | "error";
+
 export default function ExportPage() {
   const [mounted, setMounted]   = useState(false);
   useEffect(() => setMounted(true), []);
@@ -100,6 +102,47 @@ export default function ExportPage() {
   const [from, setFrom]         = useState(new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10));
   const [to, setTo]             = useState(new Date().toISOString().slice(0, 10));
   const [outcomeF, setOutcomeF] = useState<"all" | "approved" | "denied">("all");
+  const [reportText, setReportText] = useState("");
+  const [reportStatus, setReportStatus] = useState<ReportStatus>("idle");
+  const [copied, setCopied]     = useState(false);
+  const reportRef               = useRef<HTMLDivElement>(null);
+
+  const generateReport = useCallback(async (data: AuditEntry[]) => {
+    if (data.length === 0) return;
+    setReportText("");
+    setReportStatus("generating");
+    try {
+      const res = await fetch("/api/compliance-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ entries: data, from, to }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Request failed" }));
+        throw new Error(err.error || `HTTP ${res.status}`);
+      }
+      const reader = res.body!.getReader();
+      const dec = new TextDecoder();
+      let done = false;
+      while (!done) {
+        const { value, done: d } = await reader.read();
+        done = d;
+        if (value) setReportText(prev => prev + dec.decode(value, { stream: !d }));
+      }
+      setReportStatus("done");
+      setTimeout(() => reportRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+    } catch (e: any) {
+      setReportText(e?.message || "Report generation failed");
+      setReportStatus("error");
+    }
+  }, [from, to]);
+
+  const copyReport = () => {
+    navigator.clipboard.writeText(reportText).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -232,12 +275,54 @@ export default function ExportPage() {
           </div>
 
           {/* Export button */}
-          <button
-            onClick={doExport}
-            disabled={exporting || filtered.length === 0 || loading}
-            style={{ ...m, fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", background: filtered.length === 0 || loading ? "var(--accent-bg)" : "var(--accent)", color: filtered.length === 0 || loading ? "var(--accent)" : "white", border: "1px solid var(--accent)", padding: "16px 28px", cursor: filtered.length === 0 || loading ? "not-allowed" : "pointer", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
-            ↓ {exporting ? "Generating CSV..." : `Export ${filtered.length} Records — FATF R.16`}
-          </button>
+          <div style={{ display: "flex", gap: "2px" }}>
+            <button
+              onClick={doExport}
+              disabled={exporting || filtered.length === 0 || loading}
+              style={{ ...m, fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", background: filtered.length === 0 || loading ? "var(--accent-bg)" : "var(--accent)", color: filtered.length === 0 || loading ? "var(--accent)" : "white", border: "1px solid var(--accent)", padding: "16px 28px", cursor: filtered.length === 0 || loading ? "not-allowed" : "pointer", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", flex: 1 }}>
+              ↓ {exporting ? "Generating CSV..." : `Export ${filtered.length} Records — FATF R.16`}
+            </button>
+            <button
+              onClick={() => generateReport(filtered)}
+              disabled={reportStatus === "generating" || filtered.length === 0 || loading}
+              style={{ ...m, fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", background: "var(--bg-1)", color: "var(--accent)", border: "1px solid var(--accent)", padding: "16px 24px", cursor: filtered.length === 0 || loading || reportStatus === "generating" ? "not-allowed" : "pointer", fontWeight: 700, display: "flex", alignItems: "center", gap: "8px", opacity: filtered.length === 0 || loading ? 0.4 : 1, whiteSpace: "nowrap" }}>
+              {reportStatus === "generating" ? "⟳ Generating..." : "AI Report →"}
+            </button>
+          </div>
+
+          {/* AI Report Output */}
+          {(reportStatus !== "idle") && (
+            <div ref={reportRef} style={{ border: "1px solid var(--border)", background: "var(--bg-1)" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid var(--border)" }}>
+                <div>
+                  <SectionLabel>AI Compliance Report</SectionLabel>
+                  <div style={{ ...f, fontSize: "14px", fontWeight: 600, color: "var(--text-1)" }}>
+                    {reportStatus === "generating" ? "Claude is drafting your FATF R.16 report..." : reportStatus === "error" ? "Report generation failed" : "Report ready — copy or print for submission"}
+                  </div>
+                </div>
+                {reportStatus === "done" && (
+                  <button onClick={copyReport} style={{ ...m, fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase", background: copied ? "var(--success)" : "var(--bg-2)", color: copied ? "white" : "var(--accent)", border: `1px solid ${copied ? "var(--success)" : "var(--accent)"}`, padding: "8px 16px", cursor: "pointer" }}>
+                    {copied ? "✓ Copied" : "Copy Text"}
+                  </button>
+                )}
+              </div>
+              <div style={{ padding: "24px 28px", ...m, fontSize: "11px", color: reportStatus === "error" ? "var(--danger)" : "var(--text-2)", lineHeight: 1.9, whiteSpace: "pre-wrap", minHeight: reportStatus === "generating" ? "120px" : "auto", position: "relative" }}>
+                {reportStatus === "generating" && reportText === "" && (
+                  <span style={{ color: "var(--text-4)", animation: "pulse 1.5s ease-in-out infinite" }}>Analyzing {filtered.length} records...</span>
+                )}
+                {reportText}
+                {reportStatus === "generating" && reportText !== "" && (
+                  <span style={{ opacity: 0.5 }}>▌</span>
+                )}
+              </div>
+              {reportStatus === "done" && (
+                <div style={{ padding: "12px 20px", borderTop: "1px solid var(--border)", display: "flex", gap: "16px", alignItems: "center" }}>
+                  <span style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.08em", textTransform: "uppercase" }}>Generated by Claude claude-haiku-4-5 · FATF R.16 aligned · {new Date().toISOString().slice(0, 10)}</span>
+                  <button onClick={() => { setReportText(""); setReportStatus("idle"); }} style={{ ...m, fontSize: "9px", color: "var(--text-4)", background: "none", border: "none", cursor: "pointer", padding: 0, letterSpacing: "0.08em", textTransform: "uppercase", marginLeft: "auto" }}>Clear</button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right — FATF fields */}
