@@ -3,7 +3,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useState, useEffect, useCallback } from "react";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { AdminRole, shortAddr, GATE_PROGRAM_ID, RPC_ENDPOINT, SEEDS } from "@leyfis/shared";
+import { AdminRole, shortAddr, GATE_PROGRAM_ID, RPC_ENDPOINT, SEEDS, usePlan, track } from "@leyfis/shared";
 import {
   LayoutDashboard, Vault, BadgeCheck,
   BookOpen, ScrollText, Radio, Download, Globe, History,
@@ -126,6 +126,13 @@ export function AdminShell({ children, current }: { children: React.ReactNode; c
   useEffect(() => setMounted(true), []);
   const { role, loading } = useRole();
   const { theme, toggle } = useTheme();
+  const plan = usePlan();
+
+  useEffect(() => {
+    if (publicKey && role !== "none" && !loading) {
+      track({ event: "admin_session_start", role, wallet_truncated: publicKey.toBase58().slice(0, 8) });
+    }
+  }, [publicKey, role, loading]);
 
   const handleDisconnect = async () => { await disconnect(); setShowDisconnect(false); };
 
@@ -210,6 +217,26 @@ export function AdminShell({ children, current }: { children: React.ReactNode; c
             <span style={{ fontFamily:"DM Mono,monospace", fontSize:"11px", color:"var(--text-4)", letterSpacing:"0.06em" }}>Solana devnet</span>
           </div>
         </div>
+        {/* Trial banner */}
+        {mounted && plan.tier === "trial" && plan.trialDaysRemaining !== undefined && (
+          <div style={{ padding: "12px 36px", display: "flex", alignItems: "center", justifyContent: "space-between", background: plan.trialDaysRemaining <= 10 ? "rgba(202,138,4,0.08)" : "var(--bg-2)", borderBottom: `1px solid ${plan.trialDaysRemaining <= 10 ? "rgba(202,138,4,0.3)" : "var(--border)"}` }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: plan.trialDaysRemaining <= 10 ? "#b45309" : "var(--accent)", flexShrink: 0 }} />
+              <span style={{ fontFamily: "DM Mono,monospace", fontSize: "10px", color: plan.trialDaysRemaining <= 10 ? "#b45309" : "var(--text-3)", letterSpacing: "0.06em" }}>
+                30-day trial · {plan.trialDaysRemaining} days remaining · All features unlocked
+              </span>
+            </div>
+            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+              <a href="mailto:contact@leyfis.io?subject=Upgrade to Institutional" style={{ fontFamily: "DM Mono,monospace", fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--accent)", textDecoration: "none", fontWeight: 700 }}>
+                Upgrade to Institutional — $8,000/mo →
+              </a>
+              <span style={{ fontFamily: "DM Mono,monospace", fontSize: "9px", color: "var(--text-4)" }}>|</span>
+              <a href="mailto:contact@leyfis.io" style={{ fontFamily: "DM Mono,monospace", fontSize: "9px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-4)", textDecoration: "none" }}>
+                Talk to us
+              </a>
+            </div>
+          </div>
+        )}
         <div style={{ padding:"40px" }}>{children}</div>
       </main>
       <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
