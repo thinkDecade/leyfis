@@ -57,6 +57,11 @@ type ClearanceStatus =
   | { state: "cleared"; tier: number; issuer: string; jurisdiction: string; expires: string; attestationId: string }
   | { state: "blocked"; reasonCode: number; reason: string; tier: number; issuer?: string };
 
+type StepResult = { label: string; passed: boolean; detail: string };
+type SimResult =
+  | { state: "idle" | "running" }
+  | { state: "done"; passed: boolean; steps: StepResult[]; tier?: number; jurisdiction?: string; expires?: string }
+
 type Vault = {
   id: string; name: string; institution: string; mandate: string;
   tvl: string; apy: string; minTier: number; jurisdictions: string[];
@@ -136,6 +141,75 @@ async function checkGate(walletAddr: string): Promise<ClearanceStatus> {
 
 function tierLabel(t: number) {
   return t === 3 ? "Institutional" : t === 2 ? "Enhanced" : t === 1 ? "Basic" : "—";
+}
+
+async function simulateGateDetailed(walletAddr: string): Promise<Extract<SimResult, { state: "done" }>> {
+  const connection = new Connection(RPC_ENDPOINT, "confirmed");
+  const steps: StepResult[] = [];
+  try {
+    new PublicKey(walletAddr);
+  } catch {
+    return { state: "done", passed: false, steps: [{ label: "Valid Solana address", passed: false, detail: "Input is not a valid base58 public key." }] };
+  }
+  const walletPubkey = new PublicKey(walletAddr);
+  const [vcPDA] = PublicKey.findProgramAddressSync([Buffer.from(SEEDS.VAULT_CONFIG), VAULT_PROG.toBuffer()], GATE);
+  const vcInfo = await connection.getAccountInfo(vcPDA);
+  if (!vcInfo) return { state: "done", passed: false, steps: [{ label: "VaultConfig loaded", passed: false, detail: "VaultConfig account not found. Gate may not be initialised." }] };
+  const data = vcInfo.data;
+
+  const paused = data.length > 113 && data[113] !== 0;
+  steps.push({ label: "Gate is active (not paused)", passed: !paused, detail: paused ? "Gate is currently paused by the vault operator. All access is suspended." : "Gate is accepting credential checks." });
+  if (paused) return { state: "done", passed: false, steps };
+
+  const minTier    = data[72];
+  const issuerCount = data.readUInt32LE(73);
+  const issuers: PublicKey[] = [];
+  for (let i = 0; i < issuerCount; i++) {
+    const off = 77 + i * 32;
+    if (off + 32 <= data.length) issuers.push(new PublicKey(data.slice(off, off + 32)));
+  }
+  steps.push({ label: "Trusted issuer(s) configured", passed: issuers.length > 0, detail: issuers.length > 0 ? `${issuers.length} trusted issuer(s) on this vault.` : "No issuers configured — no attestation can be accepted." });
+  if (issuers.length === 0) return { state: "done", passed: false, steps };
+
+  let foundAtt: Buffer | null = null;
+  let foundIssuer = "";
+  for (const issuer of issuers) {
+    const [attPDA] = PublicKey.findProgramAddressSync([Buffer.from(SEEDS.ATTESTATION), walletPubkey.toBuffer(), issuer.toBuffer()], GATE);
+    const info = await connection.getAccountInfo(attPDA);
+    if (info && info.data.length >= 125) { foundAtt = Buffer.from(info.data); foundIssuer = shortAddr(issuer.toBase58(), 8); break; }
+  }
+  steps.push({ label: "Attestation exists on-chain", passed: !!foundAtt, detail: foundAtt ? `Valid attestation account found (issuer: ${foundIssuer}).` : "No attestation found for this wallet from any trusted issuer." });
+  if (!foundAtt) return { state: "done", passed: false, steps };
+
+  const revoked = foundAtt[124] !== 0;
+  steps.push({ label: "Credential not revoked", passed: !revoked, detail: revoked ? "This attestation has been revoked by the issuing institution." : "Credential is active and has not been revoked." });
+  if (revoked) return { state: "done", passed: false, steps };
+
+  const expiresAt = foundAtt.readBigInt64LE(81);
+  const now = BigInt(Math.floor(Date.now() / 1000));
+  const expired = expiresAt !== 0n && now > expiresAt;
+  const expiresISO = expiresAt > 0 ? new Date(Number(expiresAt) * 1000).toISOString().slice(0, 10) : "Never";
+  steps.push({ label: "Credential not expired", passed: !expired, detail: expired ? `Attestation expired ${expiresISO}. Renewal required.` : `Valid until ${expiresISO}.` });
+  if (expired) return { state: "done", passed: false, steps };
+
+  const tier = foundAtt[72];
+  steps.push({ label: `Tier meets minimum (${tier} ≥ ${minTier})`, passed: tier >= minTier, detail: tier >= minTier ? `Credential is Tier ${tier} (${tierLabel(tier)}) — vault requires Tier ${minTier}.` : `Credential is Tier ${tier} — vault requires Tier ${minTier} (${tierLabel(minTier)}). Enhanced review needed.` });
+  if (tier < minTier) return { state: "done", passed: false, steps };
+
+  const jur = String.fromCharCode(foundAtt[121], foundAtt[122], foundAtt[123]);
+  const jurOff = 77 + issuerCount * 32;
+  const jurCount = data.readUInt32LE(jurOff);
+  const allowedJurs: string[] = [];
+  for (let i = 0; i < jurCount; i++) {
+    const off = jurOff + 4 + i * 3;
+    if (off + 3 <= data.length) allowedJurs.push(String.fromCharCode(data[off], data[off+1], data[off+2]));
+  }
+  const jurOk = allowedJurs.length === 0 || allowedJurs.includes(jur);
+  steps.push({ label: `Jurisdiction permitted (${jur})`, passed: jurOk, detail: jurOk ? (allowedJurs.length === 0 ? "All jurisdictions permitted on this vault." : `${jur} is on the allowed list: ${allowedJurs.join(", ")}.`) : `${jur} is not in allowed jurisdictions: ${allowedJurs.join(", ")}.` });
+  if (!jurOk) return { state: "done", passed: false, steps };
+
+  steps.push({ label: "Gate check complete", passed: true, detail: "All compliance requirements satisfied. This wallet would be granted vault access." });
+  return { state: "done", passed: true, steps, tier, jurisdiction: jur, expires: expiresISO };
 }
 
 // ─── SVG: Gate Illustration ───────────────────────────────────────────────────
@@ -296,7 +370,9 @@ export default function Home() {
   const { publicKey } = useWallet();
   const [mounted, setMounted] = useState(false);
   const [status, setStatus] = useState<ClearanceStatus>({ state: "idle" });
-  const [dark, setDark] = useState(true); // default: dark
+  const [dark, setDark] = useState(true);
+  const [simAddr, setSimAddr] = useState("");
+  const [simResult, setSimResult] = useState<SimResult>({ state: "idle" });
 
   useEffect(() => {
     setMounted(true);
@@ -325,6 +401,21 @@ export default function Home() {
     if (!publicKey || !mounted) { setStatus({ state: "idle" }); return; }
     runCheck(publicKey.toBase58());
   }, [publicKey, mounted, runCheck]);
+
+  useEffect(() => {
+    if (publicKey && mounted && !simAddr) setSimAddr(publicKey.toBase58());
+  }, [publicKey, mounted, simAddr]);
+
+  const runSim = useCallback(async () => {
+    if (!simAddr.trim()) return;
+    setSimResult({ state: "running" });
+    try {
+      const result = await simulateGateDetailed(simAddr.trim());
+      setSimResult(result);
+    } catch {
+      setSimResult({ state: "done", passed: false, steps: [{ label: "Simulation error", passed: false, detail: "Unable to connect to Solana RPC. Check network." }] });
+    }
+  }, [simAddr]);
 
   if (!mounted) return null;
 
@@ -405,6 +496,66 @@ export default function Home() {
             <WalletMultiButton/>
           </div>
         </header>
+
+        {/* ── PRE-FLIGHT SIMULATOR ─────────────────────────────────────────── */}
+        <div style={{ paddingTop: "60px", borderBottom: `1px solid ${c.border}`, background: c.bg1 }}>
+          <div style={{ padding: "20px 48px", display: "flex", gap: "12px", alignItems: "flex-start" }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: "8px", fontFamily: "var(--f-mono)", letterSpacing: "0.14em", textTransform: "uppercase", color: c.text4, marginBottom: "8px" }}>Pre-flight simulator — no wallet connection required</div>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <input
+                  value={simAddr}
+                  onChange={e => { setSimAddr(e.target.value); setSimResult({ state: "idle" }); }}
+                  onKeyDown={e => e.key === "Enter" && runSim()}
+                  placeholder="Enter any Solana wallet address to simulate gate access..."
+                  style={{ flex: 1, fontFamily: "var(--f-mono)", fontSize: "11px", background: c.bg2, border: `1px solid ${c.border2}`, color: c.text1, padding: "10px 14px", outline: "none" }}
+                />
+                <button
+                  onClick={runSim}
+                  disabled={simResult.state === "running" || !simAddr.trim()}
+                  style={{ fontFamily: "var(--f-mono)", fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", background: !simAddr.trim() ? "transparent" : c.accent, color: !simAddr.trim() ? c.text4 : "#fff", border: `1px solid ${!simAddr.trim() ? c.border : c.accent}`, padding: "10px 24px", cursor: !simAddr.trim() || simResult.state === "running" ? "not-allowed" : "pointer", whiteSpace: "nowrap", fontWeight: 500 }}>
+                  {simResult.state === "running" ? "Checking..." : "Simulate →"}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Simulation result */}
+          {simResult.state === "done" && (
+            <div style={{ padding: "0 48px 20px" }}>
+              <div style={{ border: `1px solid ${simResult.passed ? c.approvedBorder : c.dangerBorder}`, background: simResult.passed ? c.approvedBg : c.dangerBg }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px", borderBottom: `1px solid ${simResult.passed ? c.approvedBorder : c.dangerBorder}` }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <span style={{ fontSize: "11px", fontFamily: "var(--f-mono)", fontWeight: 700, color: simResult.passed ? c.approved : c.danger, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                      {simResult.passed ? "ACCESS GRANTED" : "ACCESS DENIED"}
+                    </span>
+                    {simResult.passed && simResult.tier !== undefined && (
+                      <span style={{ fontSize: "10px", fontFamily: "var(--f-mono)", color: c.text3 }}>
+                        Tier {simResult.tier} · {simResult.jurisdiction} · Expires {simResult.expires}
+                      </span>
+                    )}
+                  </div>
+                  <span style={{ fontSize: "9px", fontFamily: "var(--f-mono)", color: c.text4 }}>{simResult.steps.length} checks · read-only · no transaction</span>
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0", borderTop: "none" }}>
+                  {simResult.steps.map((step, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 20px", borderRight: i < simResult.steps.length - 1 ? `1px solid ${simResult.passed ? c.approvedBorder : c.dangerBorder}` : "none", minWidth: "0", flex: "1 1 auto" }} title={step.detail}>
+                      <span style={{ fontSize: "11px", color: step.passed ? c.approved : c.danger, flexShrink: 0 }}>{step.passed ? "✓" : "✕"}</span>
+                      <span style={{ fontSize: "9px", fontFamily: "var(--f-mono)", color: step.passed ? c.text2 : c.danger, letterSpacing: "0.04em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{step.label}</span>
+                    </div>
+                  ))}
+                </div>
+                {!simResult.passed && simResult.steps.length > 0 && (
+                  <div style={{ padding: "10px 20px", borderTop: `1px solid ${c.dangerBorder}` }}>
+                    <span style={{ fontSize: "10px", fontFamily: "var(--f-mono)", color: c.text3 }}>
+                      {simResult.steps.find(s => !s.passed)?.detail}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* ── NOT CONNECTED ──────────────────────────────────────────────────── */}
         {!publicKey && (
@@ -514,6 +665,25 @@ export default function Home() {
               {[`Tier ${status.tier} — ${tierLabel(status.tier)}`, status.issuer, status.jurisdiction, `Expires ${status.expires}`, status.attestationId].map((v, i) => (
                 <div key={i} style={{ padding: "0 20px", borderRight: i < 4 ? `1px solid ${c.border}` : "none" }}>
                   <span style={{ fontSize: "10px", fontFamily: "var(--f-mono)", color: c.text3, letterSpacing: "0.04em" }}>{v}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Why it passed — step breakdown */}
+            <div style={{ padding: "16px 48px", background: c.bg1, borderBottom: `1px solid ${c.border}`, display: "flex", gap: "0", overflowX: "auto" }}>
+              {[
+                [`Tier ${status.tier} ≥ min ${status.tier}`, "Clearance level", true],
+                [status.jurisdiction + " permitted", "Jurisdiction", true],
+                ["Not revoked", "Credential status", true],
+                [`Expires ${status.expires}`, "Validity", true],
+                [shortAddr(status.issuer, 6), "Trusted issuer", true],
+              ].map(([value, label, passed], i) => (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 20px", borderRight: i < 4 ? `1px solid ${c.border}` : "none", flexShrink: 0 }}>
+                  <span style={{ fontSize: "11px", color: c.approved }}>✓</span>
+                  <div>
+                    <div style={{ fontSize: "9px", fontFamily: "var(--f-mono)", color: c.text4, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "2px" }}>{label as string}</div>
+                    <div style={{ fontSize: "10px", fontFamily: "var(--f-mono)", color: c.approved }}>{value as string}</div>
+                  </div>
                 </div>
               ))}
             </div>
