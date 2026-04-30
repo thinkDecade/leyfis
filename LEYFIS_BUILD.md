@@ -1,9 +1,9 @@
 # LEYFIS — Living Build Document
-**Last updated:** 2026-04-30  
+**Last updated:** 2026-04-30 Session 2  
 **Repo:** https://github.com/thinkDecade/leyfis (private)  
 **Live:** https://leyfis-app.netlify.app · https://leyfis-admin.netlify.app  
 **Deadline:** Colosseum Frontier Hackathon — May 11, 2026  
-**Active branch:** `phase/1-foundation` → merge to `main` when clean
+**Active branch:** `main` (clean — both priorities complete and merged)
 
 > This document is the single source of truth for build state, feature progress, and session context.  
 > Read this at the start of every session before touching any file.  
@@ -101,9 +101,14 @@ leyfis-protocol/
 │   ├── apps/app/src/app/
 │   │   ├── page.tsx                         ← public landing page
 │   │   └── portal/page.tsx                  ← two-wallet demo (preflight partial)
-│   └── packages/shared/src/
-│       ├── index.ts                         ← constants, types, helpers
-│       └── txBuilders.ts                    ← ✅ NEW — manual instruction builders
+│   ├── packages/shared/src/
+│   │   ├── index.ts                         ← constants, types, helpers
+│   │   └── txBuilders.ts                    ← ✅ manual instruction builders
+│   └── packages/leyfis-mcp/                 ← ✅ NEW — MCP server package
+│       ├── src/server.ts                    ← 5 MCP tools, stdio transport
+│       ├── src/decoder.ts                   ← Anchor account data decoders
+│       ├── package.json
+│       └── tsconfig.json
 └── Dockerfile.dev
 ```
 
@@ -138,6 +143,7 @@ leyfis-protocol/
 - Audit log explorer — reads AuditEntry PDAs
 - Real-time feed — WebSocket subscription to gate program logs
 - FATF CSV export — generates compliant CSV from AuditEntry data
+- **AI Compliance Report Generator** — Claude streams FATF R.16 report from audit log ✅ NEW
 - Super admin overview
 
 **Public App**
@@ -281,17 +287,49 @@ These are not in the spec but strengthen the submission:
 
 | Days | Feature | Branch | Status |
 |------|---------|--------|--------|
-| 1–3 | MCP Server — 5 tools, deploy | `feature/mcp-server` | ⬜ Not started |
-| 3–5 | AI Compliance Report Generator | `feature/ai-reports` | ⬜ Not started |
-| 5–7 | Regulatory Intelligence Agent | `feature/regulatory-intel` | ⬜ Not started |
-| 7–8 | Pre-flight Simulator | `feature/preflight` | ⬜ Not started |
-| 8–9 | Natural Language Vault Config | `feature/nl-config` | ⬜ Not started |
-| 9–10 | Compliance Time Machine | `feature/timemachine` | ⬜ Not started |
-| 10–11 | Submission prep | `main` | ⬜ Not started |
+| 1–2 | MCP Server — 5 tools, stdio | `feature/mcp-server` | ✅ Complete — merged to main |
+| 2 | AI Compliance Report Generator | `feature/ai-compliance-report` | ✅ Complete — merged to main |
+| 3–5 | Regulatory Intelligence Agent | `feature/regulatory-intel` | ⬜ Next |
+| 5–7 | Pre-flight Simulator | `feature/preflight` | ⬜ Not started |
+| 7–8 | Natural Language Vault Config | `feature/nl-config` | ⬜ Not started |
+| 8–9 | Compliance Time Machine | `feature/timemachine` | ⬜ Not started |
+| 9–11 | Submission prep | `main` | ⬜ Not started |
 
 ---
 
 ## Session Log
+
+### 2026-04-30 — Session 2 (Claude Code)
+**What was done:**
+- Committed `LEYFIS_BUILD.md` to `phase/1-foundation`, merged to `main`, pushed
+- **Built Priority 1: Leyfis MCP Server** (`feature/mcp-server`)
+  - New package `app/packages/leyfis-mcp/` with `@modelcontextprotocol/sdk`
+  - 5 tools: `leyfis_check_attestation`, `leyfis_get_vault_config`, `leyfis_get_audit_log`, `leyfis_get_issuer_registry`, `leyfis_simulate_gate`
+  - Full on-chain data decoding from raw Anchor account bytes (sha256 discriminators)
+  - MCP protocol verified via JSON-RPC test (tools/list handshake passes)
+  - Registered in `.claude/settings.json` for Claude Code auto-load
+  - Merged to `main`, pushed
+- **Built Priority 2: AI Compliance Report Generator** (`feature/ai-compliance-report`)
+  - New API route `POST /api/compliance-report` — streams Claude Haiku response
+  - `export/page.tsx` updated with "AI Report" button beside CSV export
+  - Streaming output with copy and clear controls
+  - Anthropic SDK installed in admin workspace
+  - Merged to `main`, pushed
+
+**Commits:**
+- `9c4ca19` docs: add LEYFIS_BUILD.md
+- `90fe320` merge: phase/1-foundation → main
+- `28eb432` feat: add Leyfis MCP server — 5 read-only Solana tools
+- `c09d362` merge: feature/mcp-server
+- `08d4338` feat: AI Compliance Report Generator — Priority 2 complete
+- `3105833` merge: feature/ai-compliance-report
+
+**Next session should start with:**
+1. Create `feature/regulatory-intel` branch
+2. Build Priority 3: Regulatory Intelligence Agent + Proposal Queue
+3. Add `ANTHROPIC_API_KEY` to Netlify admin env vars (needed for AI Report + Regulatory Agent)
+
+---
 
 ### 2026-04-30 — Session 1 (Claude Code)
 **What was done:**
@@ -318,9 +356,9 @@ These are not in the spec but strengthen the submission:
 - `ef2bbe3` docs: update CLAUDE.md — confirm program IDs live on devnet, fix hackathon metadata
 
 **Next session should start with:**
-1. Merge `phase/1-foundation` → `main` (create PR on GitHub)
-2. Create `feature/mcp-server` branch
-3. Build the Leyfis MCP Server (Priority 1)
+1. Create `feature/regulatory-intel` branch
+2. Build Priority 3: Regulatory Intelligence Agent + Proposal Queue
+3. Add `ANTHROPIC_API_KEY` to Netlify admin env vars (needed for AI Report + Regulatory Agent)
 
 ---
 
@@ -366,8 +404,7 @@ These do not change. Read before touching any file.
   Action: check leyfis-admin.netlify.app reflects vault/page.tsx and issue/page.tsx fixes
   Should be automatic from main branch push.
 
-2026-04-30 — phase/1-foundation not yet merged to main
-  Action: create PR on GitHub, merge, then start feature/mcp-server branch.
+2026-04-30 — phase/1-foundation merged, mcp-server and ai-compliance-report both on main ✅
 
 2026-04-30 — issuer wallet balance low after funding transfers (0.97 SOL)
   Monitor: if issuer drops below 0.5 SOL, airdrop or transfer from wallet-a
