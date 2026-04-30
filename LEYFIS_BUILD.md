@@ -1,9 +1,9 @@
 # LEYFIS — Living Build Document
-**Last updated:** 2026-04-30 Session 2  
+**Last updated:** 2026-04-30 Session 3  
 **Repo:** https://github.com/thinkDecade/leyfis (private)  
 **Live:** https://leyfis-app.netlify.app · https://leyfis-admin.netlify.app  
 **Deadline:** Colosseum Frontier Hackathon — May 11, 2026  
-**Active branch:** `main` (clean — both priorities complete and merged)
+**Active branch:** `main` (clean — all 6 AI priorities complete and merged)
 
 > This document is the single source of truth for build state, feature progress, and session context.  
 > Read this at the start of every session before touching any file.  
@@ -96,8 +96,8 @@ leyfis-protocol/
 │   │   ├── feed/page.tsx                    ← real-time gate feed
 │   │   ├── export/page.tsx                  ← FATF CSV export
 │   │   ├── superadmin/page.tsx              ← super admin overview
-│   │   ├── regulatory/page.tsx              ← ❌ NOT YET BUILT
-│   │   └── timemachine/page.tsx             ← ❌ NOT YET BUILT
+│   │   ├── regulatory/page.tsx              ← ✅ Regulatory Intelligence Agent
+│   │   └── timemachine/page.tsx             ← ✅ Compliance Time Machine
 │   ├── apps/app/src/app/
 │   │   ├── page.tsx                         ← public landing page
 │   │   └── portal/page.tsx                  ← two-wallet demo (preflight partial)
@@ -283,21 +283,74 @@ These are not in the spec but strengthen the submission:
 
 ---
 
+## Must-Dos Before Submission
+
+These are blocking or near-blocking. Do not record demo videos until all are checked.
+
+- [ ] **Add `ANTHROPIC_API_KEY` to Netlify admin app environment variables** — AI Report, Regulatory Scan, and NL Config are silently broken in production without it
+- [ ] **Run `anchor test` green** — `docker exec leyfis-dev bash -c "cd /workspace && anchor test"` — must pass all 8 cases before submission
+- [ ] **Verify Netlify auto-deploys are live** — check leyfis-admin.netlify.app and leyfis-app.netlify.app reflect latest main
+- [ ] **Demo dry-run: 4-role story end-to-end** — walk the full 5-minute script in CLAUDE.md with real wallets before recording
+- [ ] **Wallet B attestation expiry check** — expires 2027-03-25, fine, but confirm it still reads correctly on devnet
+- [ ] **Submit to Colosseum project page** — deadline May 11, 2026 (11 days)
+
+---
+
 ## Build Sprint — 11 Days to May 11
 
-| Days | Feature | Branch | Status |
-|------|---------|--------|--------|
-| 1–2 | MCP Server — 5 tools, stdio | `feature/mcp-server` | ✅ Complete — merged to main |
-| 2 | AI Compliance Report Generator | `feature/ai-compliance-report` | ✅ Complete — merged to main |
-| 3–5 | Regulatory Intelligence Agent | `feature/regulatory-intel` | ⬜ Next |
-| 5–7 | Pre-flight Simulator | `feature/preflight` | ⬜ Not started |
-| 7–8 | Natural Language Vault Config | `feature/nl-config` | ⬜ Not started |
-| 8–9 | Compliance Time Machine | `feature/timemachine` | ⬜ Not started |
-| 9–11 | Submission prep | `main` | ⬜ Not started |
+| Feature | Branch | Status |
+|---------|--------|--------|
+| MCP Server — 5 tools, stdio | `feature/mcp-server` | ✅ Complete |
+| AI Compliance Report Generator | `feature/ai-compliance-report` | ✅ Complete |
+| Regulatory Intelligence Agent + Proposal Queue | `feature/regulatory-intel` | ✅ Complete |
+| Pre-flight Compliance Simulator | `feature/preflight-simulator` | ✅ Complete |
+| Natural Language Vault Configuration | `feature/nl-vault-config` | ✅ Complete |
+| Compliance Time Machine | `feature/compliance-time-machine` | ✅ Complete |
+| Submission prep | `main` | ⬜ Not started |
 
 ---
 
 ## Session Log
+
+### 2026-04-30 — Session 3 (Claude Code)
+**What was done:**
+- **Built Priority 3: Regulatory Intelligence Agent** (`feature/regulatory-intel`)
+  - New API route `POST /api/regulatory-scan` — Claude returns 3 FATF-relevant proposals
+  - New `regulatory/page.tsx` — proposal queue with Apply (on-chain) / Dismiss / Restore
+  - Seed FATF CHE Tier 3 proposal on first render, localStorage persistence
+  - Nav entry added to AdminShell (Globe icon, super_admin + vault_operator)
+  - Merged to `main`, pushed
+- **Built Priority 4: Pre-flight Compliance Simulator** (`feature/preflight-simulator`)
+  - `portal/page.tsx` updated — manual wallet address input + 8-step simulation
+  - Full client-side gate validation (paused → attestation → revoked → expired → issuer → tier → jurisdiction)
+  - Step-by-step breakdown cards (green pass / amber skip / red fail)
+  - "Why it passed" breakdown shown on cleared state
+  - Merged to `main`, pushed
+- **Built Priority 5: Natural Language Vault Configuration** (`feature/nl-vault-config`)
+  - New API route `POST /api/nl-config` — Claude Haiku parses plain English → structured delta
+  - `NLConfigPanel` component in `vault/page.tsx` — input → parse → preview diff → apply on-chain
+  - Confidence indicator (high/medium/low), warning display, jurisdiction advisory note
+  - Merged to `main`, pushed
+- **Built Priority 6: Compliance Time Machine** (`feature/compliance-time-machine`)
+  - New `timemachine/page.tsx` — load all audit entries once, slice client-side by timestamp
+  - Approval rate, denial breakdown, gate activity list, tier distribution — all historical
+  - Presets for 1h/24h/7d/30d, FATF provenance note
+  - Nav entry added (History icon, super_admin + vault_operator + compliance_auditor)
+  - Merged to `main`, pushed
+
+**Commits:**
+- `f3b2f5a` feat: P3+P4 regulatory intel agent + pre-flight compliance simulator
+- `1aecd56` feat(admin/vault): P5 natural language vault configuration
+- `e9493b8` feat(admin): P6 compliance time machine
+
+**What's left:**
+- Add `ANTHROPIC_API_KEY` to Netlify admin env vars
+- Run `anchor test` green
+- Verify Netlify deploys
+- Demo dry-run (4-role story)
+- Submit to Colosseum
+
+---
 
 ### 2026-04-30 — Session 2 (Claude Code)
 **What was done:**
@@ -391,23 +444,21 @@ These do not change. Read before touching any file.
 ## Open Issues
 
 ```
-2026-04-30 — anchor test not run yet this session
+2026-04-30 — anchor test not run yet
   Action: docker exec leyfis-dev bash -c "cd /workspace && anchor test"
   Must be green before recording demo videos.
 
-2026-04-30 — Anthropic API key not yet added to admin app
-  Needed for: AI Compliance Report Generator, Regulatory Intel, NL Config
-  Action: add ANTHROPIC_API_KEY to Netlify environment variables for admin app
-  Never commit to repo.
+2026-04-30 — ANTHROPIC_API_KEY not yet added to Netlify admin app
+  Needed for: AI Compliance Report Generator, Regulatory Intel scan, NL Config
+  Action: Netlify → leyfis-admin → Site settings → Environment variables → Add ANTHROPIC_API_KEY
+  NEVER commit to repo. Listed in Must-Dos above.
 
-2026-04-30 — Netlify auto-deploy not verified after today's changes
-  Action: check leyfis-admin.netlify.app reflects vault/page.tsx and issue/page.tsx fixes
+2026-04-30 — Netlify auto-deploy not verified after Session 3 changes
+  Action: check leyfis-admin.netlify.app is live with all 9 nav items including Time Machine
   Should be automatic from main branch push.
 
-2026-04-30 — phase/1-foundation merged, mcp-server and ai-compliance-report both on main ✅
-
-2026-04-30 — issuer wallet balance low after funding transfers (0.97 SOL)
-  Monitor: if issuer drops below 0.5 SOL, airdrop or transfer from wallet-a
+2026-04-30 — issuer wallet balance low (0.97 SOL)
+  Monitor: if issuer drops below 0.5 SOL, airdrop
   Command: docker exec leyfis-dev bash -c "solana airdrop 2 EDBYT2E8HGEKhTRmHHdrAYUJChi4RUQdbzAmuqB6QALU --url devnet"
 ```
 
