@@ -409,11 +409,18 @@ ROLE 5 — Compliance Auditor — 30 seconds
 
 ```
 [x] Phase 1 — Foundation (gate live on devnet, txBuilders wired, mocks replaced)
-[ ] Phase 2 — Admin panel + app frontend (full four-role flow end-to-end)
-[ ] Phase 3 — AI compliance layer (Anthropic API, reports, regulatory intel)
+[x] Phase 2 — Admin panel + app frontend (full four-role flow end-to-end)
+[x] Phase 3 — AI compliance layer (Anthropic API, reports, regulatory intel)
+[x] Phase 3b — Business model UI (trial banner, pricing page, analytics, protocol fee)
 [ ] Phase 4 — MCP server + natural language config
 [ ] Phase 5 — Submission prep (deadline: May 11, 2026)
 ```
+
+**Protocol Fee (live on devnet 2026-04-30):**
+- TreasuryConfig PDA: `42N7MMixha7amZmjrhxQTTz59aj92nYKVMcMoiYFACfv`
+- Treasury PDA: derived from seed `["treasury"]` off Gate program
+- Fee: 5000 lamports per approved gate() call
+- Admin UI: Super Admin page → Protocol Treasury panel (update fee, withdraw)
 
 **Update the [ ] to [x] as phases complete.**
 
