@@ -33,6 +33,12 @@ function issuerRegistryPda(gateId: PublicKey) {
 function vaultStatePda(vaultId: PublicKey) {
   return PublicKey.findProgramAddressSync([Buffer.from("vault_state")], vaultId);
 }
+function treasuryPda(gateId: PublicKey) {
+  return PublicKey.findProgramAddressSync([Buffer.from("treasury")], gateId);
+}
+function treasuryConfigPda(gateId: PublicKey) {
+  return PublicKey.findProgramAddressSync([Buffer.from("treasury_config")], gateId);
+}
 
 // Manually encode gate() instruction to bypass Anchor borsh u64 bug
 // gate(vault_instruction_data: bytes, audit_nonce: u64)
@@ -91,9 +97,11 @@ describe("leyfis-gate", () => {
   const untrustedWallet = Keypair.generate();
   const walletC         = Keypair.generate();
 
-  let vaultConfigKey: PublicKey;
-  let vaultStateKey:  PublicKey;
-  let registryKey:    PublicKey;
+  let vaultConfigKey:    PublicKey;
+  let vaultStateKey:     PublicKey;
+  let registryKey:       PublicKey;
+  let treasuryKey:       PublicKey;
+  let treasuryConfigKey: PublicKey;
 
   async function issueAtt(wallet: Keypair, issuerKp: Keypair, tier: number, expiresAt: number): Promise<PublicKey> {
     const [attKey] = attestationPda(wallet.publicKey, issuerKp.publicKey, gateProgram.programId);
@@ -120,6 +128,8 @@ describe("leyfis-gate", () => {
         { pubkey: auditEntryKey,             isSigner: false, isWritable: true  },
         { pubkey: callerWallet.publicKey,    isSigner: true,  isWritable: true  },
         { pubkey: vaultProgram.programId,    isSigner: false, isWritable: false },
+        { pubkey: treasuryKey,               isSigner: false, isWritable: true  },
+        { pubkey: treasuryConfigKey,         isSigner: false, isWritable: true  },
         { pubkey: SystemProgram.programId,   isSigner: false, isWritable: false },
         // remaining accounts
         { pubkey: vaultStateKey,             isSigner: false, isWritable: true  },
@@ -143,9 +153,11 @@ describe("leyfis-gate", () => {
       fundFromDeployer(conn, operator, walletC.publicKey,         0.1),
     ]);
 
-    [vaultConfigKey] = vaultConfigPda(vaultProgram.programId, gateProgram.programId);
-    [vaultStateKey]  = vaultStatePda(vaultProgram.programId);
-    [registryKey]    = issuerRegistryPda(gateProgram.programId);
+    [vaultConfigKey]    = vaultConfigPda(vaultProgram.programId, gateProgram.programId);
+    [vaultStateKey]     = vaultStatePda(vaultProgram.programId);
+    [registryKey]       = issuerRegistryPda(gateProgram.programId);
+    [treasuryKey]       = treasuryPda(gateProgram.programId);
+    [treasuryConfigKey] = treasuryConfigPda(gateProgram.programId);
 
     // Initialize test vault state if not exists
     const vsInfo = await conn.getAccountInfo(vaultStateKey);
@@ -177,6 +189,18 @@ describe("leyfis-gate", () => {
       await gateProgram.methods.initializeIssuerRegistry().accounts({ issuerRegistry: registryKey, authority: operator.publicKey, systemProgram: SystemProgram.programId }).rpc();
       await gateProgram.methods.initializeVaultConfig(3, [issuer.publicKey]).accounts({ vaultConfig: vaultConfigKey, authority: operator.publicKey, vaultProgram: vaultProgram.programId, systemProgram: SystemProgram.programId }).rpc();
       await gateProgram.methods.registerIssuer(issuer.publicKey, vaultProgram.programId).accounts({ issuerRegistry: registryKey, authority: operator.publicKey }).rpc();
+    }
+
+    // Initialize treasury if not exists (fee = 0 for tests — no SOL required from callers)
+    const tcInfo = await conn.getAccountInfo(treasuryConfigKey);
+    if (!tcInfo) {
+      console.log("  Initializing treasury...");
+      await gateProgram.methods.initializeTreasury(new anchor.BN(0))
+        .accounts({ treasuryConfig: treasuryConfigKey, treasury: treasuryKey,
+          authority: operator.publicKey, systemProgram: SystemProgram.programId }).rpc();
+      console.log("  Treasury initialized with fee=0");
+    } else {
+      console.log("  Treasury config exists");
     }
 
     // Ensure walletB has Tier 3 attestation

@@ -1,9 +1,16 @@
 ﻿"use client";
-import { useState, useEffect } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useState, useEffect, useCallback } from "react";
+import { useWallet, useConnection } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
 import { SuperAdminShell } from "@/components/SuperAdminShell";
-import { shortAddr, GATE_PROGRAM_ID, VAULT_PROGRAM_ID } from "@leyfis/shared";
-import { UserPlus, TrendingUp, TrendingDown, Minus, Activity, Users, Shield, Zap } from "lucide-react";
+import {
+  shortAddr, GATE_PROGRAM_ID, VAULT_PROGRAM_ID, RPC_ENDPOINT,
+  findTreasuryConfigPDA, findTreasuryPDA,
+  buildUpdateTreasuryConfigIx, buildWithdrawTreasuryIx, buildInitializeTreasuryIx,
+  sendAdminTx,
+} from "@leyfis/shared";
+import { Connection } from "@solana/web3.js";
+import { UserPlus, TrendingUp, TrendingDown, Minus, Activity, Users, Shield, Zap, Coins, ArrowDownToLine } from "lucide-react";
 
 const m = { fontFamily:"DM Mono,monospace" };
 const f = { fontFamily:"Inter,sans-serif" };
@@ -34,6 +41,136 @@ const TX_META: Record<string,{color:string;label:string}> = {
   issuer_revoked:{color:"var(--danger)",label:"Issuer Revoked"},
 };
 function timeAgo(ts:number){const d=Math.floor(Date.now()/1000-ts);if(d<60)return`${d}s ago`;if(d<3600)return`${Math.floor(d/60)}m ago`;if(d<86400)return`${Math.floor(d/3600)}h ago`;return`${Math.floor(d/86400)}d ago`;}
+
+interface TreasuryState { feeLamports: bigint; totalCollected: bigint; lastUpdated: number; initialized: boolean; }
+
+function useTreasury() {
+  const [data, setData] = useState<TreasuryState | null>(null);
+  const [loading, setLoading] = useState(true);
+  const conn = new Connection(RPC_ENDPOINT, "confirmed");
+  const gatePk = new PublicKey(GATE_PROGRAM_ID);
+  const [cfgKey] = findTreasuryConfigPDA(gatePk);
+
+  const fetch = useCallback(async () => {
+    setLoading(true);
+    try {
+      const info = await conn.getAccountInfo(cfgKey);
+      if (!info || info.data.length < 65) { setData({ feeLamports: 0n, totalCollected: 0n, lastUpdated: 0, initialized: false }); }
+      else {
+        const d = info.data;
+        const feeLamports    = d.readBigUInt64LE(40);
+        const totalCollected = d.readBigUInt64LE(48);
+        const lastUpdated    = Number(d.readBigInt64LE(56));
+        setData({ feeLamports, totalCollected, lastUpdated, initialized: true });
+      }
+    } catch { setData(null); }
+    setLoading(false);
+  }, [cfgKey.toBase58()]);
+
+  useEffect(() => { fetch(); }, [fetch]);
+  return { data, loading, refresh: fetch };
+}
+
+function TreasuryPanel() {
+  const { publicKey, signTransaction } = useWallet();
+  const { connection } = useConnection();
+  const { data, loading, refresh } = useTreasury();
+  const [newFee, setNewFee] = useState("");
+  const [withdrawAmt, setWithdrawAmt] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+  const gatePk = new PublicKey(GATE_PROGRAM_ID);
+  const [treasuryKey] = findTreasuryPDA(gatePk);
+
+  const act = async (fn: () => Promise<string>) => {
+    if (!publicKey || !signTransaction) return;
+    setBusy(true); setMsg(null);
+    try {
+      const sig = await fn();
+      setMsg(`✓ ${sig.slice(0,16)}...`);
+      await refresh();
+    } catch (e: any) { setMsg(`Error: ${e?.message ?? "unknown"}`); }
+    setBusy(false);
+  };
+
+  const sign = signTransaction as ((tx: import("@solana/web3.js").Transaction) => Promise<import("@solana/web3.js").Transaction>) | undefined;
+
+  const handleInitTreasury = () => act(async () => {
+    const ix = buildInitializeTreasuryIx(gatePk, publicKey!, 5000n);
+    return sendAdminTx(connection, ix, publicKey!, sign!);
+  });
+  const handleUpdateFee = () => act(async () => {
+    const ix = buildUpdateTreasuryConfigIx(gatePk, publicKey!, BigInt(newFee) || 0n);
+    return sendAdminTx(connection, ix, publicKey!, sign!);
+  });
+  const handleWithdraw = () => act(async () => {
+    const ix = buildWithdrawTreasuryIx(gatePk, publicKey!, BigInt(withdrawAmt) || 0n);
+    return sendAdminTx(connection, ix, publicKey!, sign!);
+  });
+
+  const inp: any = { ...m, fontSize:"12px", background:"var(--bg-2)", border:"1px solid var(--border)",
+    color:"var(--text-1)", padding:"8px 12px", width:"140px", outline:"none" };
+  const btn: any = (disabled?: boolean) => ({ ...m, fontSize:"9px", letterSpacing:"0.1em", textTransform:"uppercase",
+    background: disabled ? "var(--accent-bg)" : "var(--accent)", color: disabled ? "var(--accent)" : "white",
+    border:"1px solid var(--accent)", padding:"8px 16px", cursor: disabled ? "not-allowed" : "pointer", fontWeight:600 });
+
+  return (
+    <div style={{ marginTop:"20px", border:"1px solid var(--border)", background:"var(--bg-1)", padding:"20px" }}>
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"16px" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:"8px" }}>
+          <Coins size={14} color="var(--accent)" />
+          <span style={{ ...m, fontSize:"9px", color:"var(--text-4)", letterSpacing:"0.1em", textTransform:"uppercase" }}>Protocol Treasury</span>
+        </div>
+        {data?.initialized && (
+          <span style={{ ...m, fontSize:"9px", padding:"3px 10px", background:"var(--accent-bg)", color:"var(--accent)", border:"1px solid var(--accent-border)" }}>LIVE</span>
+        )}
+      </div>
+
+      {loading ? (
+        <div style={{ ...m, fontSize:"11px", color:"var(--text-4)" }}>Loading treasury state...</div>
+      ) : !data?.initialized ? (
+        <div style={{ display:"flex", alignItems:"center", gap:"16px" }}>
+          <div style={{ ...m, fontSize:"12px", color:"var(--text-3)" }}>Treasury not initialized.</div>
+          <button onClick={handleInitTreasury} disabled={busy || !publicKey} style={btn(busy || !publicKey)}>
+            Initialize (5000 lamports fee)
+          </button>
+        </div>
+      ) : (
+        <>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:"2px", marginBottom:"20px" }}>
+            {[
+              { label:"Fee Per Gate Call", value:`${data.feeLamports.toLocaleString()} lamports`, sub:`≈ $${(Number(data.feeLamports) * 0.000000001 * 150).toFixed(4)}` },
+              { label:"Total Collected",   value:`${data.totalCollected.toLocaleString()} lamports`, sub:`≈ $${(Number(data.totalCollected) * 0.000000001 * 150).toFixed(3)}` },
+              { label:"Last Updated",      value:data.lastUpdated ? new Date(data.lastUpdated*1000).toLocaleDateString() : "—", sub:"UTC" },
+            ].map((s,i) => (
+              <div key={i} style={{ padding:"14px 16px", background:"var(--bg-2)", border:"1px solid var(--border)" }}>
+                <div style={{ ...m, fontSize:"9px", color:"var(--text-4)", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:"8px" }}>{s.label}</div>
+                <div style={{ ...m, fontSize:"15px", color:"var(--text-1)", fontWeight:700, marginBottom:"4px" }}>{s.value}</div>
+                <div style={{ ...m, fontSize:"9px", color:"var(--text-3)" }}>{s.sub}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display:"flex", gap:"24px", flexWrap:"wrap" }}>
+            <div style={{ display:"flex", gap:"8px", alignItems:"center" }}>
+              <input value={newFee} onChange={e=>setNewFee(e.target.value)} placeholder="New fee (lamports)" style={inp} type="number" min="0"/>
+              <button onClick={handleUpdateFee} disabled={busy || !publicKey || !newFee} style={btn(busy || !publicKey || !newFee)}>Update Fee</button>
+            </div>
+            <div style={{ display:"flex", gap:"8px", alignItems:"center" }}>
+              <input value={withdrawAmt} onChange={e=>setWithdrawAmt(e.target.value)} placeholder="Amount (lamports)" style={inp} type="number" min="0"/>
+              <button onClick={handleWithdraw} disabled={busy || !publicKey || !withdrawAmt} style={{ ...btn(busy || !publicKey || !withdrawAmt), display:"flex", alignItems:"center", gap:"6px" }}>
+                <ArrowDownToLine size={11}/> Withdraw
+              </button>
+            </div>
+          </div>
+          {msg && <div style={{ ...m, fontSize:"10px", color: msg.startsWith("✓") ? "var(--accent)" : "var(--danger)", marginTop:"12px" }}>{msg}</div>}
+        </>
+      )}
+      <div style={{ ...m, fontSize:"9px", color:"var(--text-4)", marginTop:"12px", paddingTop:"12px", borderTop:"1px solid var(--border)" }}>
+        Treasury PDA: {shortAddr(treasuryKey.toBase58(), 8)} · collected from approved gate() calls only
+      </div>
+    </div>
+  );
+}
 
 function RegisterModal({onClose}:{onClose:()=>void}){
   const [wallet,setWallet]=useState("");const [name,setName]=useState("");const [tier,setTier]=useState(3);const [loading,setLoading]=useState(false);const [done,setDone]=useState(false);
@@ -164,6 +301,7 @@ export default function SuperAdminPage(){
           ))}
         </div>
       </div>
+      <TreasuryPanel />
     </SuperAdminShell>
   );
 }
