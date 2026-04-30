@@ -1,10 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useWallet, useConnection } from "@solana/wallet-adapter-react";
-import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
-import * as anchor from "@coral-xyz/anchor";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey, Connection } from "@solana/web3.js";
 import { AdminShell } from "@/components/AdminShell";
-import { shortAddr, SEEDS, GATE_PROGRAM_ID, VAULT_PROGRAM_ID, RPC_ENDPOINT, addressUrl, txUrl } from "@leyfis/shared";
+import {
+  shortAddr, GATE_PROGRAM_ID, RPC_ENDPOINT, txUrl,
+  buildIssueAttestationIx, findAttestationPDA, sendAdminTx,
+} from "@leyfis/shared";
 
 const m = { fontFamily: "'DM Mono', monospace" };
 const f = { fontFamily: "'Inter', sans-serif" };
@@ -13,9 +15,6 @@ const inp = (err?: boolean): any => ({
   border: `1px solid ${err ? "var(--danger-border)" : "var(--border)"}`,
   color: "var(--text-1)", padding: "10px 14px", width: "100%", outline: "none",
 });
-
-const GATE = new PublicKey(GATE_PROGRAM_ID);
-const VAULT = new PublicKey(VAULT_PROGRAM_ID);
 
 const JURISDICTIONS = ["CHE", "GBR", "SGP", "USA", "DEU", "FRA", "LUX", "ARE", "HKG", "JPN"];
 
@@ -45,100 +44,33 @@ export default function IssuePage() {
   };
 
   const issue = async () => {
-    if (!publicKey || !wallet || !validate(wallet)) return;
-    setLoading(true);
-    setResult({ status: "idle" });
-
+    if (!publicKey || !signTransaction || !wallet || !validate(wallet)) return;
+    setLoading(true); setResult({ status: "idle" });
     try {
-      const { Connection } = await import("@solana/web3.js");
-      const connection = new Connection(RPC_ENDPOINT, "confirmed");
-
-      // Derive attestation PDA
+      const conn = new Connection(RPC_ENDPOINT, "confirmed");
       const walletPubkey = new PublicKey(wallet);
-      const [attPDA] = PublicKey.findProgramAddressSync(
-        [Buffer.from(SEEDS.ATTESTATION), walletPubkey.toBuffer(), publicKey.toBuffer()],
-        GATE
+      const gate = new PublicKey(GATE_PROGRAM_ID);
+      const [attPDA] = findAttestationPDA(walletPubkey, publicKey, gate);
+
+      const kycRefBytes = new Uint8Array(32);
+      if (kycRef) kycRefBytes.set(new TextEncoder().encode(kycRef.slice(0, 32)));
+
+      const jurBytes = new Uint8Array([
+        jurisdiction.charCodeAt(0), jurisdiction.charCodeAt(1), jurisdiction.charCodeAt(2),
+      ]);
+
+      const ix = buildIssueAttestationIx(
+        gate, attPDA, walletPubkey, publicKey,
+        tier, Math.floor(Date.now() / 1000) + days * 86400,
+        kycRefBytes, jurBytes,
       );
 
-      // Derive vault config PDA
-      const [vcPDA] = PublicKey.findProgramAddressSync(
-        [Buffer.from(SEEDS.VAULT_CONFIG), VAULT.toBuffer()],
-        GATE
-      );
-
-      // Load IDL and build instruction
-      const idl = await fetch("/api/idl").then(r => r.json()).catch(() => null);
-
-      if (!idl || !signTransaction) {
-        // Fallback: call the local issue script via a workaround
-        // For demo purposes, simulate success with the known Wallet B attestation
-        await new Promise(r => setTimeout(r, 1500));
-        setResult({
-          sig: "demo-" + Date.now().toString(36),
-          attestationId: shortAddr(attPDA.toBase58(), 12),
-          status: "success"
-        });
-        return;
-      }
-
-      // Real path: build Anchor instruction
-      const provider = new anchor.AnchorProvider(
-        connection,
-        { publicKey, signTransaction, signAllTransactions: async (txs: any[]) => txs } as any,
-        { commitment: "confirmed" }
-      );
-      const program = new anchor.Program(idl, provider);
-
-      // Build kyc_ref bytes
-      const kycRefBytes = Buffer.alloc(32);
-      if (kycRef) {
-        const enc = new TextEncoder().encode(kycRef.slice(0, 32));
-        enc.forEach((b, i) => { kycRefBytes[i] = b; });
-      }
-
-      // Jurisdiction bytes
-      const jurBytes = [
-        jurisdiction.charCodeAt(0),
-        jurisdiction.charCodeAt(1),
-        jurisdiction.charCodeAt(2),
-      ];
-
-      const expiresAt = new anchor.BN(Math.floor(Date.now() / 1000) + days * 86400);
-
-      const tx = await (program.methods as any)
-        .issueAttestation(tier, expiresAt, Array.from(kycRefBytes), jurBytes)
-        .accounts({
-          attestation: attPDA,
-          wallet: walletPubkey,
-          issuer: publicKey,
-          vaultConfig: vcPDA,
-          systemProgram: SystemProgram.programId,
-        })
-        .rpc();
-
-      setResult({
-        sig: tx,
-        attestationId: shortAddr(attPDA.toBase58(), 12),
-        status: "success"
-      });
+      const sig = await sendAdminTx(conn, ix, publicKey, signTransaction);
+      setResult({ sig, attestationId: attPDA.toBase58(), status: "success" });
 
     } catch (e: any) {
-      const msg = e?.message || "Transaction failed";
-      // If instruction not found on IDL, show demo success for presentation
-      if (msg.includes("NOT_IMPLEMENTED") || msg.includes("404") || msg.includes("fetch")) {
-        await new Promise(r => setTimeout(r, 1200));
-        const walletPubkey = new PublicKey(wallet);
-        const [attPDA] = PublicKey.findProgramAddressSync(
-          [Buffer.from(SEEDS.ATTESTATION), walletPubkey.toBuffer(), publicKey!.toBuffer()],
-          GATE
-        );
-        setResult({ sig: "simulated-" + Date.now().toString(36), attestationId: shortAddr(attPDA.toBase58(), 12), status: "success" });
-      } else {
-        setResult({ error: msg.slice(0, 160), status: "error" });
-      }
-    } finally {
-      setLoading(false);
-    }
+      setResult({ error: (e?.message || "Transaction failed").slice(0, 200), status: "error" });
+    } finally { setLoading(false); }
   };
 
   const expiryDate = new Date(Date.now() + days * 86400000).toISOString().slice(0, 10);

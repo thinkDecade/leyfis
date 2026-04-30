@@ -1,0 +1,11 @@
+# Normalize line endings: store as LF, checkout as-is on all platforms
+* text=auto eol=lf
+
+# Binary files — never touch line endings
+*.png binary
+*.ico binary
+*.gif binary
+*.jpg binary
+*.jpeg binary
+*.svg binary
+*.webmanifest binary
