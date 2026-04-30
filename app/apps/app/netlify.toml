@@ -1,6 +1,7 @@
 [build]
-  command   = "cd ../.. && yarn workspace @leyfis/app build"
-  publish   = "out"
+  command   = "yarn workspace @leyfis/app build"
+  publish   = "app/apps/app/out"
+  base      = ""
 
 [build.environment]
   NODE_VERSION = "20"
