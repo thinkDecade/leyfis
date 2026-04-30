@@ -16,9 +16,9 @@ An institutional product that institutions deploy and their users pass through.
 - **app.leyfis.io** — Public demo surface (end users, judges)
 - **admin.leyfis.io** — Role-gated operations surface (operators, issuers, auditors, regulators)
 
-**Hackathon:** StableHacks 2026 · Track: Institutional Permissioned DeFi Vaults
-**Demo Day:** April 8, 2026 · Zurich
-**Build window:** 48 hours from clock start
+**Hackathon:** Colosseum Frontier Hackathon · Submission deadline: May 11, 2026
+**Deployment:** Netlify — leyfis-app.netlify.app · leyfis-admin.netlify.app
+**Build branch:** phase/1-foundation → main
 
 ---
 
@@ -75,24 +75,30 @@ STORAGE
 ## Program IDs
 
 ```
-Gate Program:    [PENDING — update after: anchor deploy --provider.cluster devnet]
-Test Vault:      [PENDING — update after deploy]
+Gate Program:    Cskp4zg7aDHvY4u2M7FyceqqcbvGThgo8WahvQCkQZVP  ← LIVE on devnet ✅
+Test Vault:      88x1hxWW6mMDpQQwuR3sCDgnmbHwHmQBdWYZQhcedNaJ
 Network:         devnet
-RPC Endpoint:    [PENDING — paste Helius/QuickNode endpoint here]
+RPC Endpoint:    https://devnet.helius-rpc.com/?api-key=2414c8d2-3eff-4fda-9c74-b8c0f93d768b
+
+VaultConfig PDA:    B1vJ1Pwo8SGYg5emXoGBgqHQqBEcmBJa83cAfLJjAatj
+IssuerRegistry PDA: F8NXMpzRPpz1C6HpmgMEaBzqeX7aGyRE9w6eKhdBT3zd
 ```
 
-**Update these immediately after every deploy. Do not proceed without recording them.**
+**Verified live on devnet 2026-04-30 via Helius RPC — executable: true, owner: BPFLoaderUpgradeab1e**
 
 ---
 
 ## Wallet Addresses
 
 ```
-Deployer wallet (super admin):    [PENDING]
-Demo Wallet A (no attestation):   [PENDING]
-Demo Wallet B (Tier 3 / AMINA):   [PENDING]
-Admin wallet (vault operator):    [PENDING]
-KYC Issuer wallet:                [PENDING]
+Deployer wallet (super admin):    — read from keys/deployer.json (in .gitignore)
+Demo Wallet A (no attestation):   — read from keys/wallet-a.json
+Demo Wallet B (Tier 3 / AMINA):   — read from keys/wallet-b.json
+Admin wallet (vault operator):    — same as deployer (VaultConfig.authority)
+KYC Issuer wallet:                — read from keys/issuer.json
+
+To fund any wallet: docker exec leyfis-dev bash -c "solana airdrop 2 [address] --url devnet"
+To read pubkey:     docker exec leyfis-dev bash -c "solana-keygen pubkey keys/[name].json"
 ```
 
 ---
@@ -402,11 +408,11 @@ ROLE 5 — Compliance Auditor — 30 seconds
 ## Current Build Stage
 
 ```
-[ ] Phase 1 — Environment setup        (H0–H6)
-[ ] Phase 2 — Gate program             (H6–H18)
-[ ] Phase 3 — Integration layer        (H22–H30)
-[ ] Phase 4 — Frontend + admin panel   (H30–H42)
-[ ] Phase 5 — Polish + submit          (H45–H48)
+[x] Phase 1 — Foundation (gate live on devnet, txBuilders wired, mocks replaced)
+[ ] Phase 2 — Admin panel + app frontend (full four-role flow end-to-end)
+[ ] Phase 3 — AI compliance layer (Anthropic API, reports, regulatory intel)
+[ ] Phase 4 — MCP server + natural language config
+[ ] Phase 5 — Submission prep (deadline: May 11, 2026)
 ```
 
 **Update the [ ] to [x] as phases complete.**
