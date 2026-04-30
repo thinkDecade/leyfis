@@ -1,0 +1,24 @@
+{
+  "name": "@leyfis/mcp",
+  "version": "0.1.0",
+  "description": "Leyfis MCP server — read-only Solana tools for AI agents",
+  "type": "module",
+  "main": "dist/server.js",
+  "bin": {
+    "leyfis-mcp": "dist/server.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "node --loader ts-node/esm src/server.ts",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@solana/web3.js": "^1.98.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.39",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
