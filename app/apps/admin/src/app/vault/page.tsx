@@ -7,7 +7,7 @@ import {
   GATE_PROGRAM_ID, VAULT_PROGRAM_ID, RPC_ENDPOINT,
   SEEDS, shortAddr, addressUrl, REASON_CODES,
   buildPauseGateIx, buildUnpauseGateIx, buildUpdateVaultConfigIx,
-  findVaultConfigPDA, sendAdminTx,
+  findVaultConfigPDA, sendAdminTx, track,
 } from "@leyfis/shared";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -413,7 +413,7 @@ export default function VaultPage() {
       const conn = new Connection(RPC_ENDPOINT, "confirmed");
       const [vcPDA] = findVaultConfigPDA(new PublicKey(VAULT_PROGRAM_ID), new PublicKey(GATE_PROGRAM_ID));
       const sig = await sendAdminTx(conn, buildPauseGateIx(new PublicKey(GATE_PROGRAM_ID), vcPDA, publicKey), publicKey, signTransaction);
-      console.log("Paused:", sig); await refresh();
+      console.log("Paused:", sig); track({ event: "gate_paused" }); await refresh();
     } catch (e: any) { alert("Pause failed: " + (e?.message || "unknown")); }
     finally { setProcessing(false); }
   };
@@ -425,7 +425,7 @@ export default function VaultPage() {
       const conn = new Connection(RPC_ENDPOINT, "confirmed");
       const [vcPDA] = findVaultConfigPDA(new PublicKey(VAULT_PROGRAM_ID), new PublicKey(GATE_PROGRAM_ID));
       const sig = await sendAdminTx(conn, buildUnpauseGateIx(new PublicKey(GATE_PROGRAM_ID), vcPDA, publicKey), publicKey, signTransaction);
-      console.log("Unpaused:", sig); await refresh();
+      console.log("Unpaused:", sig); track({ event: "gate_unpaused" }); await refresh();
     } catch (e: any) { alert("Unpause failed: " + (e?.message || "unknown")); }
     finally { setProcessing(false); }
   };
@@ -437,7 +437,7 @@ export default function VaultPage() {
       const conn = new Connection(RPC_ENDPOINT, "confirmed");
       const [vcPDA] = findVaultConfigPDA(new PublicKey(VAULT_PROGRAM_ID), new PublicKey(GATE_PROGRAM_ID));
       const sig = await sendAdminTx(conn, buildUpdateVaultConfigIx(new PublicKey(GATE_PROGRAM_ID), vcPDA, publicKey, pendingTier, null), publicKey, signTransaction);
-      console.log("Updated:", sig); await refresh();
+      console.log("Updated:", sig); track({ event: "vault_config_updated", field: "min_tier" }); await refresh();
     } catch (e: any) { alert("Update failed: " + (e?.message || "unknown")); }
     finally { setSavingTier(false); }
   };

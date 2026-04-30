@@ -5,7 +5,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import { AdminShell } from "@/components/AdminShell";
 import {
   GATE_PROGRAM_ID, VAULT_PROGRAM_ID, RPC_ENDPOINT, SEEDS, shortAddr,
-  buildUpdateVaultConfigIx, findVaultConfigPDA, sendAdminTx,
+  buildUpdateVaultConfigIx, findVaultConfigPDA, sendAdminTx, track,
 } from "@leyfis/shared";
 
 const m = { fontFamily: "'DM Mono', monospace" };
@@ -225,6 +225,7 @@ export default function RegulatoryPage() {
       const sig = await sendAdminTx(conn, ix, publicKey, signTransaction);
 
       updateProposal(proposal.id, { status: "applied" });
+      track({ event: "regulatory_proposal_applied", proposal_id: proposal.id, tx_signature: sig });
       setApplyResult({ id: proposal.id, sig });
       if (newTier !== null) setVaultConfig(prev => prev ? { ...prev, minTier: newTier! } : prev);
     } catch (e: any) {
@@ -234,6 +235,7 @@ export default function RegulatoryPage() {
 
   const handleDismiss = (id: string) => {
     updateProposal(id, { status: "dismissed", dismissNote: dismissNote || undefined });
+    track({ event: "regulatory_proposal_dismissed", proposal_id: id });
     setDismissTarget(null); setDismissNote("");
   };
 
