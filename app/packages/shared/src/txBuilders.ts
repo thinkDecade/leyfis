@@ -13,6 +13,9 @@ export const DISC = {
   revoke_issuer:              Buffer.from([ 17, 145,  62, 240,  50, 135, 145, 181]),
   initialize_vault_config:    Buffer.from([199,  95,  61, 130, 239, 178,  88, 193]),
   initialize_issuer_registry: Buffer.from([157, 206,  75,  32, 236, 128, 138, 167]),
+  initialize_treasury:        Buffer.from([124, 186, 211, 195,  85, 165, 129, 166]),
+  update_treasury_config:     Buffer.from([129, 100, 213,  18,  68, 118, 249, 154]),
+  withdraw_treasury:          Buffer.from([ 40,  63, 122, 158, 144, 216,  83,  96]),
 } as const;
 
 export function findVaultConfigPDA(vaultProgram: PublicKey, gateProgram: PublicKey) {
@@ -33,6 +36,13 @@ export function findAuditEntryPDA(vaultConfigKey: PublicKey, nonce: bigint, gate
   return PublicKey.findProgramAddressSync(
     [Buffer.from("audit_entry"), vaultConfigKey.toBuffer(), b], gateProgram
   );
+}
+
+export function findTreasuryPDA(gateProgram: PublicKey) {
+  return PublicKey.findProgramAddressSync([Buffer.from("treasury")], gateProgram);
+}
+export function findTreasuryConfigPDA(gateProgram: PublicKey) {
+  return PublicKey.findProgramAddressSync([Buffer.from("treasury_config")], gateProgram);
 }
 
 function encodeOptionU8(v: number | null) {
@@ -102,6 +112,51 @@ export function buildRevokeIssuerIx(
   return new TransactionInstruction({ programId: gate,
     keys: [{ pubkey: registryPDA, isSigner: false, isWritable: true }, { pubkey: authority, isSigner: true, isWritable: false }],
     data: Buffer.concat([DISC.revoke_issuer, issuerKey.toBuffer(), vaultKey.toBuffer()]) });
+}
+
+export function buildInitializeTreasuryIx(
+  gate: PublicKey, authority: PublicKey, feeLamports: bigint
+): TransactionInstruction {
+  const [treasuryConfig] = findTreasuryConfigPDA(gate);
+  const [treasury]       = findTreasuryPDA(gate);
+  const feeBuf = Buffer.alloc(8); feeBuf.writeBigUInt64LE(feeLamports);
+  return new TransactionInstruction({ programId: gate,
+    keys: [
+      { pubkey: treasuryConfig,            isSigner: false, isWritable: true  },
+      { pubkey: treasury,                  isSigner: false, isWritable: true  },
+      { pubkey: authority,                 isSigner: true,  isWritable: true  },
+      { pubkey: SystemProgram.programId,   isSigner: false, isWritable: false },
+    ],
+    data: Buffer.concat([DISC.initialize_treasury, feeBuf]) });
+}
+export function buildUpdateTreasuryConfigIx(
+  gate: PublicKey, authority: PublicKey, feeLamports: bigint | null
+): TransactionInstruction {
+  const [treasuryConfig] = findTreasuryConfigPDA(gate);
+  const optFee = feeLamports === null
+    ? Buffer.from([0])
+    : Buffer.concat([Buffer.from([1]), (() => { const b = Buffer.alloc(8); b.writeBigUInt64LE(feeLamports); return b; })()]);
+  return new TransactionInstruction({ programId: gate,
+    keys: [
+      { pubkey: treasuryConfig, isSigner: false, isWritable: true  },
+      { pubkey: authority,      isSigner: true,  isWritable: false },
+    ],
+    data: Buffer.concat([DISC.update_treasury_config, optFee]) });
+}
+export function buildWithdrawTreasuryIx(
+  gate: PublicKey, authority: PublicKey, amountLamports: bigint
+): TransactionInstruction {
+  const [treasuryConfig] = findTreasuryConfigPDA(gate);
+  const [treasury]       = findTreasuryPDA(gate);
+  const amtBuf = Buffer.alloc(8); amtBuf.writeBigUInt64LE(amountLamports);
+  return new TransactionInstruction({ programId: gate,
+    keys: [
+      { pubkey: treasuryConfig,            isSigner: false, isWritable: false },
+      { pubkey: treasury,                  isSigner: false, isWritable: true  },
+      { pubkey: authority,                 isSigner: true,  isWritable: true  },
+      { pubkey: SystemProgram.programId,   isSigner: false, isWritable: false },
+    ],
+    data: Buffer.concat([DISC.withdraw_treasury, amtBuf]) });
 }
 
 export async function sendAdminTx(

@@ -13,6 +13,10 @@ pub const VAULT_CONFIG_SEED:    &[u8] = b"vault_config";
 pub const AUDIT_ENTRY_SEED:     &[u8] = b"audit_entry";
 pub const ISSUER_REGISTRY_SEED: &[u8] = b"issuer_registry";
 pub const ATTESTATION_SEED:     &[u8] = b"attestation";
+pub const TREASURY_SEED:        &[u8] = b"treasury";
+pub const TREASURY_CONFIG_SEED: &[u8] = b"treasury_config";
+
+pub const DEFAULT_PROTOCOL_FEE_LAMPORTS: u64 = 5_000;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ACCOUNT STRUCTS
@@ -59,6 +63,20 @@ pub struct AuditEntry {
 
 impl AuditEntry {
     pub const SPACE: usize = 8 + 32 + 32 + 8 + 8 + 1 + 1 + 32 + 1 + 1;
+}
+
+#[derive(InitSpace)]
+#[account]
+pub struct TreasuryConfig {
+    pub authority:       Pubkey,   // Leyfis deployer — only this wallet can withdraw or update
+    pub fee_lamports:    u64,      // fee charged per approved gate() call
+    pub total_collected: u64,      // running total (informational)
+    pub last_updated:    i64,
+    pub bump:            u8,
+}
+
+impl TreasuryConfig {
+    pub const SPACE: usize = 8 + 32 + 8 + 8 + 8 + 1; // 65 bytes
 }
 
 #[derive(InitSpace)]
@@ -159,6 +177,10 @@ pub enum LeyfisError {
     IssuerNotFound,
     #[msg("Invalid audit nonce: must equal vault_config.audit_nonce")]
     InvalidNonce,
+    #[msg("Unauthorized: caller is not the treasury authority")]
+    NotTreasuryAuthority,
+    #[msg("Insufficient treasury balance for withdrawal")]
+    InsufficientTreasuryBalance,
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -252,14 +274,76 @@ pub mod leyfis_gate {
         };
         invoke(&ix, &remaining.iter().map(|a| a.to_account_info()).collect::<Vec<_>>())?;
 
-        // ── 11. Write AuditEntry on approval ─────────────────────────────
+        // ── 11. Collect protocol fee from caller ──────────────────────────
+        let fee = ctx.accounts.treasury_config.fee_lamports;
+        if fee > 0 {
+            let transfer_ix = anchor_lang::solana_program::system_instruction::transfer(
+                &ctx.accounts.wallet.key(),
+                &ctx.accounts.treasury.key(),
+                fee,
+            );
+            anchor_lang::solana_program::program::invoke(
+                &transfer_ix,
+                &[
+                    ctx.accounts.wallet.to_account_info(),
+                    ctx.accounts.treasury.to_account_info(),
+                    ctx.accounts.system_program.to_account_info(),
+                ],
+            )?;
+            ctx.accounts.treasury_config.total_collected =
+                ctx.accounts.treasury_config.total_collected.saturating_add(fee);
+        }
+
+        // ── 12. Write AuditEntry on approval ─────────────────────────────
         set_audit_entry(&mut ctx.accounts.audit_entry, wallet, vault_program_key,
             &clock, GateOutcome::Approved, 0, attestation_id, tier, ctx.bumps.audit_entry);
         emit!(GateEvent { wallet, vault: vault_program_key, outcome: GateOutcome::Approved,
             reason_code: 0, tier, timestamp: clock.unix_timestamp, slot: clock.slot });
         ctx.accounts.vault_config.audit_nonce += 1;
 
-        msg!("Gate APPROVED: wallet={} tier={}", wallet, tier);
+        msg!("Gate APPROVED: wallet={} tier={} fee_lamports={}", wallet, tier, fee);
+        Ok(())
+    }
+
+    pub fn initialize_treasury(
+        ctx: Context<InitializeTreasury>,
+        fee_lamports: u64,
+    ) -> Result<()> {
+        let clock = Clock::get()?;
+        let tc = &mut ctx.accounts.treasury_config;
+        tc.authority       = ctx.accounts.authority.key();
+        tc.fee_lamports    = fee_lamports;
+        tc.total_collected = 0;
+        tc.last_updated    = clock.unix_timestamp;
+        tc.bump            = ctx.bumps.treasury_config;
+        msg!("Treasury initialized: fee_lamports={}", fee_lamports);
+        Ok(())
+    }
+
+    pub fn update_treasury_config(
+        ctx: Context<UpdateTreasury>,
+        fee_lamports: Option<u64>,
+    ) -> Result<()> {
+        let clock = Clock::get()?;
+        let tc = &mut ctx.accounts.treasury_config;
+        require!(ctx.accounts.authority.key() == tc.authority, LeyfisError::NotTreasuryAuthority);
+        if let Some(f) = fee_lamports { tc.fee_lamports = f; }
+        tc.last_updated = clock.unix_timestamp;
+        msg!("TreasuryConfig updated: fee_lamports={}", tc.fee_lamports);
+        Ok(())
+    }
+
+    pub fn withdraw_treasury(
+        ctx: Context<WithdrawTreasury>,
+        amount_lamports: u64,
+    ) -> Result<()> {
+        let treasury_lamports = ctx.accounts.treasury.lamports();
+        let rent = Rent::get()?.minimum_balance(0);
+        require!(treasury_lamports.saturating_sub(rent) >= amount_lamports,
+            LeyfisError::InsufficientTreasuryBalance);
+        **ctx.accounts.treasury.try_borrow_mut_lamports()? -= amount_lamports;
+        **ctx.accounts.authority.to_account_info().try_borrow_mut_lamports()? += amount_lamports;
+        msg!("Treasury withdrawal: {} lamports to {}", amount_lamports, ctx.accounts.authority.key());
         Ok(())
     }
 
@@ -457,6 +541,45 @@ pub struct Gate<'info> {
     pub wallet: Signer<'info>,
     /// CHECK: target vault program — CPI destination
     pub vault_program: UncheckedAccount<'info>,
+    /// CHECK: treasury PDA — receives protocol fee lamports on approved calls
+    #[account(mut, seeds = [TREASURY_SEED], bump)]
+    pub treasury: UncheckedAccount<'info>,
+    #[account(mut, seeds = [TREASURY_CONFIG_SEED], bump = treasury_config.bump)]
+    pub treasury_config: Account<'info, TreasuryConfig>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct InitializeTreasury<'info> {
+    #[account(init, payer = authority, space = TreasuryConfig::SPACE,
+        seeds = [TREASURY_CONFIG_SEED], bump)]
+    pub treasury_config: Account<'info, TreasuryConfig>,
+    /// CHECK: treasury PDA — will hold SOL, owned by system program after creation
+    #[account(mut, seeds = [TREASURY_SEED], bump)]
+    pub treasury: UncheckedAccount<'info>,
+    #[account(mut)]
+    pub authority: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct UpdateTreasury<'info> {
+    #[account(mut, seeds = [TREASURY_CONFIG_SEED], bump = treasury_config.bump,
+        has_one = authority @ LeyfisError::NotTreasuryAuthority)]
+    pub treasury_config: Account<'info, TreasuryConfig>,
+    pub authority: Signer<'info>,
+}
+
+#[derive(Accounts)]
+pub struct WithdrawTreasury<'info> {
+    #[account(seeds = [TREASURY_CONFIG_SEED], bump = treasury_config.bump,
+        has_one = authority @ LeyfisError::NotTreasuryAuthority)]
+    pub treasury_config: Account<'info, TreasuryConfig>,
+    /// CHECK: treasury PDA — lamports withdrawn from here
+    #[account(mut, seeds = [TREASURY_SEED], bump)]
+    pub treasury: UncheckedAccount<'info>,
+    #[account(mut)]
+    pub authority: Signer<'info>,
     pub system_program: Program<'info, System>,
 }
 
