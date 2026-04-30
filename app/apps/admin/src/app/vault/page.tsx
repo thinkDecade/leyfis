@@ -109,6 +109,189 @@ function timeAgo(ts: number) {
   return `${Math.floor(d / 86400)}d ago`;
 }
 
+// ─── NL Config Panel ─────────────────────────────────────────────────────────
+type NLDelta = { min_tier: number | null; allowed_jurisdictions: string[] | null };
+type NLResult = { proposed_delta: NLDelta; explanation: string; warnings: string[]; confidence: "high" | "medium" | "low" };
+
+function NLConfigPanel({ vaultConfig, publicKey, signTransaction, onApplied }: {
+  vaultConfig: VaultConfig | null;
+  publicKey: import("@solana/web3.js").PublicKey | null;
+  signTransaction: ((tx: import("@solana/web3.js").Transaction) => Promise<import("@solana/web3.js").Transaction>) | undefined;
+  onApplied: () => void;
+}) {
+  const [instruction, setInstruction] = useState("");
+  const [parsing, setParsing] = useState(false);
+  const [applying, setApplying] = useState(false);
+  const [result, setResult] = useState<NLResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [applied, setApplied] = useState(false);
+
+  const handleParse = async () => {
+    if (!instruction.trim() || !vaultConfig) return;
+    setParsing(true); setResult(null); setError(null); setApplied(false);
+    try {
+      const res = await fetch("/api/nl-config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          instruction,
+          currentConfig: { minTier: vaultConfig.minTier, allowedJurisdictions: vaultConfig.allowedJurisdictions, paused: vaultConfig.paused },
+        }),
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error || "Parse failed"); }
+      setResult(await res.json());
+    } catch (e: any) { setError(e?.message || "Unknown error"); }
+    finally { setParsing(false); }
+  };
+
+  const handleApply = async () => {
+    if (!result || !publicKey || !signTransaction || !vaultConfig) return;
+    const { min_tier } = result.proposed_delta;
+    if (min_tier === null) { setError("No tier change to apply. Jurisdiction changes must be applied via Super Admin."); return; }
+    setApplying(true);
+    try {
+      const conn = new Connection(RPC_ENDPOINT, "confirmed");
+      const [vcPDA] = findVaultConfigPDA(new PublicKey(VAULT_PROGRAM_ID), new PublicKey(GATE_PROGRAM_ID));
+      const sig = await sendAdminTx(conn, buildUpdateVaultConfigIx(new PublicKey(GATE_PROGRAM_ID), vcPDA, publicKey, min_tier, null), publicKey, signTransaction);
+      console.log("NL config applied:", sig);
+      setApplied(true); setResult(null); setInstruction("");
+      onApplied();
+    } catch (e: any) { setError(e?.message || "Apply failed"); }
+    finally { setApplying(false); }
+  };
+
+  const confidenceColor = (c: string) => c === "high" ? "var(--success)" : c === "medium" ? "var(--accent)" : "var(--danger)";
+
+  return (
+    <div style={{ border: "1px solid var(--border)", background: "var(--bg-1)", marginBottom: "20px" }}>
+      <div style={{ padding: "20px 24px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
+        <div>
+          <SectionLabel>AI Config — Natural Language</SectionLabel>
+          <div style={{ ...f, fontSize: "15px", fontWeight: 600, color: "var(--text-1)" }}>Plain-English vault configuration</div>
+        </div>
+        <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.08em" }}>Powered by Claude Haiku</div>
+      </div>
+
+      <div style={{ padding: "24px" }}>
+        <div style={{ ...m, fontSize: "10px", color: "var(--text-4)", lineHeight: 1.7, marginBottom: "16px" }}>
+          Describe your compliance intent in plain English. Claude will parse the instruction and propose a configuration delta for your review before any on-chain change.
+        </div>
+
+        <div style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>
+          <textarea
+            value={instruction}
+            onChange={e => { setInstruction(e.target.value); setResult(null); setError(null); setApplied(false); }}
+            placeholder={`e.g. "Require institutional KYC for all Swiss transactions" or "Open access to Singapore and Japan"`}
+            rows={2}
+            style={{ ...m, fontSize: "12px", flex: 1, background: "var(--bg-2)", border: "1px solid var(--border)", color: "var(--text-1)", padding: "12px 14px", outline: "none", resize: "none", lineHeight: 1.65 }}
+            onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleParse(); }}
+          />
+          <button
+            onClick={handleParse}
+            disabled={!instruction.trim() || parsing || !vaultConfig}
+            style={{ ...m, fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", background: "var(--accent)", color: "white", border: "none", padding: "0 22px", cursor: !instruction.trim() || parsing || !vaultConfig ? "not-allowed" : "pointer", fontWeight: 600, opacity: !instruction.trim() || parsing || !vaultConfig ? 0.4 : 1, flexShrink: 0 }}
+          >
+            {parsing ? "Parsing..." : "Parse →"}
+          </button>
+        </div>
+
+        {applied && (
+          <div style={{ padding: "14px 16px", background: "rgba(22,163,74,0.06)", border: "1px solid rgba(22,163,74,0.25)", ...m, fontSize: "11px", color: "var(--success)", marginBottom: "12px" }}>
+            Configuration applied on-chain.
+          </div>
+        )}
+
+        {error && (
+          <div style={{ padding: "14px 16px", background: "var(--danger-bg)", border: "1px solid var(--danger-border)", ...m, fontSize: "11px", color: "var(--danger)", marginBottom: "12px" }}>
+            {error}
+          </div>
+        )}
+
+        {result && (
+          <div style={{ border: "1px solid var(--border)", background: "var(--bg-2)" }}>
+            {/* Header */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 18px", borderBottom: "1px solid var(--border)" }}>
+              <div style={{ ...m, fontSize: "9px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-4)" }}>Proposed delta</div>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: confidenceColor(result.confidence) }} />
+                <span style={{ ...m, fontSize: "9px", color: confidenceColor(result.confidence), letterSpacing: "0.08em", textTransform: "uppercase" }}>{result.confidence} confidence</span>
+              </div>
+            </div>
+
+            {/* Changes */}
+            <div style={{ padding: "18px", display: "flex", flexDirection: "column", gap: "12px" }}>
+              {result.proposed_delta.min_tier !== null ? (
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <span style={{ ...m, fontSize: "10px", color: "var(--text-4)", width: "160px", flexShrink: 0 }}>Min clearance tier</span>
+                  <span style={{ ...m, fontSize: "11px", color: "var(--text-3)", textDecoration: "line-through" }}>{tierLabel(vaultConfig?.minTier ?? 0)}</span>
+                  <span style={{ ...m, fontSize: "10px", color: "var(--text-4)" }}>→</span>
+                  <span style={{ ...m, fontSize: "11px", color: "var(--accent)", fontWeight: 600 }}>{tierLabel(result.proposed_delta.min_tier)}</span>
+                </div>
+              ) : null}
+
+              {result.proposed_delta.allowed_jurisdictions !== null ? (
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
+                  <span style={{ ...m, fontSize: "10px", color: "var(--text-4)", width: "160px", flexShrink: 0, marginTop: "3px" }}>Jurisdictions</span>
+                  {result.proposed_delta.allowed_jurisdictions.length === 0 ? (
+                    <span style={{ ...m, fontSize: "11px", color: "var(--accent)", fontWeight: 600 }}>All jurisdictions (open)</span>
+                  ) : (
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                      {result.proposed_delta.allowed_jurisdictions.map(j => (
+                        <span key={j} style={{ ...m, fontSize: "10px", padding: "3px 10px", background: "var(--accent-bg)", color: "var(--accent)", border: "1px solid var(--accent-border)", letterSpacing: "0.08em" }}>{j}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : null}
+
+              {result.proposed_delta.min_tier === null && result.proposed_delta.allowed_jurisdictions === null && (
+                <div style={{ ...m, fontSize: "11px", color: "var(--text-4)" }}>No changes required. Current configuration already matches intent.</div>
+              )}
+              {result.proposed_delta.min_tier === null && result.proposed_delta.allowed_jurisdictions !== null && (
+                <div style={{ ...m, fontSize: "10px", color: "var(--text-4)", marginTop: "4px", lineHeight: 1.65 }}>
+                  Jurisdiction changes must be applied via Super Admin console (no on-chain apply available here).
+                </div>
+              )}
+
+              <div style={{ paddingTop: "12px", borderTop: "1px solid var(--border)", ...m, fontSize: "11px", color: "var(--text-2)", lineHeight: 1.7 }}>
+                {result.explanation}
+              </div>
+
+              {result.warnings.length > 0 && (
+                <div style={{ padding: "12px 14px", background: "rgba(202,138,4,0.08)", border: "1px solid rgba(202,138,4,0.25)" }}>
+                  {result.warnings.map((w, i) => (
+                    <div key={i} style={{ ...m, fontSize: "10px", color: "#b45309", lineHeight: 1.7 }}>⚠ {w}</div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Actions */}
+            {result.proposed_delta.min_tier !== null && (
+              <div style={{ display: "flex", gap: "8px", padding: "14px 18px", borderTop: "1px solid var(--border)" }}>
+                <button
+                  onClick={handleApply}
+                  disabled={applying || !publicKey || !signTransaction}
+                  style={{ ...m, fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", background: "var(--accent)", color: "white", border: "none", padding: "11px 22px", cursor: applying || !publicKey || !signTransaction ? "not-allowed" : "pointer", fontWeight: 600, opacity: applying || !publicKey || !signTransaction ? 0.4 : 1 }}
+                >
+                  {applying ? "Applying..." : "Apply On-Chain"}
+                </button>
+                <button
+                  onClick={() => { setResult(null); setInstruction(""); }}
+                  style={{ ...m, fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", background: "transparent", color: "var(--text-3)", border: "1px solid var(--border)", padding: "11px 22px", cursor: "pointer" }}
+                >
+                  Discard
+                </button>
+                {!publicKey && <span style={{ ...m, fontSize: "10px", color: "var(--text-4)", alignSelf: "center", marginLeft: "8px" }}>Connect wallet to apply</span>}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Pause Modal ──────────────────────────────────────────────────────────────
 function PauseModal({ onConfirm, onCancel }: { onConfirm: (r: string, n: string) => void; onCancel: () => void }) {
   const [selected, setSelected] = useState("");
@@ -499,7 +682,10 @@ export default function VaultPage() {
         </div>
       </div>
 
-      {/* ── Row 4: Recent activity ───────────────────────────────────────── */}
+      {/* ── Row 4: Natural Language Config ──────────────────────────────── */}
+      <NLConfigPanel vaultConfig={config} publicKey={publicKey} signTransaction={signTransaction} onApplied={refresh} />
+
+      {/* ── Row 5: Recent activity ───────────────────────────────────────── */}
       <div style={{ border: "1px solid var(--border)", background: "var(--bg-1)" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", borderBottom: "1px solid var(--border)" }}>
           <div>
