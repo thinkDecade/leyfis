@@ -6,7 +6,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import { AdminRole, shortAddr, GATE_PROGRAM_ID, RPC_ENDPOINT, SEEDS } from "@leyfis/shared";
 import {
   LayoutDashboard, Vault, BadgeCheck,
-  BookOpen, ScrollText, Radio, Download, Globe,
+  BookOpen, ScrollText, Radio, Download, Globe, History,
   Sun, Moon, Wallet, ChevronRight, LogOut, Loader2
 } from "lucide-react";
 
@@ -115,7 +115,8 @@ const NAV = [
   { label: "Audit Log", href: "/audit",    icon: ScrollText,      roles: ["super_admin","vault_operator","kyc_issuer","compliance_auditor"] },
   { label: "Live Feed",   href: "/feed",       icon: Radio,   roles: ["super_admin","vault_operator","kyc_issuer","compliance_auditor"] },
   { label: "Export",      href: "/export",     icon: Download, roles: ["super_admin","vault_operator","compliance_auditor"] },
-  { label: "Regulatory",  href: "/regulatory", icon: Globe,    roles: ["super_admin","vault_operator"] },
+  { label: "Regulatory",    href: "/regulatory",   icon: Globe,    roles: ["super_admin","vault_operator"] },
+  { label: "Time Machine",  href: "/timemachine",  icon: History,  roles: ["super_admin","vault_operator","compliance_auditor"] },
 ];
 
 export function AdminShell({ children, current }: { children: React.ReactNode; current: string }) {
