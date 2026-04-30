@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "leyfis": {
+      "command": "node",
+      "args": ["C:\\Users\\mnt50\\leyfis-protocol\\app\\packages\\leyfis-mcp\\dist\\server.js"],
+      "env": {
+        "HELIUS_RPC_URL": "https://devnet.helius-rpc.com/?api-key=2414c8d2-3eff-4fda-9c74-b8c0f93d768b"
+      }
+    }
+  }
+}
