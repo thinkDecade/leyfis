@@ -1,9 +1,6 @@
 [build]
   command   = "cd ../.. && yarn workspace @leyfis/app build"
-  publish   = ".next"
+  publish   = "out"
 
 [build.environment]
   NODE_VERSION = "20"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"

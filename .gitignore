@@ -8,6 +8,7 @@ keys/
 .env.local
 dist/
 .next/
+out/
 
 # Sensitive / unnecessary
 *.pptx
@@ -15,3 +16,6 @@ dist/
 *.mp4
 *.bak
 21st-dev.txt
+
+# Local Netlify folder
+.netlify

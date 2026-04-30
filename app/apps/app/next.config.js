@@ -1,2 +1,2 @@
 /** @type {import('next').NextConfig} */
-module.exports = { transpilePackages: ['@leyfis/shared'] };
+module.exports = { output: 'export', transpilePackages: ['@leyfis/shared'] };
