@@ -275,6 +275,11 @@ revoke_issuer(issuer_pubkey)
 
 // Core gate, called by end users on every vault interaction
 gate(vault_instruction_data)
+
+// Protocol treasury, callable by treasury authority
+initialize_treasury(fee_lamports)
+update_treasury_config(fee_lamports)
+withdraw_treasury(amount_lamports)
 ```
 
 ---
@@ -308,6 +313,8 @@ docker exec leyfis-dev bash -c "cd /workspace/leyfis-gate && anchor test"
 | Test Vault | `88x1hxWW6mMDpQQwuR3sCDgnmbHwHmQBdWYZQhcedNaJ` |
 | VaultConfig PDA | `B1vJ1Pwo8SGYg5emXoGBgqHQqBEcmBJa83cAfLJjAatj` |
 | IssuerRegistry PDA | `F8NXMpzRPpz1C6HpmgMEaBzqeX7aGyRE9w6eKhdBT3zd` |
+| TreasuryConfig PDA | `42N7MMixha7amZmjrhxQTTz59aj92nYKVMcMoiYFACfv` |
+| Treasury PDA | `BydvUhvo9vXF4t3dp1ZCJLBKwsWsw3RY8YUU1HhDKMww` |
 
 | Wallet | Role | Address |
 |--------|------|---------|
@@ -331,6 +338,7 @@ docker exec leyfis-dev bash -c "cd /workspace/leyfis-gate && anchor test"
 | Deployment | Netlify, two projects, one monorepo |
 | Dev environment | Docker Desktop on Windows |
 | RPC | Helius devnet |
+| AI interface | Claude Desktop + MCP server (12 tools, natural language ops) |
 
 ---
 
@@ -368,13 +376,16 @@ docker exec -d leyfis-dev bash -c "cd /workspace/app/apps/admin && yarn dev"
 ```
 leyfis-protocol/
   programs/
-    leyfis-gate/src/lib.rs    Gate Program. 7 instructions, 7 errors, 8/8 tests.
+    leyfis-gate/src/lib.rs    Gate Program. 10 instructions, 9 errors, 8/8 tests.
     test-vault/src/lib.rs     Minimal test vault used in demo.
   tests/
     leyfis-gate.ts            Anchor test suite. All passing.
   app/
     apps/app/                 Public portal and landing page.
     apps/admin/               Institutional operations console.
+  mcp/
+    src/index.ts              MCP server. 12 tools. Claude Desktop integration.
+    dist/index.js             Compiled output (run by Claude Desktop).
   scripts/
     issue-attestation.ts      CLI for issuing SAS attestations.
   Anchor.toml
@@ -405,6 +416,36 @@ leyfis-protocol/
 **Separation of roles.** KYC issuers, vault operators, and compliance auditors operate in independent scopes. Leyfis enforces the boundaries between them at the program level.
 
 **Protocol-level enforcement.** Compliance rules live in a Solana program, not in an off-chain API that can fail, be bypassed, or be selectively applied. The rules run on every transaction, without exception.
+
+---
+
+## MCP Server
+
+Leyfis ships a Model Context Protocol server that gives Claude Desktop direct access to the protocol. Compliance operators can manage the gate, query the audit log, and generate regulatory reports in plain English — no CLI, no code, no Solana Explorer.
+
+**12 tools across two categories:**
+
+| Category | Tools |
+|----------|-------|
+| Read (no keypair needed) | `get_protocol_status`, `get_audit_log`, `check_wallet_access`, `get_issuer_registry`, `get_treasury_stats`, `generate_compliance_report` |
+| Write (requires authority keypair) | `pause_gate`, `unpause_gate`, `update_vault_config`, `issue_attestation`, `revoke_attestation`, `set_protocol_fee` |
+
+**Setup** — add to `claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "leyfis": {
+      "command": "node",
+      "args": ["/path/to/leyfis-protocol/mcp/dist/index.js"],
+      "env": {
+        "LEYFIS_KEYPAIR_PATH": "/path/to/keys/deployer.json"
+      }
+    }
+  }
+}
+```
+
+Write operations are secured at two layers: the MCP server requires a keypair file, and the Solana program independently verifies the transaction signer is the registered authority.
 
 ---
 

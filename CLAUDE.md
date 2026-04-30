@@ -412,7 +412,7 @@ ROLE 5 — Compliance Auditor — 30 seconds
 [x] Phase 2 — Admin panel + app frontend (full four-role flow end-to-end)
 [x] Phase 3 — AI compliance layer (Anthropic API, reports, regulatory intel)
 [x] Phase 3b — Business model UI (trial banner, pricing page, analytics, protocol fee)
-[ ] Phase 4 — MCP server + natural language config
+[x] Phase 4 — MCP server + natural language config
 [ ] Phase 5 — Submission prep (deadline: May 11, 2026)
 ```
 

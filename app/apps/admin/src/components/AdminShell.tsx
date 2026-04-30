@@ -2,6 +2,7 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { AdminRole, shortAddr, GATE_PROGRAM_ID, RPC_ENDPOINT, SEEDS, usePlan, track } from "@leyfis/shared";
 import {
@@ -140,7 +141,7 @@ export function AdminShell({ children, current }: { children: React.ReactNode; c
     <div style={{ display:"flex", minHeight:"100vh", background:"var(--bg)" }}>
       <aside style={{ width:"var(--sidebar-w)", flexShrink:0, borderRight:"1px solid var(--border)", display:"flex", flexDirection:"column", position:"fixed", top:0, left:0, bottom:0, zIndex:300, background:"var(--bg-1)" }}>
         <div style={{ padding:"24px 20px 20px", borderBottom:"1px solid var(--border)" }}>
-          <a href="/" style={{ display:"flex", alignItems:"center", gap:"12px" }}>
+          <Link href="/" style={{ display:"flex", alignItems:"center", gap:"12px" }}>
             <div style={{ width:"32px", height:"32px", background:"var(--accent)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
               <svg width="16" height="16" viewBox="0 0 56 56" fill="none"><rect x="8" y="16" width="7" height="32" fill="white"/><rect x="41" y="16" width="7" height="32" fill="white"/><rect x="8" y="13" width="40" height="6" fill="white"/><rect x="18" y="19" width="20" height="29" fill="var(--accent)"/></svg>
             </div>
@@ -148,7 +149,7 @@ export function AdminShell({ children, current }: { children: React.ReactNode; c
               <div style={{ fontFamily:"Inter,sans-serif", fontSize:"13px", fontWeight:800, letterSpacing:"0.2em", color:"var(--text-1)", lineHeight:1 }}>LEYFIS</div>
               <div style={{ fontFamily:"DM Mono,monospace", fontSize:"9px", color:"var(--text-4)", letterSpacing:"0.1em", textTransform:"uppercase", marginTop:"3px" }}>Admin Console</div>
             </div>
-          </a>
+          </Link>
         </div>
         <nav style={{ flex:1, padding:"10px 0", overflowY:"auto" }}>
           {loading && mounted && publicKey ? (
@@ -156,16 +157,15 @@ export function AdminShell({ children, current }: { children: React.ReactNode; c
               <Loader2 size={14} color="var(--text-4)" style={{ animation:"spin 1s linear infinite" }}/>
               <span style={{ fontFamily:"DM Mono,monospace", fontSize:"10px", color:"var(--text-4)", letterSpacing:"0.08em" }}>Detecting role...</span>
             </div>
-          ) : NAV.map(item => {
+          ) : NAV.filter(item => role !== "none" && item.roles.includes(role)).map(item => {
             const Icon = item.icon;
-            const accessible = role !== "none" && item.roles.includes(role);
             const active = current === item.href;
             return (
-              <a key={item.href} href={accessible ? item.href : "#"} style={{ display:"flex", alignItems:"center", gap:"12px", padding:"11px 20px", textDecoration:"none", background:active?"var(--accent-bg)":"transparent", borderLeft:active?"2px solid var(--accent)":"2px solid transparent", opacity:accessible?1:0.25, cursor:accessible?"pointer":"not-allowed", transition:"background 0.15s" }}>
-                <Icon size={16} color={active?"var(--accent)":accessible?"var(--text-3)":"var(--text-4)"} strokeWidth={active?2.5:1.8}/>
-                <span style={{ fontFamily:"Inter,sans-serif", fontSize:"13px", fontWeight:active?600:400, color:active?"var(--text-1)":accessible?"var(--text-2)":"var(--text-4)", letterSpacing:"-0.01em" }}>{item.label}</span>
+              <Link key={item.href} href={item.href} style={{ display:"flex", alignItems:"center", gap:"12px", padding:"11px 20px", textDecoration:"none", background:active?"var(--accent-bg)":"transparent", borderLeft:active?"2px solid var(--accent)":"2px solid transparent", transition:"background 0.15s" }}>
+                <Icon size={16} color={active?"var(--accent)":"var(--text-3)"} strokeWidth={active?2.5:1.8}/>
+                <span style={{ fontFamily:"Inter,sans-serif", fontSize:"13px", fontWeight:active?600:400, color:active?"var(--text-1)":"var(--text-2)", letterSpacing:"-0.01em" }}>{item.label}</span>
                 {active && <ChevronRight size={13} color="var(--accent)" style={{ marginLeft:"auto" }}/>}
-              </a>
+              </Link>
             );
           })}
         </nav>

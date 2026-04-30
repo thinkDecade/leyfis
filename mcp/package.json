@@ -1,0 +1,20 @@
+{
+  "name": "@leyfis/mcp",
+  "version": "0.1.0",
+  "description": "Leyfis Protocol MCP server — Claude tools for on-chain compliance operations",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@solana/web3.js": "^1.98.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@types/node": "^20.0.0"
+  }
+}
