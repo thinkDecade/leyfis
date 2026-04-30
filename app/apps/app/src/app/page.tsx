@@ -1,25 +1,19 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 
-const RiveGate = dynamic(() => import("./RiveGate"), { ssr: false });
-
-// ─── Reveal — fires immediately if already in view ────────────────────────────
+// ─── Scroll reveal ────────────────────────────────────────────
 function useInView(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
   const [v, setV] = useState(false);
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+    const el = ref.current; if (!el) return;
     const obs = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { setV(true); obs.disconnect(); } },
       { threshold, rootMargin: "0px 0px -40px 0px" }
     );
     obs.observe(el);
-    // Also fire immediately if already visible
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight) setV(true);
+    if (el.getBoundingClientRect().top < window.innerHeight) setV(true);
     return () => obs.disconnect();
   }, [threshold]);
   return { ref, v };
@@ -32,287 +26,305 @@ function Fade({ children, delay = 0, style }: {
   return (
     <div ref={ref} style={{
       opacity: v ? 1 : 0,
-      transform: v ? "none" : "translateY(20px)",
-      transition: `opacity 0.6s ${delay}ms, transform 0.6s ${delay}ms`,
+      transform: v ? "none" : "translateY(18px)",
+      transition: `opacity 0.55s ${delay}ms, transform 0.55s ${delay}ms`,
       ...style,
     }}>{children}</div>
   );
 }
 
-// ─── Design tokens ────────────────────────────────────────────────────────────
+// ─── Design tokens — light, cheerful, institutional ───────────
 const D = {
-  bg:      "#000000",
-  bg1:     "#060606",
-  bg2:     "#0A0A0A",
+  bg:       "#FAFAF8",
+  bg1:      "#F3F4F1",
+  bg2:      "#FFFFFF",
+  bgDark:   "#0C0C15",
+
+  ink:      "#0A0E1A",
+  ink70:    "rgba(10,14,26,0.7)",
+  ink50:    "rgba(10,14,26,0.5)",
+  ink30:    "rgba(10,14,26,0.3)",
+  ink15:    "rgba(10,14,26,0.15)",
+  ink08:    "rgba(10,14,26,0.08)",
+  ink04:    "rgba(10,14,26,0.04)",
+
+  indigo:   "#5B4CF5",
+  indigoDk: "#4338CA",
+  indigo20: "rgba(91,76,245,0.20)",
+  indigo12: "rgba(91,76,245,0.12)",
+  indigo06: "rgba(91,76,245,0.06)",
+
+  teal:     "#0D6B4F",
+  tealBt:   "#059669",
+  teal20:   "rgba(13,107,79,0.20)",
+  teal10:   "rgba(13,107,79,0.10)",
+
+  red:      "#DC2626",
+  red10:    "rgba(220,38,38,0.10)",
+
+  amber:    "#B45309",
+  amber10:  "rgba(180,83,9,0.10)",
+  amber20:  "rgba(180,83,9,0.20)",
+
+  rule:     "rgba(10,14,26,0.08)",
+  shadow:   "0 1px 3px rgba(10,14,26,0.06),0 6px 20px rgba(10,14,26,0.04)",
+  shadowMd: "0 4px 16px rgba(10,14,26,0.10),0 1px 3px rgba(10,14,26,0.06)",
+
+  mono:    "'DM Mono',monospace",
+  display: "'Unbounded',sans-serif",
+  sans:    "'Inter',sans-serif",
+
   ice:     "#E8EEF6",
-  ice50:   "rgba(232,238,246,0.5)",
   ice30:   "rgba(232,238,246,0.3)",
-  ice15:   "rgba(232,238,246,0.15)",
-  ice08:   "rgba(232,238,246,0.08)",
-  blue:    "#1B4FD8",
-  blue20:  "rgba(27,79,216,0.2)",
-  teal:    "#0F6E56",
-  teal10:  "rgba(15,110,86,0.1)",
-  red:     "#7A1F1F",
-  red10:   "rgba(122,31,31,0.1)",
-  rule:    "rgba(232,238,246,0.07)",
-  mono:    "'DM Mono', monospace",
-  serif:   "'EB Garamond', Georgia, serif",
-  display: "'Unbounded', sans-serif",
+  ice10:   "rgba(232,238,246,0.1)",
 };
 
-// ─── Gate animation CSS ────────────────────────────────────────────────────────
+// ─── Gate animation ───────────────────────────────────────────
 function Gate({ approved, size = 200 }: { approved: boolean; size?: number }) {
-  const w = size * 0.1;
-  const h = size;
-  const gap = size * 0.5;
-  const total = gap + w * 2;
-  const c = approved ? D.teal : D.blue;
+  const w = size * 0.1, h = size, gap = size * 0.5, total = gap + w * 2;
+  const c = approved ? D.tealBt : D.indigo;
   return (
-    <div style={{ position: "relative", width: total, height: h, margin: "0 auto" }}>
+    <div style={{ position:"relative", width:total, height:h, margin:"0 auto" }}>
       <style>{`
-        @keyframes gatePulse { 0%,100%{opacity:0.7} 50%{opacity:1} }
-        @keyframes scanDown { 0%{top:${w}px;opacity:0.6} 80%{opacity:0.3} 100%{top:${h - 4}px;opacity:0} }
-        @keyframes popIn { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
-        @keyframes ringOut { from{transform:translate(-50%,-50%) scale(0.6);opacity:0.6} to{transform:translate(-50%,-50%) scale(2);opacity:0} }
+        @keyframes gPulse{0%,100%{opacity:.75}50%{opacity:1}}
+        @keyframes gScan{0%{top:${w}px;opacity:.7}80%{opacity:.2}100%{top:${h-4}px;opacity:0}}
+        @keyframes gPop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+        @keyframes gRing{from{transform:translate(-50%,-50%) scale(.5);opacity:.8}to{transform:translate(-50%,-50%) scale(2.2);opacity:0}}
       `}</style>
-      {/* Left pillar */}
-      <div style={{ position:"absolute", left:0, top:0, width:w, height:h, background:c, borderRadius:"1px", animation:"gatePulse 2.5s infinite", transition:"background 0.8s" }}/>
-      {/* Right pillar */}
-      <div style={{ position:"absolute", right:0, top:0, width:w, height:h, background:c, borderRadius:"1px", animation:"gatePulse 2.5s infinite 0.4s", transition:"background 0.8s" }}/>
-      {/* Lintel */}
-      <div style={{ position:"absolute", left:0, top:0, width:total, height:w, background:c, borderRadius:"1px", animation:"gatePulse 2.5s infinite 0.2s", transition:"background 0.8s" }}/>
-      {/* Interior */}
-      {!approved && (
-        <div style={{ position:"absolute", left:w+2, right:w+2, top:w, height:"2px", background:`rgba(27,79,216,0.5)`, animation:"scanDown 1.8s ease-in infinite" }}/>
-      )}
-      {approved && (
-        <>
-          <div style={{ position:"absolute", left:"50%", top:"55%", width:size*0.28, height:size*0.28, borderRadius:"50%", border:`1.5px solid ${D.teal}`, animation:"ringOut 1.5s ease-out infinite" }}/>
-          <div style={{ position:"absolute", left:"50%", top:"55%", transform:"translate(-50%,-50%)", fontFamily:D.display, fontSize:size*0.22, fontWeight:900, color:D.teal, animation:"popIn 0.4s ease", lineHeight:1 }}>✓</div>
-        </>
-      )}
+      <div style={{ position:"absolute",left:0,top:0,width:w,height:h,background:c,borderRadius:"2px",animation:"gPulse 2.5s infinite",transition:"background .7s" }}/>
+      <div style={{ position:"absolute",right:0,top:0,width:w,height:h,background:c,borderRadius:"2px",animation:"gPulse 2.5s infinite .4s",transition:"background .7s" }}/>
+      <div style={{ position:"absolute",left:0,top:0,width:total,height:w,background:c,borderRadius:"2px",animation:"gPulse 2.5s infinite .2s",transition:"background .7s" }}/>
+      {!approved && <div style={{ position:"absolute",left:w+2,right:w+2,top:w,height:"2px",background:"rgba(91,76,245,.45)",animation:"gScan 1.8s ease-in infinite" }}/>}
+      {approved && <>
+        <div style={{ position:"absolute",left:"50%",top:"55%",width:size*.3,height:size*.3,borderRadius:"50%",border:`1.5px solid ${D.tealBt}`,animation:"gRing 1.5s ease-out infinite" }}/>
+        <div style={{ position:"absolute",left:"50%",top:"55%",transform:"translate(-50%,-50%)",fontFamily:D.display,fontSize:size*.24,fontWeight:900,color:D.tealBt,animation:"gPop .35s ease",lineHeight:1 }}>✓</div>
+      </>}
     </div>
   );
 }
 
-// ─── Audience section ─────────────────────────────────────────────────────────
-function AudienceSection({ id, index, label, heading, pain, solution, outcomes, stat, statLabel, cta, href, accent, flip }: {
-  id: string; index: string; label: string; heading: string; pain: string; solution: string;
-  outcomes: string[]; stat: string; statLabel: string; cta: string; href: string; accent: string; flip?: boolean;
-}) {
-  const { ref, v } = useInView(0.05);
+// ─── MCP terminal — cycling exchange demo ─────────────────────
+const MCP_EX = [
+  {
+    cmd: "Pause the gate for the EU vault",
+    res: "Gate paused. VaultConfig updated.\nVault: 88x1...NaJ  ·  Slot: 312,847,291\nAudit entry written.",
+  },
+  {
+    cmd: "Who was denied access in the last hour?",
+    res: "3 denials in the last 60 minutes:\n  2× NoAttestation  ·  1× TierInsufficient\nMost recent: 5t1o...fjS at 14:31:58",
+  },
+  {
+    cmd: "Export FATF R.16 report for this week",
+    res: "compliance_report_2026-W18.csv ready.\n47 entries  ·  41 approved  ·  6 denied\nFields: wallet, vault, timestamp, outcome, tier, jurisdiction",
+  },
+];
+
+function McpTerminal() {
+  const [idx, setIdx] = useState(0);
+  const [vis, setVis] = useState(true);
+  useEffect(() => {
+    const t = setInterval(() => {
+      setVis(false);
+      setTimeout(() => { setIdx(i => (i + 1) % MCP_EX.length); setVis(true); }, 380);
+    }, 4800);
+    return () => clearInterval(t);
+  }, []);
+  const ex = MCP_EX[idx];
   return (
-    <section id={id} ref={ref} style={{ borderTop:`1px solid ${D.rule}`, padding:"96px 10vw", background: D.bg1 }}>
-      <div style={{ display:"grid", gridTemplateColumns: flip ? "1fr 1fr" : "1fr 1fr", gap:"6vw", alignItems:"start" }}>
-        {/* Left */}
-        <div style={{ order: flip ? 2 : 1 }}>
-          <div style={{
-            opacity: v ? 1 : 0, transform: v ? "none" : "translateY(16px)",
-            transition: "opacity 0.5s 0ms, transform 0.5s 0ms",
-          }}>
-            <div style={{ display:"flex", alignItems:"center", gap:"16px", marginBottom:"32px" }}>
-              <span style={{ fontFamily:D.mono, fontSize:"9px", letterSpacing:"0.18em", color:D.ice30 }}>{index}</span>
-              <span style={{ fontFamily:D.mono, fontSize:"9px", letterSpacing:"0.14em", color:accent, textTransform:"uppercase" }}>{label}</span>
-            </div>
-            <h2 style={{ fontFamily:D.display, fontSize:"clamp(24px,3.5vw,44px)", fontWeight:900, lineHeight:1.0, letterSpacing:"-0.02em", color:D.ice, marginBottom:"40px" }}>
-              {heading}
-            </h2>
-          </div>
-
-          {/* Pain + Solution */}
-          <div style={{
-            opacity: v ? 1 : 0, transform: v ? "none" : "translateY(16px)",
-            transition: "opacity 0.5s 100ms, transform 0.5s 100ms",
-          }}>
-            <div style={{ marginBottom:"32px" }}>
-              <div style={{ fontFamily:D.mono, fontSize:"8px", letterSpacing:"0.16em", color:D.red, textTransform:"uppercase", marginBottom:"10px" }}>The Problem</div>
-              <p style={{ fontFamily:D.mono, fontSize:"13px", color:D.ice50, lineHeight:1.85, fontWeight:300 }}>{pain}</p>
-            </div>
-            <div style={{ marginBottom:"40px" }}>
-              <div style={{ fontFamily:D.mono, fontSize:"8px", letterSpacing:"0.16em", color:D.teal, textTransform:"uppercase", marginBottom:"10px" }}>With Leyfis</div>
-              <p style={{ fontFamily:D.mono, fontSize:"13px", color:D.ice, lineHeight:1.85, fontWeight:300 }}>{solution}</p>
-            </div>
-          </div>
-
-          {/* Outcomes */}
-          <div style={{
-            opacity: v ? 1 : 0, transform: v ? "none" : "translateY(16px)",
-            transition: "opacity 0.5s 180ms, transform 0.5s 180ms",
-          }}>
-            <div style={{ borderTop:`1px solid ${D.rule}`, paddingTop:"24px", marginBottom:"32px" }}>
-              {outcomes.map((o, i) => (
-                <div key={i} style={{ display:"flex", gap:"14px", alignItems:"flex-start", padding:"10px 0", borderBottom:`1px solid ${D.rule}` }}>
-                  <div style={{ width:"4px", height:"4px", borderRadius:"50%", background:accent, flexShrink:0, marginTop:"7px" }}/>
-                  <span style={{ fontFamily:D.mono, fontSize:"12px", color:D.ice50, lineHeight:1.8, fontWeight:300 }}>{o}</span>
-                </div>
-              ))}
-            </div>
-            <Link href={href} style={{
-              fontFamily:D.mono, fontSize:"10px", letterSpacing:"0.12em", textTransform:"uppercase",
-              color:accent, border:`1px solid ${accent}`, padding:"11px 24px", display:"inline-block",
-              textDecoration:"none", transition:"all 0.15s",
-            }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = accent; (e.currentTarget as HTMLElement).style.color = "#000"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = accent; }}
-            >{cta} →</Link>
-          </div>
+    <div style={{ background:D.bgDark, borderRadius:"16px", overflow:"hidden", border:"1px solid rgba(232,238,246,0.07)", boxShadow:"0 24px 80px rgba(0,0,0,0.28)" }}>
+      <div style={{ padding:"13px 20px", borderBottom:"1px solid rgba(232,238,246,0.06)", display:"flex", alignItems:"center", gap:"7px" }}>
+        {["#FF5F57","#FFBD2E","#28C840"].map(c => <div key={c} style={{ width:11, height:11, borderRadius:"50%", background:c }}/>)}
+        <span style={{ fontFamily:D.mono, fontSize:"11px", color:"rgba(232,238,246,.28)", marginLeft:8, letterSpacing:".05em" }}>leyfis — claude mcp</span>
+      </div>
+      <div style={{ padding:"28px", minHeight:210, opacity:vis?1:0, transition:"opacity .32s" }}>
+        <div style={{ marginBottom:20 }}>
+          <div style={{ fontFamily:D.mono, fontSize:"9px", color:"rgba(91,76,245,.65)", letterSpacing:".08em", marginBottom:8 }}>You</div>
+          <div style={{ fontFamily:D.mono, fontSize:"13px", color:D.ice, lineHeight:1.65 }}>{ex.cmd}</div>
         </div>
-
-        {/* Right — stat */}
-        <div style={{
-          order: flip ? 1 : 2,
-          display:"flex", flexDirection:"column", justifyContent:"flex-start", paddingTop:"64px",
-          opacity: v ? 1 : 0, transform: v ? "none" : "translateY(20px)",
-          transition: "opacity 0.6s 80ms, transform 0.6s 80ms",
-        }}>
-          <div style={{ fontFamily:D.display, fontSize:"clamp(72px,10vw,140px)", fontWeight:900, color:accent, lineHeight:0.88, letterSpacing:"-0.04em" }}>
-            {stat}
-          </div>
-          <div style={{ fontFamily:D.mono, fontSize:"10px", letterSpacing:"0.14em", color:D.ice30, marginTop:"14px", textTransform:"uppercase" }}>{statLabel}</div>
-          {/* Divider line */}
-          <div style={{ width:"40px", height:"1px", background:accent, marginTop:"40px", opacity:0.5 }}/>
+        <div style={{ borderLeft:`2px solid ${D.indigo}`, paddingLeft:16 }}>
+          <div style={{ fontFamily:D.mono, fontSize:"9px", color:"rgba(91,76,245,.9)", letterSpacing:".08em", marginBottom:8 }}>Leyfis</div>
+          <div style={{ fontFamily:D.mono, fontSize:"12px", color:"rgba(232,238,246,.65)", lineHeight:1.85, whiteSpace:"pre-line" }}>{ex.res}</div>
         </div>
       </div>
-    </section>
+      <div style={{ padding:"0 28px 20px", display:"flex", gap:6 }}>
+        {MCP_EX.map((_, i) => (
+          <div key={i} style={{ width:i===idx?18:6, height:6, borderRadius:3, background:i===idx?D.indigo:"rgba(232,238,246,.15)", transition:"all .3s" }}/>
+        ))}
+      </div>
+    </div>
   );
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
+// ─── Live audit feed ──────────────────────────────────────────
+const FEED = [
+  { t:"14:32:17", ok:true,  w:"64je...xfb", note:"Tier 3 · CHE" },
+  { t:"14:32:11", ok:false, w:"5t1o...fjS",  note:"NoAttestation" },
+  { t:"14:31:58", ok:true,  w:"64je...xfb", note:"Tier 3 · CHE" },
+  { t:"14:31:44", ok:false, w:"8m2p...3kR",  note:"TierInsufficient" },
+  { t:"14:31:12", ok:true,  w:"3q9n...7dL", note:"Tier 2 · DEU" },
+  { t:"14:30:58", ok:false, w:"9f1m...2vX",  note:"AttestationRevoked" },
+  { t:"14:30:33", ok:true,  w:"2h8x...5pW", note:"Tier 3 · SGP" },
+  { t:"14:30:11", ok:true,  w:"7g4l...9aQ", note:"Tier 2 · CHE" },
+  { t:"14:29:47", ok:false, w:"4c2k...1nB",  note:"AttestationExpired" },
+  { t:"14:29:22", ok:true,  w:"64je...xfb", note:"Tier 3 · CHE" },
+  { t:"14:28:58", ok:true,  w:"6r5s...8yM", note:"Tier 3 · USA" },
+  { t:"14:28:44", ok:false, w:"1b9t...4zO",  note:"UntrustedIssuer" },
+];
+
+function AuditFeed() {
+  const rows = [...FEED, ...FEED];
+  const rowH = 50;
+  const totalH = FEED.length * rowH;
+  return (
+    <div style={{ position:"relative", height:340, overflow:"hidden", borderRadius:12, border:`1px solid ${D.rule}`, background:D.bg2 }}>
+      <div style={{ position:"absolute",top:0,left:0,right:0,height:56,background:`linear-gradient(${D.bg2},transparent)`,zIndex:2,pointerEvents:"none" }}/>
+      <div style={{ position:"absolute",bottom:0,left:0,right:0,height:56,background:`linear-gradient(transparent,${D.bg2})`,zIndex:2,pointerEvents:"none" }}/>
+      <style>{`@keyframes feedScroll{0%{transform:translateY(0)}100%{transform:translateY(-${totalH}px)}}`}</style>
+      <div style={{ animation:`feedScroll ${FEED.length * 3}s linear infinite` }}>
+        {rows.map((r, i) => (
+          <div key={i} style={{ display:"grid", gridTemplateColumns:"72px 100px 1fr 1fr", gap:16, alignItems:"center", padding:"13px 24px", borderBottom:`1px solid ${D.rule}`, height:rowH }}>
+            <span style={{ fontFamily:D.mono, fontSize:"10px", color:D.ink30 }}>{r.t}</span>
+            <div style={{ display:"flex", alignItems:"center", gap:7 }}>
+              <div style={{ width:7,height:7,borderRadius:"50%",background:r.ok?D.tealBt:D.red,flexShrink:0 }}/>
+              <span style={{ fontFamily:D.mono, fontSize:"10px", color:r.ok?D.teal:D.red, fontWeight:500, letterSpacing:".06em" }}>{r.ok?"APPROVED":"DENIED"}</span>
+            </div>
+            <span style={{ fontFamily:D.mono, fontSize:"10px", color:D.ink50 }}>{r.w}</span>
+            <span style={{ fontFamily:D.mono, fontSize:"10px", color:D.ink30, textAlign:"right" }}>{r.note}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Card hover helpers ───────────────────────────────────────
+const onHover  = (e: React.MouseEvent) => { const el = e.currentTarget as HTMLElement; el.style.boxShadow = D.shadowMd; el.style.transform = "translateY(-2px)"; };
+const onLeave  = (e: React.MouseEvent) => { const el = e.currentTarget as HTMLElement; el.style.boxShadow = "none"; el.style.transform = ""; };
+
+// ─── Main ─────────────────────────────────────────────────────
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
   const [approved, setApproved] = useState(false);
-
   useEffect(() => {
     setMounted(true);
     const t = setInterval(() => setApproved(p => !p), 3200);
     return () => clearInterval(t);
   }, []);
-
   if (!mounted) return null;
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Unbounded:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Unbounded:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         html{scroll-behavior:smooth}
-        body{background:${D.bg};color:${D.ice};font-family:${D.mono};overflow-x:hidden;-webkit-font-smoothing:antialiased}
+        body{background:${D.bg};color:${D.ink};font-family:${D.sans};overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
         a{color:inherit;text-decoration:none}
-        ::selection{background:${D.blue};color:#fff}
+        ::selection{background:${D.indigo};color:#fff}
         @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-        @keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
       `}</style>
 
-      {/* ── NAV ──────────────────────────────────────────────────────────── */}
-      <nav style={{
-        position:"fixed", top:0, left:0, right:0, zIndex:100,
-        padding:"0 10vw", height:"56px", display:"flex", alignItems:"center", justifyContent:"space-between",
-        background:"rgba(0,0,0,0.92)", backdropFilter:"blur(16px)",
-        borderBottom:`1px solid ${D.rule}`,
-      }}>
-        {/* Logo */}
-        <div style={{ display:"flex", alignItems:"center", gap:"10px" }}>
-          <svg width="20" height="20" viewBox="0 0 56 56" fill="none">
-            <rect x="8" y="16" width="7" height="32" fill={D.ice}/>
-            <rect x="41" y="16" width="7" height="32" fill={D.ice}/>
-            <rect x="8" y="13" width="40" height="6" fill={D.ice}/>
-            <rect x="18" y="19" width="20" height="29" fill="#000"/>
-            <rect x="18" y="44" width="20" height="1.5" fill={D.blue}/>
+      {/* ── NAV ─────────────────────────────────────────────── */}
+      <nav style={{ position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"0 8vw",height:"60px",display:"flex",alignItems:"center",justifyContent:"space-between",background:"rgba(250,250,248,.93)",backdropFilter:"blur(20px)",borderBottom:`1px solid ${D.rule}` }}>
+        <div style={{ display:"flex",alignItems:"center",gap:10 }}>
+          <svg width="22" height="22" viewBox="0 0 56 56" fill="none">
+            <rect x="8"  y="16" width="7"  height="32" fill={D.ink}/>
+            <rect x="41" y="16" width="7"  height="32" fill={D.ink}/>
+            <rect x="8"  y="13" width="40" height="6"  fill={D.ink}/>
+            <rect x="18" y="19" width="20" height="29" fill={D.bg}/>
+            <rect x="18" y="44" width="20" height="1.5" fill={D.indigo}/>
           </svg>
-          <span style={{ fontFamily:D.display, fontSize:"12px", fontWeight:700, letterSpacing:"0.22em" }}>LEYFIS</span>
+          <span style={{ fontFamily:D.display,fontSize:"12px",fontWeight:700,letterSpacing:".22em",color:D.ink }}>LEYFIS</span>
         </div>
-
-        {/* Nav links */}
-        <div style={{ display:"flex", alignItems:"center", gap:"8px" }}>
-          {[
-            ["#problem","Problem"],
-            ["#how","How it works"],
-            ["#banks","Banks"],
-            ["#operators","Vault Operators"],
-            ["#kyc","KYC Providers"],
-            ["#regulators","Regulators"],
-          ].map(([h,l]) => (
-            <a key={h} href={h} style={{ fontFamily:D.mono, fontSize:"9px", letterSpacing:"0.1em", color:D.ice30, padding:"6px 10px", transition:"color 0.15s" }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = D.ice)}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = D.ice30)}
+        <div style={{ display:"flex",alignItems:"center",gap:4 }}>
+          {[["#how","How it works"],["#roles","Roles"],["#mcp","MCP"],["#audit","Audit"]].map(([h,l]) => (
+            <a key={h} href={h} style={{ fontFamily:D.sans,fontSize:"13px",fontWeight:500,color:D.ink50,padding:"6px 12px",borderRadius:6,transition:"all .15s" }}
+              onMouseEnter={e => { const el=e.currentTarget as HTMLElement; el.style.color=D.ink; el.style.background=D.ink08; }}
+              onMouseLeave={e => { const el=e.currentTarget as HTMLElement; el.style.color=D.ink50; el.style.background="transparent"; }}
             >{l}</a>
           ))}
-          <div style={{ width:"1px", height:"20px", background:D.rule, margin:"0 8px" }}/>
-          <Link href="/portal" style={{
-            fontFamily:D.mono, fontSize:"9px", letterSpacing:"0.1em", color:D.ice50,
-            border:`1px solid ${D.rule}`, padding:"7px 16px", transition:"all 0.15s",
-          }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = D.ice30; (e.currentTarget as HTMLElement).style.color = D.ice; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = D.rule; (e.currentTarget as HTMLElement).style.color = D.ice50; }}
+          <div style={{ width:1,height:20,background:D.rule,margin:"0 8px" }}/>
+          <Link href="/portal" style={{ fontFamily:D.sans,fontSize:"13px",fontWeight:500,color:D.ink70,padding:"7px 16px",borderRadius:8,border:`1px solid ${D.rule}`,transition:"all .15s" }}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background=D.ink08)}
+            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background="transparent")}
           >Access Vaults</Link>
-          <Link href="/admin" style={{
-            fontFamily:D.mono, fontSize:"9px", letterSpacing:"0.1em",
-            background:D.blue, color:"#fff", padding:"7px 16px",
-            display:"flex", alignItems:"center", gap:"7px", transition:"opacity 0.15s",
-          }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.opacity = "0.85")}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.opacity = "1")}
+          <Link href="/admin" style={{ fontFamily:D.sans,fontSize:"13px",fontWeight:600,background:D.indigo,color:"#fff",padding:"7px 18px",borderRadius:8,display:"flex",alignItems:"center",gap:7,marginLeft:4,transition:"opacity .15s" }}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.opacity=".88")}
+            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.opacity="1")}
           >
-            <span style={{ width:"5px", height:"5px", borderRadius:"50%", background:D.teal, animation:"blink 2s infinite", flexShrink:0 }}/>
+            <span style={{ width:6,height:6,borderRadius:"50%",background:"rgba(255,255,255,.8)",animation:"blink 2s infinite",flexShrink:0 }}/>
             Admin Console
           </Link>
         </div>
       </nav>
 
-      {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section style={{ minHeight:"100vh", padding:"120px 10vw 0", display:"flex", flexDirection:"column", justifyContent:"center", position:"relative", overflow:"hidden" }}>
-        {/* Grid bg */}
-        <div style={{ position:"absolute", inset:0, backgroundImage:`linear-gradient(${D.rule} 1px,transparent 1px),linear-gradient(90deg,${D.rule} 1px,transparent 1px)`, backgroundSize:"80px 80px", pointerEvents:"none" }}/>
+      {/* ── HERO ────────────────────────────────────────────── */}
+      <section style={{ minHeight:"100vh",padding:"100px 8vw 0",display:"flex",flexDirection:"column",justifyContent:"center",position:"relative",overflow:"hidden",background:D.bg }}>
+        {/* Grid */}
+        <div style={{ position:"absolute",inset:0,backgroundImage:`linear-gradient(${D.ink08} 1px,transparent 1px),linear-gradient(90deg,${D.ink08} 1px,transparent 1px)`,backgroundSize:"80px 80px",pointerEvents:"none",opacity:.45 }}/>
+        {/* Glow */}
+        <div style={{ position:"absolute",top:"10%",left:"2%",width:"55%",height:"70%",background:`radial-gradient(ellipse at 30% 50%,${D.indigo06} 0%,transparent 68%)`,pointerEvents:"none" }}/>
 
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8vw", alignItems:"center", position:"relative", zIndex:1 }}>
+        <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8vw",alignItems:"center",position:"relative",zIndex:1 }}>
           {/* Copy */}
-          <div style={{ animation:"fadeUp 0.7s ease both" }}>
-            <div style={{ fontFamily:D.mono, fontSize:"9px", letterSpacing:"0.2em", color:D.ice30, marginBottom:"28px" }}>
-              — COMPLIANCE INFRASTRUCTURE · SOLANA
+          <div style={{ animation:"fadeUp .65s ease both" }}>
+            {/* Pill */}
+            <div style={{ display:"inline-flex",alignItems:"center",gap:8,background:D.indigo12,border:`1px solid ${D.indigo20}`,borderRadius:100,padding:"5px 14px",marginBottom:28 }}>
+              <span style={{ width:6,height:6,borderRadius:"50%",background:D.indigo,flexShrink:0 }}/>
+              <span style={{ fontFamily:D.mono,fontSize:"10px",color:D.indigo,letterSpacing:".08em" }}>LEYFIS FOR THE AGENTIC ECONOMY</span>
             </div>
-            <h1 style={{ fontFamily:D.display, fontSize:"clamp(40px,6.5vw,88px)", fontWeight:900, lineHeight:0.92, letterSpacing:"-0.025em", marginBottom:"32px" }}>
-              <span style={{ display:"block", color:D.ice }}>Institutional</span>
-              <span style={{ display:"block", color:D.blue }}>Compliance.</span>
-              <span style={{ display:"block", color:D.ice }}>On-Chain.</span>
+            <h1 style={{ fontFamily:D.display,fontSize:"clamp(36px,5.2vw,78px)",fontWeight:900,lineHeight:.95,letterSpacing:"-.025em",marginBottom:28 }}>
+              <span style={{ display:"block",color:D.ink }}>The compliance</span>
+              <span style={{ display:"block",color:D.indigo }}>layer for</span>
+              <span style={{ display:"block",color:D.ink }}>institutions</span>
+              <span style={{ display:"block",color:D.ink }}>and agents.</span>
             </h1>
-            <p style={{ fontFamily:D.serif, fontSize:"19px", color:D.ice50, lineHeight:1.7, maxWidth:"380px", marginBottom:"40px", fontStyle:"italic" }}>
-              On-chain compliance middleware for institutional DeFi vaults. Verifies KYC/AML attestations before execution.
+            <p style={{ fontFamily:D.sans,fontSize:"18px",color:D.ink50,lineHeight:1.7,maxWidth:420,marginBottom:40 }}>
+              On-chain KYC/AML enforcement before every vault interaction. Seven checks. Every time. Protocol-level. Immutable.
             </p>
-            <div style={{ display:"flex", gap:"12px", flexWrap:"wrap" }}>
-              <Link href="/portal" style={{ fontFamily:D.mono, fontSize:"10px", letterSpacing:"0.12em", background:D.blue, color:"#fff", padding:"13px 28px", transition:"opacity 0.15s" }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.opacity="0.85")}
-                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.opacity="1")}
-              >ACCESS VAULTS →</Link>
-              <Link href="/admin" style={{ fontFamily:D.mono, fontSize:"10px", letterSpacing:"0.12em", color:D.ice30, border:`1px solid ${D.rule}`, padding:"13px 28px", transition:"all 0.15s" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = D.ice30; (e.currentTarget as HTMLElement).style.color = D.ice; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = D.rule; (e.currentTarget as HTMLElement).style.color = D.ice30; }}
-              >ADMIN CONSOLE</Link>
+            <div style={{ display:"flex",gap:12,flexWrap:"wrap",marginBottom:44 }}>
+              <Link href="/portal" style={{ fontFamily:D.sans,fontSize:"14px",fontWeight:600,background:D.indigo,color:"#fff",padding:"13px 28px",borderRadius:10,transition:"all .15s",boxShadow:`0 4px 16px ${D.indigo20}` }}
+                onMouseEnter={e => { const el=e.currentTarget as HTMLElement; el.style.background=D.indigoDk; el.style.transform="translateY(-1px)"; el.style.boxShadow=`0 8px 24px ${D.indigo20}`; }}
+                onMouseLeave={e => { const el=e.currentTarget as HTMLElement; el.style.background=D.indigo; el.style.transform=""; el.style.boxShadow=`0 4px 16px ${D.indigo20}`; }}
+              >Access Vaults →</Link>
+              <Link href="/admin" style={{ fontFamily:D.sans,fontSize:"14px",fontWeight:500,color:D.ink70,border:`1px solid ${D.ink15}`,padding:"13px 28px",borderRadius:10,transition:"all .15s" }}
+                onMouseEnter={e => { const el=e.currentTarget as HTMLElement; el.style.borderColor=D.ink30; el.style.background=D.ink08; el.style.transform="translateY(-1px)"; }}
+                onMouseLeave={e => { const el=e.currentTarget as HTMLElement; el.style.borderColor=D.ink15; el.style.background="transparent"; el.style.transform=""; }}
+              >Admin Console</Link>
+            </div>
+            {/* Stats strip */}
+            <div style={{ display:"flex",gap:32,flexWrap:"wrap" }}>
+              {[["8 / 8","Tests passing"],["7","Compliance checks"],["< 400ms","Gate validation"],["FATF R.16","Aligned"]].map(([n,l]) => (
+                <div key={l}>
+                  <div style={{ fontFamily:D.display,fontSize:"16px",fontWeight:900,color:D.ink,letterSpacing:"-.01em" }}>{n}</div>
+                  <div style={{ fontFamily:D.mono,fontSize:"9px",color:D.ink30,letterSpacing:".08em",marginTop:3 }}>{l}</div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Gate */}
-          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"20px", animation:"fadeUp 0.7s ease 0.15s both" }}>
-            <Gate approved={approved} size={220} />
-            <div style={{ fontFamily:D.mono, fontSize:"9px", letterSpacing:"0.18em", color:approved ? D.teal : D.blue, transition:"color 0.8s" }}>
+          {/* Gate visual */}
+          <div style={{ display:"flex",flexDirection:"column",alignItems:"center",gap:24,animation:"fadeUp .65s ease .15s both" }}>
+            <Gate approved={approved} size={220}/>
+            <div style={{ fontFamily:D.mono,fontSize:"10px",letterSpacing:".18em",fontWeight:500,color:approved?D.teal:D.indigo,transition:"color .7s" }}>
               {approved ? "ACCESS GRANTED" : "VERIFYING..."}
             </div>
-            {/* Live badge */}
-            <div style={{ display:"flex", alignItems:"center", gap:"8px", padding:"6px 16px", border:`1px solid ${D.rule}`, marginTop:"8px" }}>
-              <span style={{ width:"5px", height:"5px", borderRadius:"50%", background:D.teal, animation:"blink 2s infinite" }}/>
-              <span style={{ fontFamily:D.mono, fontSize:"9px", letterSpacing:"0.12em", color:D.ice30 }}>DEVNET LIVE · 10 GATE CALLS CONFIRMED</span>
+            <div style={{ display:"flex",alignItems:"center",gap:8,padding:"8px 18px",background:D.bg2,border:`1px solid ${D.rule}`,borderRadius:100,boxShadow:D.shadow }}>
+              <span style={{ width:6,height:6,borderRadius:"50%",background:D.tealBt,animation:"blink 2s infinite" }}/>
+              <span style={{ fontFamily:D.mono,fontSize:"9px",letterSpacing:".1em",color:D.ink50 }}>DEVNET LIVE · GATE PROGRAM ACTIVE</span>
             </div>
           </div>
         </div>
 
         {/* Ticker */}
-        <div style={{ position:"absolute", bottom:0, left:0, right:0, overflow:"hidden", borderTop:`1px solid ${D.rule}`, padding:"11px 0", background:D.bg }}>
-          <div style={{ display:"flex", animation:"ticker 22s linear infinite", width:"max-content" }}>
+        <div style={{ position:"absolute",bottom:0,left:0,right:0,overflow:"hidden",borderTop:`1px solid ${D.rule}`,padding:"10px 0",background:D.bgDark }}>
+          <div style={{ display:"flex",animation:"ticker 26s linear infinite",width:"max-content" }}>
             {[...Array(2)].map((_,i) => (
               <span key={i} style={{ display:"contents" }}>
-                {["7 COMPLIANCE CHECKS","FATF R.16 ALIGNED","<400MS VALIDATION","SOLANA DEVNET","8/8 ANCHOR TESTS PASSING","IMMUTABLE AUDIT LOG","FINMA · FCA · MAS READY","TIER-GATED ACCESS"].map((t,j) => (
-                  <span key={j} style={{ fontFamily:D.mono, fontSize:"8px", letterSpacing:"0.16em", color:D.ice15, padding:"0 36px", borderRight:`1px solid ${D.rule}`, whiteSpace:"nowrap" }}>{t}</span>
+                {["7 COMPLIANCE CHECKS","FATF R.16 ALIGNED","<400MS VALIDATION","SOLANA DEVNET","8/8 ANCHOR TESTS","IMMUTABLE AUDIT LOG","FINMA · FCA · MAS READY","MCP SERVER LIVE","AI AGENT READY","12 MCP TOOLS","AGENTIC ECONOMY"].map((t,j) => (
+                  <span key={j} style={{ fontFamily:D.mono,fontSize:"9px",letterSpacing:".14em",color:"rgba(232,238,246,.32)",padding:"0 32px",borderRight:"1px solid rgba(232,238,246,0.07)",whiteSpace:"nowrap" }}>{t}</span>
                 ))}
               </span>
             ))}
@@ -320,135 +332,142 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── PROBLEM ──────────────────────────────────────────────────────── */}
-      <section id="problem" style={{ padding:"96px 10vw", borderTop:`1px solid ${D.rule}` }}>
+      {/* ── THE GAP ─────────────────────────────────────────── */}
+      <section id="problem" style={{ padding:"96px 8vw",borderTop:`1px solid ${D.rule}`,background:D.bg1 }}>
         <Fade>
-          <div style={{ fontFamily:D.mono, fontSize:"8px", letterSpacing:"0.2em", color:D.ice30, marginBottom:"48px" }}>/01 THE GAP</div>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"6vw", alignItems:"start" }}>
-            {/* Left — statement */}
+          <div style={{ fontFamily:D.mono,fontSize:"9px",letterSpacing:".2em",color:D.ink30,marginBottom:48 }}>/01 THE GAP</div>
+          <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6vw",alignItems:"start",marginBottom:40 }}>
             <div>
-              <h2 style={{ fontFamily:D.display, fontSize:"clamp(24px,3.5vw,44px)", fontWeight:900, lineHeight:1.0, letterSpacing:"-0.02em", color:D.ice, marginBottom:"28px" }}>
-                Compliance exists.<br/>DeFi can't read it.
+              <h2 style={{ fontFamily:D.display,fontSize:"clamp(24px,3.5vw,48px)",fontWeight:900,lineHeight:1.0,letterSpacing:"-.02em",color:D.ink,marginBottom:22 }}>
+                Compliance exists.<br/><span style={{ color:D.indigo }}>DeFi can't read it.</span>
               </h2>
-              <p style={{ fontFamily:D.serif, fontSize:"18px", color:D.ice50, lineHeight:1.75, marginBottom:"28px", fontStyle:"italic" }}>
-                Banks have spent years building KYC/AML infrastructure. That work lives in internal systems no blockchain can query. DeFi vaults can't tell a verified institutional investor from a sanctioned wallet.
+              <p style={{ fontFamily:D.sans,fontSize:"17px",color:D.ink50,lineHeight:1.75,marginBottom:18 }}>
+                Banks have spent years building KYC/AML infrastructure. That work lives in internal systems no blockchain can query.
               </p>
-              <p style={{ fontFamily:D.display, fontSize:"15px", fontWeight:700, color:D.ice, lineHeight:1.4 }}>
-                The problem is not your compliance team.{" "}
-                <span style={{ color:D.blue }}>The problem is that compliance has no on-chain address.</span>
+              <p style={{ fontFamily:D.display,fontSize:"14px",fontWeight:700,color:D.ink,lineHeight:1.5 }}>
+                DeFi vaults can't distinguish a verified institutional investor from a sanctioned wallet.{" "}
+                <span style={{ color:D.indigo }}>Compliance has no on-chain address.</span>
               </p>
             </div>
+            <div style={{ display:"flex",flexDirection:"column",gap:3 }}>
+              <div style={{ padding:"22px 26px",background:D.red10,border:"1px solid rgba(220,38,38,0.16)",borderRadius:"10px 10px 3px 3px" }}>
+                <div style={{ fontFamily:D.mono,fontSize:"8px",letterSpacing:".14em",color:D.red,marginBottom:14 }}>WITHOUT LEYFIS</div>
+                {["KYC data locked in spreadsheets and PDFs","Vault open to any wallet — verified or not","One sanctioned wallet exposes the entire institution","Compliance team reviews every transaction manually"].map((t,i) => (
+                  <div key={i} style={{ display:"flex",gap:10,padding:"7px 0",borderBottom:"1px solid rgba(220,38,38,0.08)" }}>
+                    <span style={{ color:D.red,fontSize:12,flexShrink:0 }}>✕</span>
+                    <span style={{ fontFamily:D.sans,fontSize:13,color:D.ink50,lineHeight:1.65 }}>{t}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ padding:"22px 26px",background:D.teal10,border:`1px solid ${D.teal20}`,borderRadius:"3px 3px 10px 10px" }}>
+                <div style={{ fontFamily:D.mono,fontSize:"8px",letterSpacing:".14em",color:D.teal,marginBottom:14 }}>WITH LEYFIS</div>
+                {["Signed attestations on Solana — always current, always on-chain","Every wallet checked automatically before execution","Sanctioned wallets blocked at the protocol layer","Audit log written on-chain. No manual review. No exceptions."].map((t,i) => (
+                  <div key={i} style={{ display:"flex",gap:10,padding:"7px 0",borderBottom:`1px solid rgba(13,107,79,0.1)` }}>
+                    <span style={{ color:D.teal,fontSize:12,flexShrink:0 }}>✓</span>
+                    <span style={{ fontFamily:D.sans,fontSize:13,color:D.ink70,lineHeight:1.65 }}>{t}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Fade>
 
-            {/* Right — contrast */}
-            <div style={{ display:"flex", flexDirection:"column", gap:"2px" }}>
-              <div style={{ padding:"24px 28px", background:D.red10, border:`1px solid rgba(122,31,31,0.2)` }}>
-                <div style={{ fontFamily:D.mono, fontSize:"8px", letterSpacing:"0.16em", color:"rgba(200,80,80,0.8)", marginBottom:"16px" }}>TODAY — WITHOUT LEYFIS</div>
-                {["KYC data locked in spreadsheets and PDFs","Vault open to any wallet, verified or not","One sanctioned wallet = institution-wide exposure","Compliance team manually reviews every transaction"].map((t,i) => (
-                  <div key={i} style={{ display:"flex", gap:"10px", padding:"7px 0", borderBottom:`1px solid rgba(122,31,31,0.1)` }}>
-                    <span style={{ color:"rgba(200,80,80,0.6)", fontSize:"11px", flexShrink:0, marginTop:"1px" }}>✕</span>
-                    <span style={{ fontFamily:D.mono, fontSize:"12px", color:D.ice30, lineHeight:1.6, fontWeight:300 }}>{t}</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{ padding:"24px 28px", background:D.teal10, border:`1px solid rgba(15,110,86,0.2)` }}>
-                <div style={{ fontFamily:D.mono, fontSize:"8px", letterSpacing:"0.16em", color:"rgba(30,180,120,0.8)", marginBottom:"16px" }}>WITH LEYFIS</div>
-                {["Signed attestations on Solana — immutable, always current","Every wallet checked automatically on every interaction","Sanctioned wallets blocked before the transaction executes","Audit log written on-chain. No manual anything."].map((t,i) => (
-                  <div key={i} style={{ display:"flex", gap:"10px", padding:"7px 0", borderBottom:`1px solid rgba(15,110,86,0.1)` }}>
-                    <span style={{ color:D.teal, fontSize:"11px", flexShrink:0, marginTop:"1px" }}>✓</span>
-                    <span style={{ fontFamily:D.mono, fontSize:"12px", color:D.ice50, lineHeight:1.6, fontWeight:300 }}>{t}</span>
-                  </div>
-                ))}
-              </div>
+        {/* Agentic callout */}
+        <Fade delay={100}>
+          <div style={{ padding:"28px 32px",background:D.indigo12,border:`1px solid ${D.indigo20}`,borderRadius:12,display:"flex",gap:28,alignItems:"flex-start" }}>
+            <div style={{ flexShrink:0,width:48,height:48,background:D.indigo20,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center" }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={D.indigo} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73C11.4 5.39 11 4.74 11 4a2 2 0 0 1 2-2z"/>
+                <circle cx="7.5" cy="14.5" r="1"/><circle cx="16.5" cy="14.5" r="1"/>
+              </svg>
+            </div>
+            <div style={{ flex:1 }}>
+              <div style={{ fontFamily:D.mono,fontSize:"9px",letterSpacing:".12em",color:D.indigo,marginBottom:8 }}>NEW · LEYFIS FOR THE AGENTIC ECONOMY</div>
+              <h3 style={{ fontFamily:D.display,fontSize:"18px",fontWeight:900,color:D.ink,marginBottom:10,letterSpacing:"-.01em" }}>Your AI agents inherit your compliance tier.</h3>
+              <p style={{ fontFamily:D.sans,fontSize:"14px",color:D.ink50,lineHeight:1.75,maxWidth:680 }}>In the agentic economy, institutions deploy AI systems to execute on their behalf. Leyfis verifies them exactly as it verifies your human traders — on-chain, before execution, with a full immutable audit trail. Permissioned autonomy, without blind spots.</p>
             </div>
           </div>
         </Fade>
       </section>
 
-      {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
-      <section id="how" style={{ padding:"96px 10vw", borderTop:`1px solid ${D.rule}`, background:D.bg1 }}>
+      {/* ── HOW THE GATE WORKS ──────────────────────────────── */}
+      <section id="how" style={{ padding:"96px 8vw",borderTop:`1px solid ${D.rule}`,background:D.bg2 }}>
         <Fade>
-          <div style={{ fontFamily:D.mono, fontSize:"8px", letterSpacing:"0.2em", color:D.ice30, marginBottom:"48px" }}>/02 THE SOLUTION</div>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"6vw", alignItems:"start", marginBottom:"56px" }}>
+          <div style={{ fontFamily:D.mono,fontSize:"9px",letterSpacing:".2em",color:D.ink30,marginBottom:48 }}>/02 THE GATE</div>
+          <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6vw",alignItems:"start",marginBottom:56 }}>
             <div>
-              <h2 style={{ fontFamily:D.display, fontSize:"clamp(22px,3vw,38px)", fontWeight:900, lineHeight:1.0, color:D.ice, marginBottom:"20px", letterSpacing:"-0.02em" }}>
-                A gate between the wallet and the vault.
+              <h2 style={{ fontFamily:D.display,fontSize:"clamp(24px,3.5vw,48px)",fontWeight:900,lineHeight:1.0,letterSpacing:"-.02em",color:D.ink,marginBottom:22 }}>
+                Seven checks.<br/>Every time.<br/><span style={{ color:D.indigo }}>No exceptions.</span>
               </h2>
-              <p style={{ fontFamily:D.serif, fontSize:"17px", color:D.ice50, lineHeight:1.75, marginBottom:"32px", fontStyle:"italic" }}>
-                Leyfis enforces compliance at the point of execution using cryptographic attestations stored on-chain.
+              <p style={{ fontFamily:D.sans,fontSize:"17px",color:D.ink50,lineHeight:1.75 }}>
+                Every vault interaction passes through the Leyfis Gate first. Seven checks fire in a fixed order. Any failure stops the transaction atomically — no partial state, no side effects. The gate cannot be bypassed.
               </p>
-              <div style={{ display:"flex", flexDirection:"column", gap:"0" }}>
-                {["Attestation-based access control","Issuer verification","Tiered permissions","Real-time enforcement"].map((b,i) => (
-                  <div key={i} style={{ display:"flex", gap:"12px", alignItems:"center", padding:"11px 0", borderBottom:`1px solid ${D.rule}` }}>
-                    <div style={{ width:4, height:4, borderRadius:"50%", background:D.blue, flexShrink:0 }}/>
-                    <span style={{ fontFamily:D.mono, fontSize:"12px", color:D.ice, fontWeight:300 }}>{b}</span>
-                  </div>
-                ))}
-              </div>
             </div>
-            <div style={{ paddingTop:"8px" }}>
-              {/* Attestation flow SVG — inline */}
-              <div style={{ fontFamily:D.mono, fontSize:"8px", letterSpacing:"0.14em", color:D.ice30, marginBottom:"16px" }}>EXECUTION FLOW</div>
-              <div style={{ display:"flex", flexDirection:"column", gap:"2px" }}>
-                {[
-                  { from:"WALLET", arrow:"→", to:"LEYFIS GATE", note:"intercepts every call" },
-                  { from:"LEYFIS GATE", arrow:"→", to:"SAS ATTESTATION", note:"reads on-chain credential" },
-                  { from:"LEYFIS GATE", arrow:"→", to:"7 CHECKS", note:"tier · issuer · expiry · jurisdiction" },
-                  { from:"PASS", arrow:"→", to:"VAULT", note:"CPI forwarded, executes atomically" },
-                  { from:"FAIL", arrow:"→", to:"REJECTED", note:"reason code written to audit log" },
-                ].map(({from,arrow,to,note},i) => (
-                  <div key={i} style={{ display:"grid", gridTemplateColumns:"120px 16px 120px 1fr", gap:"8px", padding:"10px 16px", border:`1px solid ${D.rule}`, background:D.bg2, alignItems:"center" }}>
-                    <span style={{ fontFamily:D.mono, fontSize:"9px", color: from === "PASS" ? D.teal : from === "FAIL" ? "rgba(200,80,80,0.7)" : D.blue, letterSpacing:"0.06em" }}>{from}</span>
-                    <span style={{ fontFamily:D.mono, fontSize:"10px", color:D.ice30 }}>{arrow}</span>
-                    <span style={{ fontFamily:D.mono, fontSize:"9px", color: to === "VAULT" ? D.teal : to === "REJECTED" ? "rgba(200,80,80,0.7)" : D.ice, letterSpacing:"0.06em", fontWeight: to === "VAULT" || to === "REJECTED" ? 500 : 300 }}>{to}</span>
-                    <span style={{ fontFamily:D.mono, fontSize:"8px", color:D.ice15, letterSpacing:"0.04em" }}>{note}</span>
-                  </div>
-                ))}
-              </div>
+            {/* Flow */}
+            <div style={{ display:"flex",flexDirection:"column",gap:2 }}>
+              {[
+                { from:"Wallet",      to:"Leyfis Gate",  note:"intercepts every call",       color:D.indigo },
+                { from:"Leyfis Gate", to:"SAS Attest.",  note:"reads on-chain credential",   color:D.indigo },
+                { from:"Gate",        to:"7 Checks",     note:"tier · issuer · expiry · geo", color:D.amber  },
+                { from:"PASS",        to:"Vault",        note:"CPI forwarded atomically",     color:D.teal   },
+                { from:"FAIL",        to:"Rejected",     note:"reason code + audit entry",    color:D.red    },
+              ].map(({ from,to,note,color },i) => (
+                <div key={i} style={{ display:"grid",gridTemplateColumns:"108px 14px 112px 1fr",gap:8,padding:"12px 18px",border:`1px solid ${D.rule}`,background:D.bg1,alignItems:"center",borderRadius:i===0?"9px 9px 0 0":i===4?"0 0 9px 9px":"0" }}>
+                  <span style={{ fontFamily:D.mono,fontSize:"10px",color,fontWeight:500,letterSpacing:".04em" }}>{from}</span>
+                  <span style={{ fontFamily:D.mono,fontSize:"11px",color:D.ink30 }}>→</span>
+                  <span style={{ fontFamily:D.mono,fontSize:"10px",color:D.ink,fontWeight:500,letterSpacing:".04em" }}>{to}</span>
+                  <span style={{ fontFamily:D.mono,fontSize:"9px",color:D.ink30 }}>{note}</span>
+                </div>
+              ))}
             </div>
           </div>
         </Fade>
 
-        {/* Steps */}
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"2px", marginBottom:"64px" }}>
+        {/* 4 steps */}
+        <div style={{ display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:2,marginBottom:56 }}>
           {[
-            { n:"01", t:"Attest", d:"Your KYC provider issues a signed credential to the verified wallet on Solana. Tier, jurisdiction, expiry, KYC reference. One transaction. Immutable." },
-            { n:"02", t:"Gate", d:"Every vault interaction hits the Leyfis Gate first. Seven checks fire in fixed order. Any failure stops the transaction. No discretion. No exceptions." },
-            { n:"03", t:"Authorize", d:"All seven checks pass. Leyfis CPIs to the vault, forwarding the instruction unchanged. Atomic. No proxy. No custody. Invisible to compliant users." },
-            { n:"04", t:"Audit", d:"Every outcome — approved or denied — writes an immutable AuditEntry on-chain. FATF R.16 aligned CSV export on demand. The ledger is the record." },
-          ].map(({ n, t, d }, i) => (
-            <Fade key={n} delay={i * 60}>
-              <div style={{ padding:"32px", border:`1px solid ${D.rule}`, background:D.bg2, height:"100%" }}>
-                <div style={{ display:"flex", alignItems:"center", gap:"16px", marginBottom:"16px" }}>
-                  <span style={{ fontFamily:D.display, fontSize:"11px", fontWeight:400, color:D.ice15 }}>{n}</span>
-                  <span style={{ fontFamily:D.display, fontSize:"18px", fontWeight:700, color:D.ice }}>{t}</span>
+            { n:"01", t:"Attest",    d:"KYC provider issues a signed credential to the verified wallet. Tier, jurisdiction, expiry. One transaction. Immutable." },
+            { n:"02", t:"Gate",      d:"Every vault interaction hits the Gate first. Seven checks fire in order. Any failure stops the transaction. No discretion." },
+            { n:"03", t:"Authorize", d:"All checks pass. Leyfis CPIs to the vault with the original instruction unchanged. Atomic. Invisible to compliant users." },
+            { n:"04", t:"Audit",     d:"Every outcome — approved or denied — writes an immutable AuditEntry on-chain. FATF R.16 CSV on demand." },
+          ].map(({ n,t,d },i) => (
+            <Fade key={n} delay={i*60}>
+              <div style={{ padding:28,border:`1px solid ${D.rule}`,background:D.bg1,height:"100%",borderRadius:10,transition:"all .2s",cursor:"default" }}
+                onMouseEnter={onHover} onMouseLeave={onLeave}>
+                <div style={{ display:"flex",alignItems:"center",gap:12,marginBottom:14 }}>
+                  <span style={{ fontFamily:D.display,fontSize:"10px",color:D.ink15 }}>{n}</span>
+                  <span style={{ fontFamily:D.display,fontSize:"16px",fontWeight:700,color:D.ink }}>{t}</span>
                 </div>
-                <p style={{ fontFamily:D.mono, fontSize:"12px", color:D.ice30, lineHeight:1.8, fontWeight:300 }}>{d}</p>
+                <p style={{ fontFamily:D.sans,fontSize:"13px",color:D.ink50,lineHeight:1.75 }}>{d}</p>
               </div>
             </Fade>
           ))}
         </div>
 
-        {/* 7 checks — CENTERED */}
+        {/* 7 checks table */}
         <Fade>
-          <div style={{ maxWidth:"800px", margin:"0 auto" }}>
-            <div style={{ fontFamily:D.mono, fontSize:"8px", letterSpacing:"0.18em", color:D.ice30, textAlign:"center", marginBottom:"20px" }}>
+          <div style={{ maxWidth:860,margin:"0 auto" }}>
+            <div style={{ fontFamily:D.mono,fontSize:"9px",letterSpacing:".16em",color:D.ink30,textAlign:"center",marginBottom:18 }}>
               7 COMPLIANCE CHECKS — ENFORCED ON EVERY GATE CALL, IN THIS ORDER
             </div>
-            <div style={{ border:`1px solid ${D.rule}` }}>
+            <div style={{ border:`1px solid ${D.rule}`,borderRadius:12,overflow:"hidden",boxShadow:D.shadow }}>
               {[
-                ["01","Gate status","GatePaused","Gate is paused by vault operator"],
-                ["02","Attestation exists","NoAttestation","No credential found for this wallet"],
-                ["03","Not revoked","AttestationRevoked","Credential has been revoked"],
-                ["04","Not expired","AttestationExpired","Credential has expired"],
-                ["05","Trusted issuer","UntrustedIssuer","Issuer not on approved list"],
-                ["06","Tier sufficient","TierInsufficient","Wallet tier below vault minimum"],
-                ["07","Jurisdiction eligible","JurisdictionBlocked","Wallet jurisdiction not permitted"],
-              ].map(([num, label, code, desc], i) => (
-                <div key={i} style={{ display:"grid", gridTemplateColumns:"36px 1fr 1fr 1fr", gap:"16px", padding:"14px 20px", borderBottom: i < 6 ? `1px solid ${D.rule}` : "none", alignItems:"center" }}>
-                  <span style={{ fontFamily:D.mono, fontSize:"9px", color:D.ice15 }}>{num}</span>
-                  <span style={{ fontFamily:D.mono, fontSize:"12px", color:D.ice }}>{label}</span>
-                  <span style={{ fontFamily:D.mono, fontSize:"9px", color:D.blue, letterSpacing:"0.06em" }}>{code}</span>
-                  <span style={{ fontFamily:D.mono, fontSize:"10px", color:D.ice30, fontWeight:300 }}>{desc}</span>
+                ["01","Gate status",       "GatePaused",          "Gate is paused by vault operator"],
+                ["02","Attestation exists","NoAttestation",       "No credential found for this wallet"],
+                ["03","Not revoked",       "AttestationRevoked",  "Credential has been revoked by issuer"],
+                ["04","Not expired",       "AttestationExpired",  "Credential validity has lapsed"],
+                ["05","Trusted issuer",    "UntrustedIssuer",     "Issuer not on vault approved list"],
+                ["06","Tier sufficient",   "TierInsufficient",    "Wallet tier below vault minimum"],
+                ["07","Jurisdiction",      "JurisdictionBlocked", "Wallet jurisdiction not permitted"],
+              ].map(([num,label,code,desc],i) => (
+                <div key={i} style={{ display:"grid",gridTemplateColumns:"36px 1fr 1fr 1.4fr",gap:16,padding:"14px 22px",borderBottom:i<6?`1px solid ${D.rule}`:"none",background:D.bg2,alignItems:"center",transition:"background .12s",cursor:"default" }}
+                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background=D.indigo06)}
+                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background=D.bg2)}
+                >
+                  <span style={{ fontFamily:D.mono,fontSize:"10px",color:D.ink15 }}>{num}</span>
+                  <span style={{ fontFamily:D.sans,fontSize:"13px",fontWeight:500,color:D.ink }}>{label}</span>
+                  <span style={{ fontFamily:D.mono,fontSize:"10px",color:D.indigo,letterSpacing:".04em" }}>{code}</span>
+                  <span style={{ fontFamily:D.sans,fontSize:"12px",color:D.ink50 }}>{desc}</span>
                 </div>
               ))}
             </div>
@@ -456,218 +475,217 @@ export default function LandingPage() {
         </Fade>
       </section>
 
-      {/* ── BUILT FOR EVERY ACTOR ─────────────────────────────────────────── */}
-      <section id="for" style={{ padding: "96px 10vw", borderTop: `1px solid ${D.rule}` }}>
+      {/* ── FIVE STAKEHOLDERS BENTO ──────────────────────────── */}
+      <section id="roles" style={{ padding:"96px 8vw",borderTop:`1px solid ${D.rule}`,background:D.bg1 }}>
         <Fade>
-          <div style={{ fontFamily: D.mono, fontSize: "8px", letterSpacing: "0.2em", color: D.ice30, marginBottom: "16px" }}>/03 BUILT FOR EVERY ACTOR IN THE STACK</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "40px", alignItems: "end", marginBottom: "64px" }}>
-            <div>
-              <h2 style={{ fontFamily: D.display, fontSize: "clamp(22px,3vw,40px)", fontWeight: 900, lineHeight: 1.0, color: D.ice, letterSpacing: "-0.02em", marginBottom: "16px" }}>
-                One system.<br/>Four stakeholders.<br/><span style={{ color: D.blue }}>Aligned.</span>
-              </h2>
-              <p style={{ fontFamily: D.serif, fontSize: "17px", color: D.ice50, lineHeight: 1.75, maxWidth: "520px", fontStyle: "italic" }}>
-                Leyfis connects institutions, operators, issuers, and users — enforcing compliance without breaking execution.
-              </p>
-            </div>
-            <div style={{ fontFamily: D.mono, fontSize: "9px", color: D.ice30, letterSpacing: "0.12em", textAlign: "right", whiteSpace: "nowrap" }}>
-              Each role operates independently.<br/>
-              <span style={{ color: D.blue }}>Leyfis ensures they operate in sync.</span>
-            </div>
+          <div style={{ fontFamily:D.mono,fontSize:"9px",letterSpacing:".2em",color:D.ink30,marginBottom:14 }}>/03 BUILT FOR</div>
+          <div style={{ display:"grid",gridTemplateColumns:"1fr auto",gap:32,alignItems:"end",marginBottom:44 }}>
+            <h2 style={{ fontFamily:D.display,fontSize:"clamp(24px,3.5vw,48px)",fontWeight:900,lineHeight:1.0,letterSpacing:"-.02em",color:D.ink }}>
+              One gate.<br/><span style={{ color:D.indigo }}>Five stakeholders.</span><br/>All aligned.
+            </h2>
+            <p style={{ fontFamily:D.sans,fontSize:"14px",color:D.ink50,lineHeight:1.7,maxWidth:260,textAlign:"right" }}>
+              Each role operates independently.<br/><span style={{ color:D.ink,fontWeight:500 }}>Leyfis keeps them in sync.</span>
+            </p>
           </div>
         </Fade>
 
-        {/* 2×2 Card grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2px" }}>
-
-          {/* ── 1. Financial Institutions ── */}
-          <Fade delay={0}>
-            <div style={{ padding: "40px", border: `1px solid ${D.rule}`, background: D.bg2, display: "flex", flexDirection: "column", gap: "0" }}>
-              {/* Icon + label */}
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={D.blue} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M8 10v11M12 10v11M16 10v11M20 10v11"/>
-                </svg>
-                <span style={{ fontFamily: D.mono, fontSize: "8px", letterSpacing: "0.16em", color: D.blue, textTransform: "uppercase" }}>Financial Institutions</span>
-              </div>
-              {/* Headline */}
-              <h3 style={{ fontFamily: D.display, fontSize: "clamp(16px,2vw,22px)", fontWeight: 900, lineHeight: 1.1, color: D.ice, letterSpacing: "-0.01em", marginBottom: "12px" }}>
-                Enter DeFi without<br/>regulatory exposure.
-              </h3>
-              {/* Value */}
-              <p style={{ fontFamily: D.serif, fontSize: "15px", color: D.ice50, lineHeight: 1.7, fontStyle: "italic", marginBottom: "24px" }}>
-                Deploy capital into on-chain strategies while maintaining full compliance with KYC/AML requirements.
-              </p>
-              {/* Bullets */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "0", marginBottom: "28px", flex: 1 }}>
-                {[
-                  "Enforce access control at transaction level",
-                  "Eliminate exposure to sanctioned or unknown wallets",
-                  "Generate regulator-ready audit trails automatically",
-                  "Align with FATF and MiCA requirements",
-                ].map((b, i) => (
-                  <div key={i} style={{ display: "flex", gap: "12px", alignItems: "flex-start", padding: "9px 0", borderBottom: `1px solid ${D.rule}` }}>
-                    <div style={{ width: 4, height: 4, borderRadius: "50%", background: D.blue, flexShrink: 0, marginTop: 6 }}/>
-                    <span style={{ fontFamily: D.mono, fontSize: "11px", color: D.ice30, lineHeight: 1.7, fontWeight: 300 }}>{b}</span>
+        {/* Row 1 — 5-col grid: span 2 + span 2 + span 1 */}
+        <div style={{ display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:3,marginBottom:3 }}>
+          {[
+            { label:"Financial Institutions", color:D.indigo, span:2,
+              headline:"Enter DeFi without regulatory exposure.",
+              desc:"Deploy capital into on-chain strategies while maintaining full KYC/AML compliance.",
+              points:["Enforce access at transaction level","Eliminate sanctioned wallet exposure","Auto-generate regulator-ready audit trails","Align with FATF and MiCA"] },
+            { label:"Vault Operators", color:D.teal, span:2,
+              headline:"Control who accesses your vault.",
+              desc:"Define and enforce compliance rules without touching your existing vault architecture.",
+              points:["Set minimum KYC tier per vault","Whitelist trusted KYC issuers","Pause / unpause access in one call","Monitor live gate activity"] },
+            { label:"KYC Issuers", color:"#8899BB", span:1,
+              headline:"Turn KYC into an on-chain primitive.",
+              desc:"Issue verifiable credentials that control access to real financial infrastructure.",
+              points:["Issue wallet attestations","Set tiers and expiries","Revoke in real time","View issuance registry"] },
+          ].map(({ label,color,span,headline,desc,points },i) => (
+            <Fade key={label} delay={i*70} style={{ gridColumn:`span ${span}` }}>
+              <div style={{ padding:32,border:`1px solid ${D.rule}`,background:D.bg2,height:"100%",borderRadius:12,transition:"all .2s",cursor:"default" }}
+                onMouseEnter={onHover} onMouseLeave={onLeave}>
+                <div style={{ display:"flex",alignItems:"center",gap:9,marginBottom:18 }}>
+                  <div style={{ width:8,height:8,borderRadius:"50%",background:color }}/>
+                  <span style={{ fontFamily:D.mono,fontSize:"9px",letterSpacing:".12em",color,textTransform:"uppercase" }}>{label}</span>
+                </div>
+                <h3 style={{ fontFamily:D.display,fontSize:"clamp(13px,1.6vw,18px)",fontWeight:900,lineHeight:1.1,color:D.ink,marginBottom:10,letterSpacing:"-.01em" }}>{headline}</h3>
+                <p style={{ fontFamily:D.sans,fontSize:"13px",color:D.ink50,lineHeight:1.7,marginBottom:18 }}>{desc}</p>
+                {points.map((p,j) => (
+                  <div key={j} style={{ display:"flex",gap:10,alignItems:"flex-start",padding:"8px 0",borderBottom:`1px solid ${D.rule}` }}>
+                    <div style={{ width:4,height:4,borderRadius:"50%",background:color,flexShrink:0,marginTop:6 }}/>
+                    <span style={{ fontFamily:D.sans,fontSize:"12px",color:D.ink50,lineHeight:1.6 }}>{p}</span>
                   </div>
                 ))}
               </div>
-              {/* Outcome */}
-              <div style={{ paddingTop: "16px", borderTop: `1px solid rgba(27,79,216,0.2)` }}>
-                <span style={{ fontFamily: D.mono, fontSize: "10px", color: D.blue, letterSpacing: "0.06em" }}>
-                  → DeFi access becomes deployable, not experimental.
-                </span>
-              </div>
-            </div>
-          </Fade>
+            </Fade>
+          ))}
+        </div>
 
-          {/* ── 2. Vault Operators ── */}
-          <Fade delay={80}>
-            <div style={{ padding: "40px", border: `1px solid ${D.rule}`, background: D.bg2, display: "flex", flexDirection: "column" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={D.teal} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-                  <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-                </svg>
-                <span style={{ fontFamily: D.mono, fontSize: "8px", letterSpacing: "0.16em", color: D.teal, textTransform: "uppercase" }}>Vault Operators</span>
+        {/* Row 2 — span 3 + span 2 */}
+        <div style={{ display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:3 }}>
+          {[
+            { label:"Compliance Auditors", color:D.amber, span:3, bg:D.bg2, border:D.rule,
+              headline:"Read-only access to everything.",
+              desc:"Filter the audit log, monitor denials in real-time, and export FATF R.16 CSV reports for regulators and executive teams.",
+              points:["Filter by date, outcome, wallet, tier","Export FATF R.16 CSV in one click","Monitor live gate activity feed","Read-only — zero write permissions, ever"] },
+            { label:"AI Agents & Autonomous Systems", color:D.indigo, span:2, bg:D.indigo12, border:D.indigo20,
+              headline:"Permissioned autonomy.",
+              desc:"In the agentic economy, AI systems execute on behalf of institutions. Leyfis verifies each agent with the same rigor as human traders — on-chain, before execution.",
+              points:["Agents inherit institutional attestation tier","Every agent interaction fully audited","Full compliance trail, zero blind spots","Same 7 checks on every agent call"] },
+          ].map(({ label,color,span,bg,border,headline,desc,points },i) => (
+            <Fade key={label} delay={i*80+200} style={{ gridColumn:`span ${span}` }}>
+              <div style={{ padding:32,border:`1px solid ${border}`,background:bg,height:"100%",borderRadius:12,transition:"all .2s",cursor:"default" }}
+                onMouseEnter={onHover} onMouseLeave={onLeave}>
+                <div style={{ display:"flex",alignItems:"center",gap:9,marginBottom:18 }}>
+                  <div style={{ width:8,height:8,borderRadius:"50%",background:color }}/>
+                  <span style={{ fontFamily:D.mono,fontSize:"9px",letterSpacing:".12em",color,textTransform:"uppercase" }}>{label}</span>
+                </div>
+                <h3 style={{ fontFamily:D.display,fontSize:"clamp(13px,1.6vw,18px)",fontWeight:900,lineHeight:1.1,color:D.ink,marginBottom:10,letterSpacing:"-.01em" }}>{headline}</h3>
+                <p style={{ fontFamily:D.sans,fontSize:"13px",color:D.ink50,lineHeight:1.7,marginBottom:18 }}>{desc}</p>
+                <div style={{ display:"grid",gridTemplateColumns:span===3?"1fr 1fr":"1fr",gap:0 }}>
+                  {points.map((p,j) => (
+                    <div key={j} style={{ display:"flex",gap:10,alignItems:"flex-start",padding:"8px 0",borderBottom:`1px solid ${D.rule}` }}>
+                      <div style={{ width:4,height:4,borderRadius:"50%",background:color,flexShrink:0,marginTop:6 }}/>
+                      <span style={{ fontFamily:D.sans,fontSize:"12px",color:D.ink50,lineHeight:1.6 }}>{p}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <h3 style={{ fontFamily: D.display, fontSize: "clamp(16px,2vw,22px)", fontWeight: 900, lineHeight: 1.1, color: D.ice, letterSpacing: "-0.01em", marginBottom: "12px" }}>
-                Control who accesses<br/>your vault — on-chain.
-              </h3>
-              <p style={{ fontFamily: D.serif, fontSize: "15px", color: D.ice50, lineHeight: 1.7, fontStyle: "italic", marginBottom: "24px" }}>
-                Define and enforce compliance rules without modifying your vault architecture.
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0", marginBottom: "28px", flex: 1 }}>
-                {[
-                  "Set minimum KYC tiers per vault",
-                  "Whitelist trusted issuers",
-                  "Pause/unpause access instantly",
-                  "Monitor live gate activity and approvals",
-                ].map((b, i) => (
-                  <div key={i} style={{ display: "flex", gap: "12px", alignItems: "flex-start", padding: "9px 0", borderBottom: `1px solid ${D.rule}` }}>
-                    <div style={{ width: 4, height: 4, borderRadius: "50%", background: D.teal, flexShrink: 0, marginTop: 6 }}/>
-                    <span style={{ fontFamily: D.mono, fontSize: "11px", color: D.ice30, lineHeight: 1.7, fontWeight: 300 }}>{b}</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{ paddingTop: "16px", borderTop: `1px solid rgba(15,110,86,0.2)` }}>
-                <span style={{ fontFamily: D.mono, fontSize: "10px", color: D.teal, letterSpacing: "0.06em" }}>
-                  → Permissioned vaults with zero manual overhead.
-                </span>
-              </div>
-            </div>
-          </Fade>
-
-          {/* ── 3. KYC Issuers ── */}
-          <Fade delay={120}>
-            <div style={{ padding: "40px", border: `1px solid ${D.rule}`, background: D.bg2, display: "flex", flexDirection: "column" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8899BB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                  <polyline points="9 12 11 14 15 10"/>
-                </svg>
-                <span style={{ fontFamily: D.mono, fontSize: "8px", letterSpacing: "0.16em", color: "#8899BB", textTransform: "uppercase" }}>KYC Issuers</span>
-              </div>
-              <h3 style={{ fontFamily: D.display, fontSize: "clamp(16px,2vw,22px)", fontWeight: 900, lineHeight: 1.1, color: D.ice, letterSpacing: "-0.01em", marginBottom: "12px" }}>
-                Turn KYC into a usable<br/>on-chain primitive.
-              </h3>
-              <p style={{ fontFamily: D.serif, fontSize: "15px", color: D.ice50, lineHeight: 1.7, fontStyle: "italic", marginBottom: "24px" }}>
-                Issue verifiable credentials that directly control access to financial infrastructure.
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0", marginBottom: "28px", flex: 1 }}>
-                {[
-                  "Issue signed attestations tied to wallets",
-                  "Set tiers, expiries, and jurisdictions",
-                  "Revoke access in real time",
-                  "Maintain a clear issuance registry",
-                ].map((b, i) => (
-                  <div key={i} style={{ display: "flex", gap: "12px", alignItems: "flex-start", padding: "9px 0", borderBottom: `1px solid ${D.rule}` }}>
-                    <div style={{ width: 4, height: 4, borderRadius: "50%", background: "#8899BB", flexShrink: 0, marginTop: 6 }}/>
-                    <span style={{ fontFamily: D.mono, fontSize: "11px", color: D.ice30, lineHeight: 1.7, fontWeight: 300 }}>{b}</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{ paddingTop: "16px", borderTop: "1px solid rgba(136,153,187,0.2)" }}>
-                <span style={{ fontFamily: D.mono, fontSize: "10px", color: "#8899BB", letterSpacing: "0.06em" }}>
-                  → KYC becomes enforceable, not just recorded.
-                </span>
-              </div>
-            </div>
-          </Fade>
-
-          {/* ── 4. End Users ── */}
-          <Fade delay={160}>
-            <div style={{ padding: "40px", border: `1px solid ${D.rule}`, background: D.bg2, display: "flex", flexDirection: "column" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={D.ice} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="7" width="20" height="14" rx="2"/>
-                  <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
-                  <line x1="12" y1="12" x2="12.01" y2="12"/>
-                  <path d="M8 12h.01M16 12h.01"/>
-                </svg>
-                <span style={{ fontFamily: D.mono, fontSize: "8px", letterSpacing: "0.16em", color: D.ice50, textTransform: "uppercase" }}>End Users</span>
-              </div>
-              <h3 style={{ fontFamily: D.display, fontSize: "clamp(16px,2vw,22px)", fontWeight: 900, lineHeight: 1.1, color: D.ice, letterSpacing: "-0.01em", marginBottom: "12px" }}>
-                Access compliant DeFi —<br/>once verified.
-              </h3>
-              <p style={{ fontFamily: D.serif, fontSize: "15px", color: D.ice50, lineHeight: 1.7, fontStyle: "italic", marginBottom: "24px" }}>
-                Complete KYC once and interact with multiple vaults seamlessly.
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0", marginBottom: "28px", flex: 1 }}>
-                {[
-                  "One attestation unlocks multiple protocols",
-                  "No repeated onboarding across platforms",
-                  "Transparent approval or rejection at transaction time",
-                  "Faster, predictable access to capital",
-                ].map((b, i) => (
-                  <div key={i} style={{ display: "flex", gap: "12px", alignItems: "flex-start", padding: "9px 0", borderBottom: `1px solid ${D.rule}` }}>
-                    <div style={{ width: 4, height: 4, borderRadius: "50%", background: D.ice50, flexShrink: 0, marginTop: 6 }}/>
-                    <span style={{ fontFamily: D.mono, fontSize: "11px", color: D.ice30, lineHeight: 1.7, fontWeight: 300 }}>{b}</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{ paddingTop: "16px", borderTop: `1px solid rgba(232,238,246,0.1)` }}>
-                <span style={{ fontFamily: D.mono, fontSize: "10px", color: D.ice50, letterSpacing: "0.06em" }}>
-                  → A single identity gives you portable access across DeFi.
-                </span>
-              </div>
-            </div>
-          </Fade>
-
+            </Fade>
+          ))}
         </div>
       </section>
 
-      {/* ── FINAL CTA ─────────────────────────────────────────────────────── */}
-      <section style={{ padding:"120px 10vw", borderTop:`1px solid ${D.rule}`, display:"flex", flexDirection:"column", alignItems:"center", textAlign:"center", background:D.bg1 }}>
+      {/* ── MCP SECTION ─────────────────────────────────────── */}
+      <section id="mcp" style={{ padding:"96px 8vw",borderTop:`1px solid ${D.rule}`,background:D.bg }}>
+        <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8vw",alignItems:"center" }}>
+          <Fade>
+            <div style={{ fontFamily:D.mono,fontSize:"9px",letterSpacing:".2em",color:D.ink30,marginBottom:14 }}>/04 NATURAL LANGUAGE OPERATIONS</div>
+            <h2 style={{ fontFamily:D.display,fontSize:"clamp(24px,3.5vw,48px)",fontWeight:900,lineHeight:1.0,letterSpacing:"-.02em",color:D.ink,marginBottom:22 }}>
+              Leyfis speaks<br/><span style={{ color:D.indigo }}>natural language.</span>
+            </h2>
+            <p style={{ fontFamily:D.sans,fontSize:"17px",color:D.ink50,lineHeight:1.75,marginBottom:32 }}>
+              Claude Desktop connects directly to the Leyfis protocol via MCP. Compliance operators configure vaults, query audit logs, and generate regulatory reports in plain English — no CLI, no code.
+            </p>
+            <div style={{ display:"flex",flexDirection:"column",gap:2,marginBottom:28 }}>
+              {["Pause and unpause gate access","Query audit log and filter by outcome","Issue and revoke on-chain attestations","Export FATF R.16 compliance reports","Update vault config and trusted issuers"].map((t,i) => (
+                <div key={i} style={{ display:"flex",gap:12,alignItems:"center",padding:"11px 16px",border:`1px solid ${D.rule}`,background:D.bg2,borderRadius:i===0?"8px 8px 0 0":i===4?"0 0 8px 8px":"0" }}>
+                  <div style={{ width:6,height:6,borderRadius:"50%",background:D.indigo,flexShrink:0 }}/>
+                  <span style={{ fontFamily:D.sans,fontSize:"13px",color:D.ink70 }}>{t}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ display:"inline-flex",alignItems:"center",gap:10,padding:"10px 16px",background:D.indigo12,border:`1px solid ${D.indigo20}`,borderRadius:8 }}>
+              <span style={{ fontFamily:D.mono,fontSize:"10px",color:D.indigo,letterSpacing:".05em" }}>12 MCP tools · No CLI · No Solana Explorer</span>
+            </div>
+          </Fade>
+          <Fade delay={100}>
+            <McpTerminal/>
+          </Fade>
+        </div>
+      </section>
+
+      {/* ── AUDIT FEED ──────────────────────────────────────── */}
+      <section id="audit" style={{ padding:"96px 8vw",borderTop:`1px solid ${D.rule}`,background:D.bg1 }}>
         <Fade>
-          <h2 style={{ fontFamily:D.display, fontSize:"clamp(28px,4.5vw,64px)", fontWeight:900, lineHeight:0.95, letterSpacing:"-0.025em", marginBottom:"48px", maxWidth:"820px" }}>
-            <span style={{ color:D.ice }}>Leyfis enables institutional capital to access DeFi </span>
-            <span style={{ color:D.blue }}>without compromising compliance.</span>
-          </h2>
-          <div style={{ display:"flex", gap:"12px", justifyContent:"center", flexWrap:"wrap" }}>
-            <Link href="/portal" style={{ fontFamily:D.mono, fontSize:"11px", letterSpacing:"0.12em", background:D.blue, color:"#fff", padding:"14px 36px", transition:"opacity 0.15s" }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.opacity="0.85")}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.opacity="1")}
-            >ACCESS YOUR VAULTS →</Link>
-            <Link href="/admin" style={{ fontFamily:D.mono, fontSize:"11px", letterSpacing:"0.12em", color:D.ice30, border:`1px solid ${D.rule}`, padding:"14px 36px", transition:"all 0.15s" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = D.ice30; (e.currentTarget as HTMLElement).style.color = D.ice; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = D.rule; (e.currentTarget as HTMLElement).style.color = D.ice30; }}
-            >OPEN INSTITUTIONAL CONSOLE</Link>
+          <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6vw",alignItems:"start",marginBottom:40 }}>
+            <div>
+              <div style={{ fontFamily:D.mono,fontSize:"9px",letterSpacing:".2em",color:D.ink30,marginBottom:14 }}>/05 THE AUDIT IS PUBLIC</div>
+              <h2 style={{ fontFamily:D.display,fontSize:"clamp(22px,3vw,42px)",fontWeight:900,lineHeight:1.0,letterSpacing:"-.02em",color:D.ink,marginBottom:18 }}>
+                Every decision is on-chain.<br/><span style={{ color:D.teal }}>Nothing is hidden.</span>
+              </h2>
+              <p style={{ fontFamily:D.sans,fontSize:"16px",color:D.ink50,lineHeight:1.75 }}>
+                Every gate call — approved or denied — writes an immutable AuditEntry to Solana. Independently verifiable. Never mutable. Readable by anyone, including regulators.
+              </p>
+            </div>
+            <div style={{ display:"flex",flexDirection:"column",gap:8,paddingTop:32 }}>
+              {[
+                ["Audit entries written","on every gate call"],
+                ["Mutation possible","never"],
+                ["FATF R.16 export","one click"],
+                ["Verification","Solana Explorer"],
+              ].map(([label,value]) => (
+                <div key={label} style={{ display:"flex",justifyContent:"space-between",padding:"12px 16px",border:`1px solid ${D.rule}`,background:D.bg2,borderRadius:8 }}>
+                  <span style={{ fontFamily:D.sans,fontSize:"13px",color:D.ink50 }}>{label}</span>
+                  <span style={{ fontFamily:D.mono,fontSize:"12px",color:D.ink,fontWeight:500 }}>{value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <AuditFeed/>
+        </Fade>
+      </section>
+
+      {/* ── TECH STRIP ──────────────────────────────────────── */}
+      <section style={{ padding:"36px 8vw",borderTop:`1px solid ${D.rule}`,background:D.bg2 }}>
+        <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:24 }}>
+          {[
+            ["Blockchain","Solana devnet"],
+            ["Smart contracts","Rust + Anchor v0.30"],
+            ["Credentials","SAS Attestation Service"],
+            ["RPC","Helius"],
+            ["AI interface","Claude MCP · 12 tools"],
+            ["Test coverage","8 / 8 passing"],
+          ].map(([label,value]) => (
+            <div key={label} style={{ textAlign:"center" }}>
+              <div style={{ fontFamily:D.mono,fontSize:"8px",letterSpacing:".1em",color:D.ink30,textTransform:"uppercase",marginBottom:4 }}>{label}</div>
+              <div style={{ fontFamily:D.sans,fontSize:"13px",fontWeight:500,color:D.ink }}>{value}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── CTA ─────────────────────────────────────────────── */}
+      <section style={{ padding:"120px 8vw",background:D.indigo,position:"relative",overflow:"hidden" }}>
+        <div style={{ position:"absolute",inset:0,backgroundImage:"linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px)",backgroundSize:"60px 60px",pointerEvents:"none" }}/>
+        <div style={{ position:"absolute",top:"-20%",right:"-10%",width:"50%",height:"140%",background:"radial-gradient(ellipse at 60% 50%,rgba(255,255,255,0.06) 0%,transparent 65%)",pointerEvents:"none" }}/>
+        <Fade>
+          <div style={{ position:"relative",textAlign:"center",maxWidth:780,margin:"0 auto" }}>
+            <h2 style={{ fontFamily:D.display,fontSize:"clamp(28px,4.5vw,64px)",fontWeight:900,lineHeight:.95,letterSpacing:"-.025em",color:"#fff",marginBottom:24 }}>
+              Your institution's next move<br/>into DeFi starts<br/>with a gate.
+            </h2>
+            <p style={{ fontFamily:D.sans,fontSize:"18px",color:"rgba(255,255,255,.7)",lineHeight:1.7,marginBottom:48,maxWidth:440,margin:"0 auto 48px" }}>
+              Verify compliance. Enforce access. Audit everything.
+            </p>
+            <div style={{ display:"flex",gap:14,justifyContent:"center",flexWrap:"wrap" }}>
+              <Link href="/portal" style={{ fontFamily:D.sans,fontSize:"15px",fontWeight:600,background:"#fff",color:D.indigo,padding:"14px 36px",borderRadius:10,transition:"all .15s",boxShadow:"0 4px 20px rgba(0,0,0,0.14)" }}
+                onMouseEnter={e => { const el=e.currentTarget as HTMLElement; el.style.transform="translateY(-2px)"; el.style.boxShadow="0 8px 32px rgba(0,0,0,0.18)"; }}
+                onMouseLeave={e => { const el=e.currentTarget as HTMLElement; el.style.transform=""; el.style.boxShadow="0 4px 20px rgba(0,0,0,0.14)"; }}
+              >Access Vaults →</Link>
+              <Link href="/admin" style={{ fontFamily:D.sans,fontSize:"15px",fontWeight:500,color:"rgba(255,255,255,.88)",padding:"14px 36px",borderRadius:10,border:"1px solid rgba(255,255,255,.28)",transition:"all .15s" }}
+                onMouseEnter={e => { const el=e.currentTarget as HTMLElement; el.style.background="rgba(255,255,255,.1)"; el.style.borderColor="rgba(255,255,255,.45)"; }}
+                onMouseLeave={e => { const el=e.currentTarget as HTMLElement; el.style.background="transparent"; el.style.borderColor="rgba(255,255,255,.28)"; }}
+              >Open Admin Console</Link>
+            </div>
           </div>
         </Fade>
       </section>
 
-      {/* ── FOOTER ───────────────────────────────────────────────────────── */}
-      <footer style={{ padding:"20px 10vw", borderTop:`1px solid ${D.rule}`, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-        <span style={{ fontFamily:D.display, fontSize:"10px", fontWeight:700, letterSpacing:"0.2em", color:D.ice30 }}>LEYFIS</span>
-        <div style={{ display:"flex", gap:"28px" }}>
-          {[["Vaults","/portal"],["Admin","/admin"],["GitHub","https://github.com/thinkDecade/leyfis"],["Explorer",`https://explorer.solana.com/address/Cskp4zg7aDHvY4u2M7FyceqqcbvGThgo8WahvQCkQZVP?cluster=devnet`]].map(([l,h]) => (
-            <a key={l as string} href={h as string} target={(h as string).startsWith("http") ? "_blank" : undefined} rel="noreferrer"
-              style={{ fontFamily:D.mono, fontSize:"9px", letterSpacing:"0.12em", color:D.ice30, textTransform:"uppercase", transition:"color 0.15s" }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = D.ice50)}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = D.ice30)}
+      {/* ── FOOTER ──────────────────────────────────────────── */}
+      <footer style={{ padding:"24px 8vw",borderTop:`1px solid ${D.rule}`,display:"flex",justifyContent:"space-between",alignItems:"center",background:D.bg,flexWrap:"wrap",gap:16 }}>
+        <div style={{ display:"flex",alignItems:"center",gap:10 }}>
+          <svg width="18" height="18" viewBox="0 0 56 56" fill="none">
+            <rect x="8"  y="16" width="7"  height="32" fill={D.ink}/>
+            <rect x="41" y="16" width="7"  height="32" fill={D.ink}/>
+            <rect x="8"  y="13" width="40" height="6"  fill={D.ink}/>
+            <rect x="18" y="19" width="20" height="29" fill={D.bg}/>
+          </svg>
+          <span style={{ fontFamily:D.display,fontSize:"10px",fontWeight:700,letterSpacing:".2em",color:D.ink50 }}>LEYFIS</span>
+        </div>
+        <div style={{ display:"flex",gap:24 }}>
+          {([["Vaults","/portal"],["Admin","/admin"],["GitHub","https://github.com/thinkDecade/leyfis"],["Explorer",`https://explorer.solana.com/address/Cskp4zg7aDHvY4u2M7FyceqqcbvGThgo8WahvQCkQZVP?cluster=devnet`]] as [string,string][]).map(([l,h]) => (
+            <a key={l} href={h} target={h.startsWith("http")?"_blank":undefined} rel="noreferrer"
+              style={{ fontFamily:D.sans,fontSize:"13px",fontWeight:500,color:D.ink30,transition:"color .15s" }}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color=D.ink70)}
+              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color=D.ink30)}
             >{l}</a>
           ))}
         </div>
+        <span style={{ fontFamily:D.mono,fontSize:"9px",color:D.ink30 }}>Gate: Cskp4z...QZVP · Solana devnet</span>
       </footer>
     </>
   );
