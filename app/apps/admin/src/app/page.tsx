@@ -5,7 +5,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { AdminShell, useRole, ROLE_LABELS } from "@/components/AdminShell";
 import { shortAddr, GATE_PROGRAM_ID, VAULT_PROGRAM_ID } from "@leyfis/shared";
-import { ShieldCheck, Vault, BadgeCheck, BookOpen, ScrollText, Radio, Download, LayoutDashboard, ArrowRight, Lock, Loader2 } from "lucide-react";
+import { ShieldCheck, Vault, BadgeCheck, BookOpen, ScrollText, Radio, Download, LayoutDashboard, ArrowRight, Lock, Loader2, UserSearch } from "lucide-react";
 
 const m = { fontFamily:"DM Mono,monospace" };
 const f = { fontFamily:"Inter,sans-serif" };
@@ -17,7 +17,8 @@ const ALL_SCREENS = [
   { icon:BookOpen,   title:"Attestation Registry", subtitle:"View and manage issued credentials",href:"/registry", roles:["super_admin","kyc_issuer"] },
   { icon:ScrollText, title:"Audit Log",            subtitle:"Browse immutable gate call history",href:"/audit",    roles:["super_admin","vault_operator","kyc_issuer","compliance_auditor"] },
   { icon:Radio,      title:"Live Feed",            subtitle:"Real-time gate activity monitor",   href:"/feed",     roles:["super_admin","vault_operator","kyc_issuer","compliance_auditor"] },
-  { icon:Download,   title:"Compliance Export",    subtitle:"FATF R.16 CSV export for regulators",href:"/export",  roles:["super_admin","vault_operator","compliance_auditor"] },
+  { icon:Download,    title:"Compliance Export",        subtitle:"FATF R.16 CSV export for regulators",          href:"/export",   roles:["super_admin","vault_operator","compliance_auditor"] },
+  { icon:UserSearch, title:"Profile Explorer",          subtitle:"Full compliance bureau profile for any wallet", href:"/profile",  roles:["super_admin","vault_operator","kyc_issuer","compliance_auditor"] },
 ];
 
 const ROLE_CONTENT: Record<string,{ headline:string; desc:string }> = {

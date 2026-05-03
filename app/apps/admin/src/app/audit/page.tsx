@@ -191,9 +191,14 @@ export default function AuditPage() {
               <span style={{ ...m, fontSize: "9px", fontWeight: 700, color: e.outcome === "approved" ? "var(--success)" : "var(--danger)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
                 {e.outcome === "approved" ? "PASS" : "DENY"}
               </span>
-              <a href={addressUrl(e.wallet)} target="_blank" rel="noreferrer" style={{ ...m, fontSize: "10px", color: "var(--accent)", textDecoration: "none" }}>
-                {shortAddr(e.wallet, 8)}
-              </a>
+              <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <a href={`/profile?wallet=${e.wallet}`} style={{ ...m, fontSize: "10px", color: "var(--accent)", textDecoration: "none" }}>
+                  {shortAddr(e.wallet, 8)}
+                </a>
+                <a href={addressUrl(e.wallet)} target="_blank" rel="noreferrer" style={{ color: "var(--text-4)", display: "flex", alignItems: "center" }} title="View on Explorer">
+                  <svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M7 1h4v4M11 1L5 7M2 3H1v8h8V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </a>
+              </span>
               <span style={{ ...m, fontSize: "10px", color: "var(--text-3)" }}>
                 {REASON_CODES[e.reasonCode] || `Code ${e.reasonCode}`}
               </span>

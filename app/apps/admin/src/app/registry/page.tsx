@@ -113,7 +113,7 @@ export default function RegistryPage() {
             <div key={i} onClick={()=>setSelected(selected===a.wallet?null:a.wallet)}
               style={{display:"grid",gridTemplateColumns:"2fr 1fr 60px 80px 100px 90px 80px",gap:"12px",padding:"13px 16px",borderBottom:i<filtered.length-1?"1px solid var(--border)":"none",...m,fontSize:"10px",alignItems:"center",cursor:"pointer",background:selected===a.wallet?"var(--accent-bg)":"transparent",borderLeft:`2px solid ${selected===a.wallet?"var(--accent)":a.status==="active"?"var(--accent)":a.status==="revoked"?"var(--danger)":"var(--border-2)"}`,transition:"background 0.1s"}}>
               <div>
-                <div style={{...m,fontSize:"10px",color:"var(--text-1)",fontWeight:500}}>{shortAddr(a.wallet,8)}</div>
+                <a href={`/profile?wallet=${a.wallet}`} style={{...m,fontSize:"10px",color:"var(--accent)",fontWeight:500,textDecoration:"none"}}>{shortAddr(a.wallet,8)}</a>
                 <div style={{...m,fontSize:"9px",color:"var(--text-4)",marginTop:"2px"}}>{a.kycRef}</div>
               </div>
               <span style={{color:"var(--text-3)"}}>{shortAddr(a.issuer,6)}</span>
@@ -174,6 +174,10 @@ export default function RegistryPage() {
                   Revoke Attestation
                 </button>
               )}
+              <a href={`/profile?wallet=${selectedAttestation.wallet}`}
+                style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",...m,fontSize:"10px",letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--accent)",border:"1px solid var(--accent-border)",padding:"10px",background:"var(--accent-bg)"}}>
+                <Shield size={11}/> View Compliance Profile
+              </a>
               <a href={`https://explorer.solana.com/address/${selectedAttestation.wallet}?cluster=devnet`} target="_blank" rel="noreferrer"
                 style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",...m,fontSize:"10px",letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--text-3)",border:"1px solid var(--border)",padding:"10px",background:"var(--bg-2)"}}>
                 <ExternalLink size={11}/> View on Explorer

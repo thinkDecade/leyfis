@@ -35,3 +35,4 @@ export const formatTs   = (ts: number)   => new Date(ts*1000).toISOString().repl
 export * from "./txBuilders";
 export * from "./usePlan";
 export * from "./analytics";
+export * from "./profileBuilder";
