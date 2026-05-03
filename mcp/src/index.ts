@@ -487,6 +487,146 @@ async function setProtocolFee(feeLamports: number) {
   return { success: true, action: "Protocol fee updated", feeLamports, feeSOL: feeLamports / LAMPORTS_PER_SOL, signature: sig };
 }
 
+async function getComplianceProfile(walletAddress: string, includeVaultHistory = true) {
+  let wallet: PublicKey;
+  try { wallet = new PublicKey(walletAddress); } catch {
+    return { error: `Invalid wallet address: ${walletAddress}` };
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+
+  // Load VaultConfig (for audit_nonce) + IssuerRegistry in parallel
+  const [vcInfo, regInfo] = await Promise.all([
+    conn.getAccountInfo(vaultConfigKey),
+    conn.getAccountInfo(registryKey),
+  ]);
+
+  let auditNonce = 0;
+  if (vcInfo?.data) {
+    try { auditNonce = decodeVaultConfig(vcInfo.data as Buffer).auditNonce; } catch { /* ignore */ }
+  }
+
+  let issuerPubkeys: string[] = [];
+  if (regInfo?.data) {
+    try {
+      issuerPubkeys = decodeIssuerRegistry(regInfo.data as Buffer).issuers
+        .filter(i => i.active).map(i => i.pubkey);
+    } catch { /* ignore */ }
+  }
+
+  // Scan audit entries newest-first (cap at 200 for performance)
+  const MAX_SCAN = 200;
+  const scanFrom = Math.max(0, auditNonce - MAX_SCAN);
+  const auditPDAs: PublicKey[] = [];
+  for (let n = auditNonce - 1; n >= scanFrom; n--) {
+    auditPDAs.push(auditEntryPDA(BigInt(n)));
+  }
+
+  // Batch fetch 25 at a time
+  const matchedEntries: AuditEntry[] = [];
+  for (let i = 0; i < auditPDAs.length; i += 25) {
+    const batch = auditPDAs.slice(i, i + 25);
+    const infos = await conn.getMultipleAccountsInfo(batch);
+    for (const info of infos) {
+      if (!info?.data || info.data.length < 8) continue;
+      try {
+        const e = decodeAuditEntry(info.data as Buffer);
+        if (e.wallet === walletAddress) matchedEntries.push(e);
+      } catch { /* skip */ }
+    }
+  }
+  matchedEntries.sort((a, b) => b.timestamp - a.timestamp);
+
+  // Fetch attestations from all active issuers
+  const attPDAs = issuerPubkeys.map(iss =>
+    attestationPDA(wallet, new PublicKey(iss))
+  );
+  const attInfos = await conn.getMultipleAccountsInfo(attPDAs);
+
+  const attestations: object[] = [];
+  for (let i = 0; i < attInfos.length; i++) {
+    const info = attInfos[i];
+    if (!info?.data || info.data.length < 8) continue;
+    try {
+      const att     = decodeAttestation(info.data as Buffer);
+      const expired = att.expiresAt > 0 && att.expiresAt < now;
+      attestations.push({
+        issuer:       att.issuer,
+        tier:         att.tier,
+        tier_label:   att.tier === 3 ? "Institutional" : att.tier === 2 ? "Enhanced DD" : "Basic KYC",
+        jurisdiction: att.jurisdiction,
+        issued_at:    new Date(att.issuedAt * 1000).toISOString(),
+        expires_at:   att.expiresAt > 0 ? new Date(att.expiresAt * 1000).toISOString() : "never",
+        revoked:      att.revoked,
+        status:       att.revoked ? "revoked" : expired ? "expired" : "valid",
+      });
+    } catch { /* skip */ }
+  }
+
+  const approved    = matchedEntries.filter(e => e.outcome === "Approved");
+  const denied      = matchedEntries.filter(e => e.outcome === "Denied");
+  const total       = matchedEntries.length;
+  const approvalRate = total > 0 ? `${((approved.length / total) * 100).toFixed(1)}%` : "no_calls";
+
+  const activeAtts  = attestations.filter((a: any) => a.status === "valid");
+  const highestTier = activeAtts.length > 0 ? Math.max(...activeAtts.map((a: any) => a.tier)) : 0;
+
+  const vaultMap = new Map<string, { first: number; last: number; total: number; ok: number }>();
+  for (const e of matchedEntries) {
+    const ex = vaultMap.get(e.vault);
+    if (!ex) vaultMap.set(e.vault, { first: e.timestamp, last: e.timestamp, total: 1, ok: e.outcome === "Approved" ? 1 : 0 });
+    else { ex.total++; if (e.outcome === "Approved") ex.ok++; if (e.timestamp < ex.first) ex.first = e.timestamp; if (e.timestamp > ex.last) ex.last = e.timestamp; }
+  }
+
+  const profile: Record<string, unknown> = {
+    entity:       walletAddress,
+    computed_at:  new Date().toISOString(),
+
+    credential_summary: {
+      highest_tier:        highestTier,
+      highest_tier_label:  highestTier === 3 ? "Institutional" : highestTier === 2 ? "Enhanced DD" : highestTier === 1 ? "Basic KYC" : "None",
+      active_attestations: activeAtts.length,
+      total_attestations:  attestations.length,
+      attestations,
+    },
+
+    behavioural_record: {
+      total_gate_calls: total,
+      approved:         approved.length,
+      denied:           denied.length,
+      approval_rate:    approvalRate,
+      first_seen:       total > 0 ? new Date(matchedEntries[total - 1].timestamp * 1000).toISOString() : null,
+      last_seen:        total > 0 ? new Date(matchedEntries[0].timestamp * 1000).toISOString() : null,
+      denial_breakdown: {
+        no_attestation:       denied.filter(e => e.reasonCode === 1).length,
+        expired:              denied.filter(e => e.reasonCode === 2).length,
+        revoked:              denied.filter(e => e.reasonCode === 3).length,
+        untrusted_issuer:     denied.filter(e => e.reasonCode === 4).length,
+        tier_insufficient:    denied.filter(e => e.reasonCode === 5).length,
+        jurisdiction_blocked: denied.filter(e => e.reasonCode === 6).length,
+        gate_paused:          denied.filter(e => e.reasonCode === 7).length,
+      },
+    },
+
+    bureau_note: highestTier === 0
+      ? "No active attestation found. This wallet cannot currently pass any Leyfis-protected gate."
+      : `Tier ${highestTier} credential active. Approval rate: ${approvalRate}. ${denied.length > 0 ? `${denied.length} denial(s) on record.` : "Clean gate history."}`,
+  };
+
+  if (includeVaultHistory) {
+    profile.vault_history = Array.from(vaultMap.entries()).map(([v, d]) => ({
+      vault:             v,
+      total_calls:       d.total,
+      approved:          d.ok,
+      approval_rate:     `${Math.round(d.ok / d.total * 100)}%`,
+      first_interaction: new Date(d.first * 1000).toISOString(),
+      last_interaction:  new Date(d.last * 1000).toISOString(),
+    }));
+  }
+
+  return profile;
+}
+
 // ── MCP Server ────────────────────────────────────────────────────────────────
 
 const server = new Server(
@@ -595,6 +735,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         },
       },
     },
+    {
+      name: "get_compliance_profile",
+      description: "Get the full on-chain compliance bureau profile for any wallet. Aggregates all AuditEntry records and attestation accounts into a structured counterparty profile — credential summary (tier, issuers, expiry), behavioural record (approval rate, denial breakdown), and per-vault interaction history. Use this before onboarding an institution or assessing counterparty risk.",
+      inputSchema: {
+        type: "object",
+        required: ["wallet"],
+        properties: {
+          wallet:                { type: "string",  description: "Solana wallet address (base58) to profile" },
+          include_vault_history: { type: "boolean", description: "Include per-vault footprint breakdown (default: true)" },
+        },
+      },
+    },
   ],
 }));
 
@@ -616,6 +768,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "issue_attestation":     result = await issueAttestation((args as any).wallet, (args as any).tier, (args as any).jurisdiction, (args as any).expires_in_days ?? 365); break;
       case "revoke_attestation":    result = await revokeAttestation((args as any).wallet, (args as any)?.issuer); break;
       case "set_protocol_fee":      result = await setProtocolFee((args as any).fee_lamports); break;
+      case "get_compliance_profile": result = await getComplianceProfile((args as any).wallet, (args as any)?.include_vault_history ?? true); break;
       default: result = { error: `Unknown tool: ${name}` };
     }
   } catch (e: any) {

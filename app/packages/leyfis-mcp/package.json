@@ -10,11 +10,15 @@
   "scripts": {
     "build": "tsc",
     "dev": "node --loader ts-node/esm src/server.ts",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "start:http": "node dist/http-server.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "@solana/web3.js": "^1.98.4"
+    "@solana/web3.js": "^1.98.4",
+    "@types/express": "^5.0.6",
+    "express": "^5.2.1",
+    "serverless-http": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.19.39",

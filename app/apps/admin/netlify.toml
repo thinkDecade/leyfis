@@ -1,7 +1,23 @@
 [build]
-  command   = "yarn workspace @leyfis/admin build"
+  command   = "yarn workspace @leyfis/admin build && cd app/packages/leyfis-mcp && npm install && npm run build"
   publish   = "app/apps/admin/out"
   base      = ""
 
 [build.environment]
   NODE_VERSION = "20"
+
+[functions]
+  directory         = "netlify/functions"
+  node_bundler      = "esbuild"
+  included_files    = ["app/packages/leyfis-mcp/src/**"]
+
+# Redirect /mcp → Netlify Function (clean URL for MCP clients)
+[[redirects]]
+  from   = "/mcp"
+  to     = "/.netlify/functions/mcp"
+  status = 200
+
+[[redirects]]
+  from   = "/mcp/*"
+  to     = "/.netlify/functions/mcp/:splat"
+  status = 200
