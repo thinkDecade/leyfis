@@ -9,14 +9,14 @@ import { createLeyfisServer } from "./create-server.js";
 
 export const app = express();
 
-// ── CORS ───────────────────────────────────────────────────────────────────────
+// ── CORS + OPTIONS preflight ───────────────────────────────────────────────────
 app.use((_req: Request, res: Response, next: NextFunction) => {
   res.setHeader("Access-Control-Allow-Origin",  "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept, Mcp-Session-Id");
+  if (_req.method === "OPTIONS") { res.sendStatus(204); return; }
   next();
 });
-app.options("*", (_req: Request, res: Response) => res.sendStatus(204));
 
 // ── JSON body ──────────────────────────────────────────────────────────────────
 app.use(express.json());
