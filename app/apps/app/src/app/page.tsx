@@ -211,12 +211,20 @@ const onLeave  = (e: React.MouseEvent) => { const el = e.currentTarget as HTMLEl
 export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
   const [approved, setApproved] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     setMounted(true);
     const t = setInterval(() => setApproved(p => !p), 3200);
-    return () => clearInterval(t);
+    const onScroll = () => setScrolled(window.scrollY > 80);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => { clearInterval(t); window.removeEventListener("scroll", onScroll); };
   }, []);
   if (!mounted) return null;
+
+  const navInk  = scrolled ? D.ink   : D.ice;
+  const navInk50= scrolled ? D.ink50 : "rgba(232,238,246,0.55)";
+  const navBg   = scrolled ? "rgba(247,248,250,0.96)" : "rgba(10,15,28,0.55)";
+  const navBdr  = scrolled ? D.rule  : "rgba(232,238,246,0.08)";
 
   return (
     <>
@@ -228,31 +236,31 @@ export default function LandingPage() {
         a{color:inherit;text-decoration:none}
         ::selection{background:${D.indigo12};color:${D.indigo}}
         @keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
       `}</style>
 
       {/* ── NAV ─────────────────────────────────────────────── */}
-      <nav style={{ position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"0 8vw",height:"60px",display:"flex",alignItems:"center",justifyContent:"space-between",background:"rgba(247,248,250,.95)",backdropFilter:"blur(20px)",borderBottom:`1px solid ${D.rule}` }}>
+      <nav style={{ position:"fixed",top:0,left:0,right:0,zIndex:100,padding:"0 8vw",height:"64px",display:"flex",alignItems:"center",justifyContent:"space-between",background:navBg,backdropFilter:"blur(20px)",borderBottom:`1px solid ${navBdr}`,transition:"background .3s,border-color .3s" }}>
         <div style={{ display:"flex",alignItems:"center",gap:10 }}>
           <svg width="22" height="22" viewBox="0 0 56 56" fill="none">
-            <rect x="8"  y="16" width="7"  height="32" fill={D.ink}/>
-            <rect x="41" y="16" width="7"  height="32" fill={D.ink}/>
-            <rect x="8"  y="13" width="40" height="6"  fill={D.ink}/>
-            <rect x="18" y="19" width="20" height="29" fill={D.bg}/>
+            <rect x="8"  y="16" width="7"  height="32" fill={navInk}/>
+            <rect x="41" y="16" width="7"  height="32" fill={navInk}/>
+            <rect x="8"  y="13" width="40" height="6"  fill={navInk}/>
+            <rect x="18" y="19" width="20" height="29" fill={scrolled ? D.bg : D.bgDark}/>
             <rect x="18" y="44" width="20" height="1.5" fill={D.indigo}/>
           </svg>
-          <span style={{ fontFamily:D.sans,fontSize:"12px",fontWeight:700,letterSpacing:".22em",color:D.ink }}>LEYFIS</span>
+          <span style={{ fontFamily:D.sans,fontSize:"12px",fontWeight:700,letterSpacing:".22em",color:navInk,transition:"color .3s" }}>LEYFIS</span>
         </div>
         <div style={{ display:"flex",alignItems:"center",gap:4 }}>
           {[["#how","How it works"],["#roles","Roles"],["#mcp","MCP"],["#audit","Audit"]].map(([h,l]) => (
-            <a key={h} href={h} style={{ fontFamily:D.sans,fontSize:"13px",fontWeight:500,color:D.ink50,padding:"6px 14px",transition:"color .15s" }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color=D.ink)}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color=D.ink50)}
+            <a key={h} href={h} style={{ fontFamily:D.sans,fontSize:"13px",fontWeight:500,color:navInk50,padding:"6px 14px",transition:"color .15s" }}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color=navInk)}
+              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color=navInk50)}
             >{l}</a>
           ))}
-          <div style={{ width:1,height:20,background:D.rule,margin:"0 8px" }}/>
-          <Link href="/portal" style={{ fontFamily:D.sans,fontSize:"13px",fontWeight:500,color:D.ink70,padding:"7px 16px",border:`1px solid ${D.rule}`,transition:"all .15s" }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background=D.ink08)}
+          <div style={{ width:1,height:20,background:scrolled?D.rule:"rgba(232,238,246,0.15)",margin:"0 8px",transition:"background .3s" }}/>
+          <Link href="/portal" style={{ fontFamily:D.sans,fontSize:"13px",fontWeight:500,color:navInk,padding:"7px 16px",border:`1px solid ${scrolled?D.rule:"rgba(232,238,246,0.20)"}`,transition:"all .15s" }}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background=scrolled?D.ink08:"rgba(232,238,246,0.08)")}
             onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background="transparent")}
           >Access Vaults</Link>
           <Link href="/admin" style={{ fontFamily:D.sans,fontSize:"13px",fontWeight:600,background:D.indigo,color:"#fff",padding:"7px 18px",display:"flex",alignItems:"center",gap:7,marginLeft:4,transition:"opacity .15s" }}
@@ -266,63 +274,70 @@ export default function LandingPage() {
       </nav>
 
       {/* ── HERO ────────────────────────────────────────────── */}
-      <section style={{ minHeight:"100vh",padding:"100px 8vw 96px",display:"flex",flexDirection:"column",justifyContent:"center",position:"relative",overflow:"hidden",background:D.bg }}>
-        {/* Grid */}
-        <div style={{ position:"absolute",inset:0,backgroundImage:`linear-gradient(${D.ink08} 1px,transparent 1px),linear-gradient(90deg,${D.ink08} 1px,transparent 1px)`,backgroundSize:"80px 80px",pointerEvents:"none",opacity:.45 }}/>
-        {/* Glow */}
-        <div style={{ position:"absolute",top:"10%",left:"2%",width:"55%",height:"70%",background:`radial-gradient(ellipse at 30% 50%,${D.indigo06} 0%,transparent 68%)`,pointerEvents:"none" }}/>
+      <section style={{ minHeight:"100vh",display:"flex",flexDirection:"column",justifyContent:"flex-end",position:"relative",overflow:"hidden",background:D.bgDark }}>
 
-        <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8vw",alignItems:"center",position:"relative",zIndex:1 }}>
-          {/* Copy */}
-          <div style={{ animation:"fadeUp .65s ease both" }}>
-            {/* Pill */}
-            <div style={{ display:"inline-flex",alignItems:"center",gap:8,background:D.indigo12,border:`1px solid ${D.indigo20}`,padding:"5px 14px",marginBottom:32 }}>
-              <span style={{ width:5,height:5,borderRadius:"50%",background:D.indigo,flexShrink:0 }}/>
-              <span style={{ fontFamily:D.mono,fontSize:"11px",color:D.indigo,letterSpacing:".10em" }}>LEYFIS FOR THE AGENTIC ECONOMY</span>
+        {/* Background image — full bleed */}
+        <div style={{ position:"absolute",inset:0,backgroundImage:"url('/hero-bg.jpg')",backgroundSize:"cover",backgroundPosition:"60% center",backgroundRepeat:"no-repeat",pointerEvents:"none" }}/>
+
+        {/* Directional overlay — readable left, preserves image right */}
+        <div style={{ position:"absolute",inset:0,background:"linear-gradient(105deg, rgba(10,15,28,0.93) 0%, rgba(10,15,28,0.82) 38%, rgba(10,15,28,0.50) 62%, rgba(10,15,28,0.18) 100%)",pointerEvents:"none" }}/>
+
+        {/* Bottom-of-hero gradient — smooth transition to next section */}
+        <div style={{ position:"absolute",bottom:0,left:0,right:0,height:"220px",background:"linear-gradient(transparent,rgba(10,15,28,0.70))",pointerEvents:"none" }}/>
+
+        {/* Content */}
+        <div style={{ position:"relative",zIndex:1,padding:"140px 8vw 72px" }}>
+
+          {/* Eyebrow label */}
+          <div style={{ animation:"fadeUp .55s ease both",marginBottom:0 }}>
+            <div style={{ display:"inline-flex",alignItems:"center",gap:8,background:"rgba(27,79,216,0.18)",border:"1px solid rgba(27,79,216,0.38)",padding:"5px 16px",marginBottom:36 }}>
+              <span style={{ width:5,height:5,borderRadius:"50%",background:D.indigo,flexShrink:0,animation:"blink 2.4s infinite" }}/>
+              <span style={{ fontFamily:D.mono,fontSize:"11px",color:"rgba(100,140,255,0.92)",letterSpacing:".12em" }}>INSTITUTIONAL COMPLIANCE INFRASTRUCTURE · SOLANA DEVNET</span>
             </div>
-            <h1 style={{ fontFamily:D.display,fontSize:"clamp(36px,4.8vw,68px)",fontWeight:700,lineHeight:1.0,letterSpacing:"-.030em",marginBottom:28 }}>
-              <span style={{ display:"block",color:D.ink }}>The compliance</span>
-              <span style={{ display:"block",color:D.indigo }}>layer for</span>
-              <span style={{ display:"block",color:D.ink }}>institutions</span>
-              <span style={{ display:"block",color:D.ink }}>and agents.</span>
+          </div>
+
+          {/* Grand headline */}
+          <div style={{ animation:"fadeUp .65s ease .08s both" }}>
+            <h1 style={{ fontFamily:D.display,fontSize:"clamp(40px,5.8vw,82px)",fontWeight:700,lineHeight:.97,letterSpacing:"-.035em",marginBottom:32,maxWidth:"740px" }}>
+              <span style={{ display:"block",color:D.ice }}>The Credit Bureau</span>
+              <span style={{ display:"block",color:D.ice }}>for the</span>
+              <span style={{ display:"block",color:"#5B8EFF" }}>Agentic Economy.</span>
             </h1>
-            <p style={{ fontFamily:D.sans,fontSize:"17px",color:D.ink50,lineHeight:1.75,maxWidth:420,marginBottom:40 }}>
+          </div>
+
+          {/* Sub copy */}
+          <div style={{ animation:"fadeUp .65s ease .16s both" }}>
+            <p style={{ fontFamily:D.sans,fontSize:"18px",color:"rgba(232,238,246,0.58)",lineHeight:1.72,maxWidth:480,marginBottom:44 }}>
               On-chain KYC/AML enforcement before every vault interaction. Seven checks. Every time. Protocol-level. Immutable.
             </p>
-            <div style={{ display:"flex",gap:12,flexWrap:"wrap",marginBottom:48 }}>
-              <Link href="/portal" style={{ fontFamily:D.sans,fontSize:"14px",fontWeight:600,background:D.indigo,color:"#fff",padding:"13px 28px",transition:"all .15s" }}
+          </div>
+
+          {/* CTA row */}
+          <div style={{ animation:"fadeUp .65s ease .24s both" }}>
+            <div style={{ display:"flex",gap:12,flexWrap:"wrap",marginBottom:60 }}>
+              <Link href="/portal" style={{ fontFamily:D.sans,fontSize:"14px",fontWeight:600,background:D.indigo,color:"#fff",padding:"14px 32px",transition:"all .15s",letterSpacing:"-.01em" }}
                 onMouseEnter={e => { const el=e.currentTarget as HTMLElement; el.style.background=D.indigoDk; el.style.transform="translateY(-1px)"; }}
                 onMouseLeave={e => { const el=e.currentTarget as HTMLElement; el.style.background=D.indigo; el.style.transform=""; }}
               >Access Vaults →</Link>
-              <Link href="/admin" style={{ fontFamily:D.sans,fontSize:"14px",fontWeight:500,color:D.ink70,border:`1px solid ${D.ink15}`,padding:"13px 28px",transition:"all .15s" }}
-                onMouseEnter={e => { const el=e.currentTarget as HTMLElement; el.style.borderColor=D.ink30; el.style.background=D.ink08; }}
-                onMouseLeave={e => { const el=e.currentTarget as HTMLElement; el.style.borderColor=D.ink15; el.style.background="transparent"; }}
+              <Link href="/admin" style={{ fontFamily:D.sans,fontSize:"14px",fontWeight:500,color:D.ice,border:"1px solid rgba(232,238,246,0.22)",padding:"14px 32px",transition:"all .15s",background:"rgba(232,238,246,0.06)",letterSpacing:"-.01em" }}
+                onMouseEnter={e => { const el=e.currentTarget as HTMLElement; el.style.borderColor="rgba(232,238,246,0.40)"; el.style.background="rgba(232,238,246,0.12)"; }}
+                onMouseLeave={e => { const el=e.currentTarget as HTMLElement; el.style.borderColor="rgba(232,238,246,0.22)"; el.style.background="rgba(232,238,246,0.06)"; }}
               >Admin Console</Link>
             </div>
-            {/* Stats strip */}
-            <div style={{ display:"flex",gap:0,paddingTop:24,borderTop:`1px solid ${D.rule}` }}>
+          </div>
+
+          {/* Stats strip */}
+          <div style={{ animation:"fadeUp .65s ease .32s both" }}>
+            <div style={{ display:"flex",gap:0,paddingTop:24,borderTop:"1px solid rgba(232,238,246,0.10)" }}>
               {[["8 / 8","Tests passing"],["7","Compliance checks"],["< 400ms","Gate validation"],["FATF R.16","Aligned"]].map(([n,l],i) => (
-                <div key={l} style={{ paddingRight:28,marginRight:28,borderRight:i<3?`1px solid ${D.rule}`:"none" }}>
-                  <div style={{ fontFamily:D.sans,fontSize:"18px",fontWeight:700,color:D.ink,letterSpacing:"-.02em" }}>{n}</div>
-                  <div style={{ fontFamily:D.mono,fontSize:"11px",color:D.ink30,letterSpacing:".08em",marginTop:4 }}>{l}</div>
+                <div key={l} style={{ paddingRight:32,marginRight:32,borderRight:i<3?"1px solid rgba(232,238,246,0.10)":"none" }}>
+                  <div style={{ fontFamily:D.sans,fontSize:"19px",fontWeight:700,color:D.ice,letterSpacing:"-.02em" }}>{n}</div>
+                  <div style={{ fontFamily:D.mono,fontSize:"11px",color:"rgba(232,238,246,0.35)",letterSpacing:".08em",marginTop:5 }}>{l}</div>
                 </div>
               ))}
             </div>
           </div>
-
-          {/* Gate visual */}
-          <div style={{ display:"flex",flexDirection:"column",alignItems:"center",gap:24,animation:"fadeUp .65s ease .15s both" }}>
-            <Gate approved={approved} size={220}/>
-            <div style={{ fontFamily:D.mono,fontSize:"11px",letterSpacing:".16em",fontWeight:500,color:approved?D.teal:D.indigo,transition:"color .7s" }}>
-              {approved ? "ACCESS GRANTED" : "VERIFYING..."}
-            </div>
-            <div style={{ display:"flex",alignItems:"center",gap:8,padding:"8px 20px",background:D.bg2,border:`1px solid ${D.rule}`,boxShadow:D.shadow }}>
-              <span style={{ width:6,height:6,borderRadius:"50%",background:D.tealBt,animation:"blink 2s infinite" }}/>
-              <span style={{ fontFamily:D.mono,fontSize:"11px",letterSpacing:".10em",color:D.ink50 }}>DEVNET LIVE · GATE PROGRAM ACTIVE</span>
-            </div>
-          </div>
         </div>
-
       </section>
 
       {/* ── THE GAP ─────────────────────────────────────────── */}
