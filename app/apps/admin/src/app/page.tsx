@@ -22,10 +22,10 @@ const ALL_SCREENS = [
 ];
 
 const ROLE_CONTENT: Record<string,{ headline:string; desc:string }> = {
-  super_admin:        { headline:"Protocol Admin",    desc:"Full access. Configure vaults, manage issuers, monitor all compliance activity." },
-  vault_operator:     { headline:"Vault Operator",    desc:"Configure and monitor your vault. Set compliance rules, pause the gate, and review all access activity." },
-  kyc_issuer:         { headline:"KYC Issuer",        desc:"Issue and revoke on-chain attestations. Manage the credential registry for your institution." },
-  compliance_auditor: { headline:"Compliance Auditor",desc:"Read-only access. Filter the audit log and export FATF R.16 compliance reports." },
+  super_admin:        { headline:"Protocol Administration", desc:"Full access. Configure vaults, manage issuers, monitor all compliance activity." },
+  vault_operator:     { headline:"Vault Operations",        desc:"Configure and monitor your vault. Set compliance rules, pause the gate, and review all access activity." },
+  kyc_issuer:         { headline:"Credential Issuance",     desc:"Issue and revoke on-chain attestations. Manage the credential registry for your institution." },
+  compliance_auditor: { headline:"Compliance Audit",        desc:"Read-only access. Filter the audit log and export FATF R.16 compliance reports." },
 };
 
 // Connect / rejected screen shown before entering the shell
@@ -42,11 +42,11 @@ function ConnectScreen({ rejected, walletAddr, onDisconnect }: { rejected?: bool
             </div>
             <span style={{ ...f, fontSize:"13px", fontWeight:800, letterSpacing:"0.18em", color:"var(--text-1)" }}>LEYFIS</span>
           </div>
-          <div style={{ ...m, fontSize:"9px", color:"var(--text-4)", letterSpacing:"0.12em", textTransform:"uppercase" }}>Institutional Operations Console</div>
+          <div style={{ ...m, fontSize:"11px", color:"var(--text-4)", letterSpacing:"0.10em", textTransform:"uppercase" }}>Institutional Operations Console</div>
         </div>
         <div style={{ position:"relative" }}>
           <h1 style={{ ...f, fontSize:"clamp(32px,3.5vw,48px)", fontWeight:800, letterSpacing:"-0.02em", lineHeight:1.1, marginBottom:"16px", color:"var(--text-1)" }}>The gateway to<br/><span style={{ color:"var(--accent)" }}>institutional</span><br/>DeFi access.</h1>
-          <p style={{ ...m, fontSize:"11px", color:"var(--text-3)", lineHeight:1.9, maxWidth:"400px" }}>Connect your registered wallet to access the operations console. Role detection is automatic.</p>
+          <p style={{ ...f, fontSize:"14px", color:"var(--text-3)", lineHeight:1.75, maxWidth:"400px" }}>Connect your registered wallet to access the operations console. Role detection is automatic.</p>
         </div>
         <div style={{ position:"relative", display:"flex", flexDirection:"column", gap:"10px" }}>
           {[
@@ -57,11 +57,11 @@ function ConnectScreen({ rejected, walletAddr, onDisconnect }: { rejected?: bool
           ].map((item,i) => {
             const Icon = item.icon;
             return (
-              <div key={i} style={{ display:"flex", alignItems:"flex-start", gap:"12px", padding:"12px 14px", border:"1px solid var(--border)", background:"var(--bg-1)" }}>
+              <div key={i} style={{ display:"flex", alignItems:"flex-start", gap:"12px", padding:"13px 16px", border:"1px solid var(--border)", background:"var(--bg-1)" }}>
                 <Icon size={14} color="var(--accent)" style={{ marginTop:"2px", flexShrink:0 }}/>
                 <div>
-                  <div style={{ ...f, fontSize:"12px", fontWeight:600, color:"var(--text-1)", marginBottom:"2px" }}>{item.t}</div>
-                  <div style={{ ...m, fontSize:"9px", color:"var(--text-3)" }}>{item.d}</div>
+                  <div style={{ ...f, fontSize:"13px", fontWeight:600, color:"var(--text-1)", marginBottom:"3px" }}>{item.t}</div>
+                  <div style={{ ...m, fontSize:"11px", color:"var(--text-3)" }}>{item.d}</div>
                 </div>
               </div>
             );
@@ -70,8 +70,8 @@ function ConnectScreen({ rejected, walletAddr, onDisconnect }: { rejected?: bool
         <div style={{ position:"relative", display:"flex", gap:"24px" }}>
           {[["Gate", shortAddr(GATE_PROGRAM_ID,6)], ["Network","Solana devnet"]].map(([l,v]) => (
             <div key={l}>
-              <div style={{ ...m, fontSize:"9px", color:"var(--text-4)", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:"3px" }}>{l}</div>
-              <div style={{ ...m, fontSize:"10px", color:"var(--text-2)" }}>{v}</div>
+              <div style={{ ...m, fontSize:"11px", color:"var(--text-4)", letterSpacing:"0.10em", textTransform:"uppercase", marginBottom:"4px" }}>{l}</div>
+              <div style={{ ...m, fontSize:"12px", color:"var(--text-2)" }}>{v}</div>
             </div>
           ))}
         </div>
@@ -84,20 +84,20 @@ function ConnectScreen({ rejected, walletAddr, onDisconnect }: { rejected?: bool
             // Wallet connected but not registered
             <div style={{ border:"1px solid var(--border)", background:"var(--bg-1)", padding:"36px", marginBottom:"20px" }}>
               <div style={{ textAlign:"center", marginBottom:"28px" }}>
-                <div style={{ width:"44px", height:"44px", background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.25)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 14px" }}>
-                  <Lock size={18} color="#ef4444"/>
+                <div style={{ width:"44px", height:"44px", background:"var(--danger-bg)", border:"1px solid var(--danger-border)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 14px" }}>
+                  <Lock size={18} color="var(--danger)"/>
                 </div>
                 <h2 style={{ ...f, fontSize:"18px", fontWeight:700, marginBottom:"6px", color:"var(--text-1)" }}>Wallet Not Registered</h2>
-                <p style={{ ...m, fontSize:"10px", color:"var(--text-3)", lineHeight:1.7 }}>This wallet has no role in the Leyfis protocol</p>
+                <p style={{ ...f, fontSize:"13px", color:"var(--text-3)", lineHeight:1.65 }}>This wallet has no role in the Leyfis protocol</p>
               </div>
-              <div style={{ background:"var(--bg-2)", border:"1px solid var(--border)", padding:"12px 14px", marginBottom:"20px" }}>
-                <div style={{ ...m, fontSize:"9px", color:"var(--text-4)", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:"4px" }}>Connected wallet</div>
-                <div style={{ ...m, fontSize:"11px", color:"var(--text-2)", fontWeight:500 }}>{walletAddr}</div>
+              <div style={{ background:"var(--bg-2)", border:"1px solid var(--border)", padding:"13px 16px", marginBottom:"20px" }}>
+                <div style={{ ...m, fontSize:"11px", color:"var(--text-4)", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:"5px" }}>Connected wallet</div>
+                <div style={{ ...m, fontSize:"12px", color:"var(--text-2)", fontWeight:500 }}>{walletAddr}</div>
               </div>
-              <p style={{ ...m, fontSize:"10px", color:"var(--text-3)", lineHeight:1.8, marginBottom:"20px" }}>Contact your administrator to have this wallet registered as a Vault Operator, KYC Issuer, or Compliance Auditor.</p>
+              <p style={{ ...f, fontSize:"13px", color:"var(--text-3)", lineHeight:1.75, marginBottom:"20px" }}>Contact your administrator to have this wallet registered as a Vault Operator, KYC Issuer, or Compliance Auditor.</p>
               <button
                 onClick={onDisconnect}
-                style={{ ...m, fontSize:"10px", letterSpacing:"0.08em", textTransform:"uppercase", background:"var(--bg-2)", color:"var(--text-2)", border:"1px solid var(--border)", padding:"11px 20px", cursor:"pointer", width:"100%", fontWeight:600 }}
+                style={{ ...m, fontSize:"11px", letterSpacing:"0.08em", textTransform:"uppercase", background:"var(--bg-2)", color:"var(--text-2)", border:"1px solid var(--border)", padding:"12px 20px", cursor:"pointer", width:"100%", fontWeight:600 }}
               >
                 Try a Different Wallet
               </button>
@@ -109,25 +109,25 @@ function ConnectScreen({ rejected, walletAddr, onDisconnect }: { rejected?: bool
                 <div style={{ width:"44px", height:"44px", background:"var(--accent-bg)", border:"1px solid var(--accent-border)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 14px" }}>
                   <LayoutDashboard size={18} color="var(--accent)"/>
                 </div>
-                <h2 style={{ ...f, fontSize:"18px", fontWeight:700, marginBottom:"6px", color:"var(--text-1)" }}>Access Admin Console</h2>
-                <p style={{ ...m, fontSize:"10px", color:"var(--text-3)", lineHeight:1.7 }}>Connect a registered institutional wallet</p>
+                <h2 style={{ ...f, fontSize:"18px", fontWeight:700, marginBottom:"6px", color:"var(--text-1)" }}>Access Operations Console</h2>
+                <p style={{ ...f, fontSize:"13px", color:"var(--text-3)", lineHeight:1.65 }}>Connect a registered institutional wallet</p>
               </div>
-              <div style={{ display:"flex", justifyContent:"center", marginBottom:"20px" }}><WalletMultiButton/></div>
-              <div style={{ display:"flex", flexDirection:"column", gap:"6px" }}>
-                <div style={{ ...m, fontSize:"9px", color:"var(--text-4)", textAlign:"center", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:"4px" }}>Registered roles</div>
+              <div style={{ display:"flex", justifyContent:"center", marginBottom:"24px" }}><WalletMultiButton/></div>
+              <div style={{ display:"flex", flexDirection:"column", gap:"1px", background:"var(--border)" }}>
+                <div style={{ ...m, fontSize:"11px", color:"var(--text-4)", letterSpacing:"0.08em", textTransform:"uppercase", padding:"10px 14px", background:"var(--bg-2)" }}>Registered roles</div>
                 {[["Vault Operator","Configure vaults"],["KYC Issuer","Issue credentials"],["Compliance Auditor","Read-only audit"]].map(([r,d]) => (
-                  <div key={r} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"9px 12px", border:"1px solid var(--border)", background:"var(--bg-2)" }}>
-                    <span style={{ ...f, fontSize:"12px", fontWeight:500, color:"var(--text-2)" }}>{r}</span>
-                    <span style={{ ...m, fontSize:"9px", color:"var(--text-4)" }}>{d}</span>
+                  <div key={r} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"11px 14px", background:"var(--bg-1)" }}>
+                    <span style={{ ...f, fontSize:"13px", fontWeight:500, color:"var(--text-2)" }}>{r}</span>
+                    <span style={{ ...m, fontSize:"11px", color:"var(--text-4)" }}>{d}</span>
                   </div>
                 ))}
               </div>
             </div>
           )}
-          <div style={{ textAlign:"center" }}>
-            <p style={{ ...m, fontSize:"9px", color:"var(--text-4)", lineHeight:1.8 }}>Your wallet is your credential. No passwords.<br/>Role detection via on-chain registry.</p>
-            <div style={{ height:"1px", background:"var(--border)", margin:"14px 0" }}/>
-            <a href="https://leyfis-app.netlify.app" style={{ ...m, fontSize:"9px", color:"var(--accent)", letterSpacing:"0.08em", textTransform:"uppercase" }}>View Public Demo</a>
+          <div style={{ textAlign:"center", marginTop:"20px" }}>
+            <p style={{ ...m, fontSize:"11px", color:"var(--text-4)", lineHeight:1.8 }}>Your wallet is your credential. No passwords.<br/>Role detection via on-chain registry.</p>
+            <div style={{ height:"1px", background:"var(--border)", margin:"16px 0" }}/>
+            <a href="https://leyfis-app.netlify.app" style={{ ...m, fontSize:"11px", color:"var(--accent)", letterSpacing:"0.08em", textTransform:"uppercase" }}>View Public Demo →</a>
           </div>
         </div>
       </div>
@@ -172,44 +172,47 @@ export default function AdminHome() {
 
   return (
     <AdminShell current="/">
-      <div style={{ marginBottom:"28px" }}>
-        <div style={{ ...m, fontSize:"9px", color:"var(--text-4)", letterSpacing:"0.16em", textTransform:"uppercase", marginBottom:"12px" }}>/00 - Dashboard</div>
-        <div style={{ display:"flex", alignItems:"center", gap:"12px", marginBottom:"6px" }}>
-          <h1 style={{ ...f, fontSize:"26px", fontWeight:700, letterSpacing:"-0.02em", color:"var(--text-1)" }}>Welcome back.</h1>
-          <span style={{ ...m, fontSize:"9px", padding:"4px 10px", background:"var(--accent-bg)", color:"var(--accent)", border:"1px solid var(--accent-border)", letterSpacing:"0.08em", textTransform:"uppercase", fontWeight:600 }}>{ROLE_LABELS[role]}</span>
+      {/* Page header */}
+      <div style={{ marginBottom:"36px" }}>
+        <div style={{ ...m, fontSize:"11px", color:"var(--text-4)", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:"16px" }}>00 — OVERVIEW</div>
+        <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:"16px", marginBottom:"10px" }}>
+          <h1 style={{ ...f, fontSize:"28px", fontWeight:700, letterSpacing:"-0.025em", color:"var(--text-1)", lineHeight:1.15 }}>{content.headline}</h1>
+          <span style={{ ...m, fontSize:"11px", padding:"5px 12px", background:"var(--accent-bg)", color:"var(--accent)", border:"1px solid var(--accent-border)", letterSpacing:"0.10em", textTransform:"uppercase", fontWeight:600, flexShrink:0, marginTop:"4px" }}>{ROLE_LABELS[role]}</span>
         </div>
-        <p style={{ ...m, fontSize:"11px", color:"var(--text-3)", lineHeight:1.6 }}>{content.desc}</p>
+        <p style={{ ...f, fontSize:"14px", color:"var(--text-3)", lineHeight:1.65, maxWidth:"540px" }}>{content.desc}</p>
       </div>
 
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:"2px", marginBottom:"28px" }}>
+      {/* Module grid */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:"1px", marginBottom:"36px", background:"var(--border)" }}>
         {screens.map(s => {
           const Icon = s.icon;
           return (
             <Link key={s.href} href={s.href}
-              style={{ border:"1px solid var(--border)", padding:"20px 24px", display:"flex", flexDirection:"column", gap:"10px", textDecoration:"none", background:"var(--bg-1)", transition:"border-color 0.15s,background 0.15s" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor="var(--accent-border)"; (e.currentTarget as HTMLElement).style.background="var(--accent-bg)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor="var(--border)"; (e.currentTarget as HTMLElement).style.background="var(--bg-1)"; }}
+              style={{ padding:"24px 28px", display:"flex", flexDirection:"column", gap:"16px", textDecoration:"none", background:"var(--bg-1)", transition:"background 0.12s" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background="var(--bg-2)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background="var(--bg-1)"; }}
             >
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
-                <div style={{ width:"32px", height:"32px", background:"var(--accent-bg)", border:"1px solid var(--accent-border)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                  <Icon size={14} color="var(--accent)"/>
+                <div style={{ width:"34px", height:"34px", background:"var(--accent-bg)", border:"1px solid var(--accent-border)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <Icon size={15} color="var(--accent)"/>
                 </div>
-                <ArrowRight size={14} color="var(--text-4)"/>
+                <ArrowRight size={14} color="var(--text-4)" style={{ marginTop:"2px" }}/>
               </div>
               <div>
-                <div style={{ ...f, fontSize:"13px", fontWeight:600, color:"var(--text-1)", marginBottom:"3px" }}>{s.title}</div>
-                <div style={{ ...m, fontSize:"9px", color:"var(--text-4)", letterSpacing:"0.04em" }}>{s.subtitle}</div>
+                <div style={{ ...f, fontSize:"14px", fontWeight:600, color:"var(--text-1)", marginBottom:"5px", letterSpacing:"-0.01em" }}>{s.title}</div>
+                <div style={{ ...m, fontSize:"11px", color:"var(--text-4)", letterSpacing:"0.02em" }}>{s.subtitle}</div>
               </div>
             </Link>
           );
         })}
       </div>
 
-      <div style={{ display:"flex", gap:"0", padding:"16px 0", borderTop:"1px solid var(--border)" }}>
+      {/* Protocol status strip */}
+      <div style={{ display:"flex", gap:"0", padding:"18px 0", borderTop:"1px solid var(--border)" }}>
         {[["Gate Program",shortAddr(GATE_PROGRAM_ID,8)],["Test Vault",shortAddr(VAULT_PROGRAM_ID,8)],["Network","Solana devnet"],["Wallet",shortAddr(publicKey.toBase58(),8)]].map(([l,v],i) => (
-          <div key={l} style={{ flex:1, paddingRight:"24px", borderRight:i<3?"1px solid var(--border)":"none", marginRight:i<3?"24px":"0" }}>
-            <div style={{ ...m, fontSize:"9px", color:"var(--text-4)", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:"4px" }}>{l}</div>
-            <div style={{ ...m, fontSize:"11px", color:"var(--text-2)", fontWeight:500 }}>{v}</div>
+          <div key={l} style={{ flex:1, paddingRight:"28px", borderRight:i<3?"1px solid var(--border)":"none", marginRight:i<3?"28px":"0" }}>
+            <div style={{ ...m, fontSize:"11px", color:"var(--text-4)", letterSpacing:"0.10em", textTransform:"uppercase", marginBottom:"5px" }}>{l}</div>
+            <div style={{ ...m, fontSize:"12px", color:"var(--text-2)", fontWeight:500 }}>{v}</div>
           </div>
         ))}
       </div>

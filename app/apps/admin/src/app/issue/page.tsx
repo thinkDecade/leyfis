@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, Connection } from "@solana/web3.js";
@@ -21,7 +21,7 @@ const JURISDICTIONS = ["CHE", "GBR", "SGP", "USA", "DEU", "FRA", "LUX", "ARE", "
 type IssueResult = { sig?: string; attestationId?: string; error?: string; status: "idle" | "success" | "error" };
 
 function SectionLabel({ children }: { children: string }) {
-  return <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>{children}</div>;
+  return <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>{children}</div>;
 }
 
 export default function IssuePage() {
@@ -81,7 +81,7 @@ export default function IssuePage() {
     <AdminShell current="/issue">
       {/* Header */}
       <div style={{ marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid var(--border)" }}>
-        <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "8px" }}>/03 — KYC Issuer Panel</div>
+        <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "8px" }}>03 — KYC Issuer Panel</div>
         <h1 style={{ ...f, fontSize: "26px", fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text-1)", marginBottom: "8px" }}>Issue Attestation</h1>
         <p style={{ ...m, fontSize: "11px", color: "var(--text-3)", lineHeight: 1.7 }}>
           Issue a signed on-chain KYC credential. Grants the wallet holder access to Leyfis-gated vaults matching their tier and jurisdiction.
@@ -100,8 +100,8 @@ export default function IssuePage() {
               Target wallet address
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-              <label style={{ ...m, fontSize: "9px", color: "var(--text-3)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Solana Public Key</label>
-              {walletErr && <span style={{ ...m, fontSize: "9px", color: "var(--danger)" }}>✕ {walletErr}</span>}
+              <label style={{ ...m, fontSize: "11px", color: "var(--text-3)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Solana Public Key</label>
+              {walletErr && <span style={{ ...m, fontSize: "11px", color: "var(--danger)" }}>✕ {walletErr}</span>}
             </div>
             <input
               value={wallet}
@@ -109,7 +109,7 @@ export default function IssuePage() {
               placeholder="Enter wallet public key (e.g. 64je9Dfo...)"
               style={inp(!!walletErr)}
             />
-            <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", marginTop: "6px" }}>
+            <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", marginTop: "6px" }}>
               The wallet holder will receive a Tier {tier} credential valid until {expiryDate}.
             </div>
           </div>
@@ -122,29 +122,29 @@ export default function IssuePage() {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px" }}>
               <div>
-                <label style={{ ...m, fontSize: "9px", color: "var(--text-3)", letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>Clearance Tier</label>
+                <label style={{ ...m, fontSize: "11px", color: "var(--text-3)", letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>Clearance Tier</label>
                 <select value={tier} onChange={e => setTier(parseInt(e.target.value))} style={inp()}>
                   <option value={1}>Tier 1 — Basic KYC</option>
                   <option value={2}>Tier 2 — Enhanced DD</option>
                   <option value={3}>Tier 3 — Institutional</option>
                 </select>
-                <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", marginTop: "5px", lineHeight: 1.6 }}>
+                <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", marginTop: "5px", lineHeight: 1.6 }}>
                   {tier === 3 ? "Full FATF institutional" : tier === 2 ? "Enhanced due diligence" : "Standard KYC"}
                 </div>
               </div>
               <div>
-                <label style={{ ...m, fontSize: "9px", color: "var(--text-3)", letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>Jurisdiction</label>
+                <label style={{ ...m, fontSize: "11px", color: "var(--text-3)", letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>Jurisdiction</label>
                 <select value={jurisdiction} onChange={e => setJurisdiction(e.target.value)} style={inp()}>
                   {JURISDICTIONS.map(j => <option key={j}>{j}</option>)}
                 </select>
-                <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", marginTop: "5px", lineHeight: 1.6 }}>
+                <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", marginTop: "5px", lineHeight: 1.6 }}>
                   ISO 3166-1 alpha-3 country code
                 </div>
               </div>
               <div>
-                <label style={{ ...m, fontSize: "9px", color: "var(--text-3)", letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>Validity (days)</label>
+                <label style={{ ...m, fontSize: "11px", color: "var(--text-3)", letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>Validity (days)</label>
                 <input type="number" value={days} min={1} max={3650} onChange={e => setDays(parseInt(e.target.value) || 365)} style={inp()} />
-                <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", marginTop: "5px", lineHeight: 1.6 }}>
+                <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", marginTop: "5px", lineHeight: 1.6 }}>
                   Expires {expiryDate}
                 </div>
               </div>
@@ -164,7 +164,7 @@ export default function IssuePage() {
               style={inp()}
               maxLength={32}
             />
-            <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", marginTop: "6px" }}>
+            <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", marginTop: "6px" }}>
               Stored as 32 bytes on-chain. Links this credential to your internal KYC case file.
             </div>
           </div>
@@ -190,7 +190,7 @@ export default function IssuePage() {
                   }}>
                   {loading ? "⟳ Issuing on-chain..." : "Issue Attestation →"}
                 </button>
-                <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", lineHeight: 1.7 }}>
+                <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", lineHeight: 1.7 }}>
                   Signing as {shortAddr(publicKey.toBase58(), 8)}<br />
                   Transaction will be confirmed on Solana devnet
                 </div>
@@ -206,26 +206,26 @@ export default function IssuePage() {
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                   {result.sig && (
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.08em", textTransform: "uppercase" }}>Transaction</span>
-                      <a href={txUrl(result.sig)} target="_blank" rel="noreferrer" style={{ ...m, fontSize: "10px", color: "var(--accent)", textDecoration: "none" }}>
+                      <span style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.08em", textTransform: "uppercase" }}>Transaction</span>
+                      <a href={txUrl(result.sig)} target="_blank" rel="noreferrer" style={{ ...m, fontSize: "12px", color: "var(--accent)", textDecoration: "none" }}>
                         {shortAddr(result.sig, 10)} →
                       </a>
                     </div>
                   )}
                   {result.attestationId && (
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.08em", textTransform: "uppercase" }}>Attestation PDA</span>
-                      <span style={{ ...m, fontSize: "10px", color: "var(--text-2)" }}>{result.attestationId}</span>
+                      <span style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.08em", textTransform: "uppercase" }}>Attestation PDA</span>
+                      <span style={{ ...m, fontSize: "12px", color: "var(--text-2)" }}>{result.attestationId}</span>
                     </div>
                   )}
                 </div>
                 <div style={{ display: "flex", gap: "16px", marginTop: "14px", paddingTop: "14px", borderTop: "1px solid rgba(22,163,74,0.15)" }}>
-                  <a href="/registry" style={{ ...m, fontSize: "9px", color: "var(--accent)", letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>
+                  <a href="/registry" style={{ ...m, fontSize: "11px", color: "var(--accent)", letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}>
                     View in Registry →
                   </a>
                   <button
                     onClick={() => { setWallet(""); setResult({ status: "idle" }); setKycRef(""); }}
-                    style={{ ...m, fontSize: "9px", color: "var(--text-3)", letterSpacing: "0.1em", textTransform: "uppercase", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                    style={{ ...m, fontSize: "11px", color: "var(--text-3)", letterSpacing: "0.1em", textTransform: "uppercase", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
                     Issue Another
                   </button>
                 </div>
@@ -236,7 +236,7 @@ export default function IssuePage() {
             {result.status === "error" && (
               <div style={{ marginTop: "20px", border: "1px solid var(--danger-border)", background: "var(--danger-bg)", padding: "20px" }}>
                 <div style={{ ...f, fontSize: "13px", fontWeight: 600, color: "var(--danger)", marginBottom: "8px" }}>✕ Transaction failed</div>
-                <div style={{ ...m, fontSize: "10px", color: "var(--text-3)", lineHeight: 1.7 }}>{result.error}</div>
+                <div style={{ ...m, fontSize: "12px", color: "var(--text-3)", lineHeight: 1.7 }}>{result.error}</div>
               </div>
             )}
           </div>
@@ -261,13 +261,13 @@ export default function IssuePage() {
             ["Gate Program", shortAddr(GATE_PROGRAM_ID, 8)],
           ].map(([l, v]) => (
             <div key={l} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", padding: "10px 0", borderBottom: "1px solid var(--border)" }}>
-              <span style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.08em", textTransform: "uppercase", flexShrink: 0 }}>{l}</span>
-              <span style={{ ...m, fontSize: "10px", color: v === "—" ? "var(--text-4)" : "var(--text-1)", fontWeight: 500, textAlign: "right", wordBreak: "break-all" }}>{v}</span>
+              <span style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.08em", textTransform: "uppercase", flexShrink: 0 }}>{l}</span>
+              <span style={{ ...m, fontSize: "12px", color: v === "—" ? "var(--text-4)" : "var(--text-1)", fontWeight: 500, textAlign: "right", wordBreak: "break-all" }}>{v}</span>
             </div>
           ))}
 
           <div style={{ marginTop: "20px", padding: "14px", background: "var(--bg-2)", border: "1px solid var(--border)" }}>
-            <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", lineHeight: 1.8 }}>
+            <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", lineHeight: 1.8 }}>
               This credential is permanently recorded on Solana. It cannot be modified — only revoked.
               The wallet holder can use it immediately to access Tier {tier}+ vaults in jurisdiction {jurisdiction}.
             </div>

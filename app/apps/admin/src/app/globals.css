@@ -1,46 +1,65 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 :root {
-  --bg:        #000000;
-  --bg-1:      #0a0a0a;
-  --bg-2:      #111111;
-  --bg-3:      #1a1a1a;
+  /* ── Background layers ─────────────────────────────── */
+  --bg:        #0A0F1C;   /* Void — deep navy, not pure black */
+  --bg-1:      #111827;   /* Card surface */
+  --bg-2:      #1A2235;   /* Input fields, hover states */
+  --bg-3:      #202C40;   /* Secondary hover */
+
+  /* ── Borders ───────────────────────────────────────── */
   --border:    rgba(232,238,246,0.08);
   --border-2:  rgba(232,238,246,0.16);
-  --text-1:    #E8EEF6;
-  --text-2:    rgba(232,238,246,0.72);
-  --text-3:    rgba(232,238,246,0.48);
-  --text-4:    rgba(232,238,246,0.28);
-  --accent:    #1B4FD8;
-  --accent-bg: rgba(27,79,216,0.1);
-  --accent-border: rgba(27,79,216,0.28);
-  --danger:    #C44444;
-  --danger-bg: rgba(196,68,68,0.08);
-  --danger-border: rgba(196,68,68,0.28);
-  --success:   #16A34A;
-  --muted:     #8899BB;
-  --sidebar-w: 240px;
+
+  /* ── Text ──────────────────────────────────────────── */
+  --text-1:    #E8EEF6;                    /* Ice — primary */
+  --text-2:    rgba(232,238,246,0.70);     /* Secondary */
+  --text-3:    rgba(232,238,246,0.48);     /* Tertiary */
+  --text-4:    rgba(232,238,246,0.30);     /* Muted / labels */
+
+  /* ── Accent — brand blue ───────────────────────────── */
+  --accent:        #1B4FD8;
+  --accent-bg:     rgba(27,79,216,0.10);
+  --accent-border: rgba(27,79,216,0.25);
+
+  /* ── Status — CLAUDE.md canonical values ───────────── */
+  --success:        #0F6E56;              /* Teal — approved */
+  --success-bg:     rgba(15,110,86,0.08);
+  --success-border: rgba(15,110,86,0.25);
+  --danger:         #7A1F1F;              /* Crimson — denied */
+  --danger-bg:      rgba(122,31,31,0.08);
+  --danger-border:  rgba(122,31,31,0.28);
+
+  /* ── Secondary palette ─────────────────────────────── */
+  --muted:     #3D5070;   /* Horizon */
+  --frost:     #8899BB;   /* Frost — secondary info */
+
+  /* ── Layout ────────────────────────────────────────── */
+  --sidebar-w: 256px;
 }
 
 [data-theme="light"] {
-  --bg:        #F4F6FA;
+  --bg:        #F7F8FA;
   --bg-1:      #FFFFFF;
-  --bg-2:      #EEF0F5;
+  --bg-2:      #EDF0F5;
   --bg-3:      #E4E7EF;
-  --border:    rgba(15,23,42,0.08);
-  --border-2:  rgba(15,23,42,0.16);
-  --text-1:    #0F172A;
-  --text-2:    rgba(15,23,42,0.75);
-  --text-3:    rgba(15,23,42,0.52);
-  --text-4:    rgba(15,23,42,0.32);
-  --accent:    #1B4FD8;
-  --accent-bg: rgba(27,79,216,0.07);
-  --accent-border: rgba(27,79,216,0.22);
-  --danger:    #B91C1C;
-  --danger-bg: rgba(185,28,28,0.06);
-  --danger-border: rgba(185,28,28,0.2);
-  --success:   #15803D;
-  --muted:     #64748B;
+  --border:    rgba(10,15,28,0.08);
+  --border-2:  rgba(10,15,28,0.16);
+  --text-1:    #0A0F1C;
+  --text-2:    rgba(10,15,28,0.72);
+  --text-3:    rgba(10,15,28,0.50);
+  --text-4:    rgba(10,15,28,0.32);
+  --accent:        #1B4FD8;
+  --accent-bg:     rgba(27,79,216,0.07);
+  --accent-border: rgba(27,79,216,0.20);
+  --success:        #0F6E56;
+  --success-bg:     rgba(15,110,86,0.07);
+  --success-border: rgba(15,110,86,0.20);
+  --danger:         #7A1F1F;
+  --danger-bg:      rgba(122,31,31,0.06);
+  --danger-border:  rgba(122,31,31,0.20);
+  --muted:     #3D5070;
+  --frost:     #8899BB;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -52,8 +71,9 @@ body {
   color: var(--text-1);
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 15px;
-  line-height: 1.55;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   transition: background 0.2s, color 0.2s;
 }
 
@@ -66,10 +86,10 @@ a { color: inherit; text-decoration: none; }
 
 .wallet-adapter-button {
   font-family: 'DM Mono', monospace !important;
-  font-size: 12px !important;
-  letter-spacing: 0.06em !important;
+  font-size: 11px !important;
+  letter-spacing: 0.08em !important;
   height: 38px !important;
-  padding: 0 18px !important;
+  padding: 0 20px !important;
   border-radius: 0 !important;
 }
 

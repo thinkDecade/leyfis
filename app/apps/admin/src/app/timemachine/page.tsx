@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useCallback } from "react";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { AdminShell } from "@/components/AdminShell";
@@ -98,15 +98,15 @@ function buildSnapshot(entries: AuditEntry[], asOfTs: number): Snapshot {
 }
 
 function SectionLabel({ children }: { children: string }) {
-  return <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>{children}</div>;
+  return <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>{children}</div>;
 }
 
 function StatBox({ label, value, sub, color }: { label: string; value: string; sub: string; color: string }) {
   return (
     <div style={{ border: "1px solid var(--border)", padding: "20px 24px", background: "var(--bg-1)" }}>
-      <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "10px" }}>{label}</div>
+      <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "10px" }}>{label}</div>
       <div style={{ ...f, fontSize: "30px", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1, color, marginBottom: "6px" }}>{value}</div>
-      <div style={{ ...m, fontSize: "10px", color: "var(--text-4)" }}>{sub}</div>
+      <div style={{ ...m, fontSize: "12px", color: "var(--text-4)" }}>{sub}</div>
     </div>
   );
 }
@@ -174,7 +174,7 @@ export default function TimeMachinePage() {
     <AdminShell current="/timemachine">
       {/* ── Page header ─────────────────────────────────────────────────── */}
       <div style={{ marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid var(--border)" }}>
-        <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "8px" }}>/08 — Compliance Time Machine</div>
+        <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "8px" }}>08 — Compliance Time Machine</div>
         <h1 style={{ ...f, fontSize: "26px", fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text-1)", marginBottom: "10px" }}>Compliance Time Machine</h1>
         <div style={{ ...m, fontSize: "11px", color: "var(--text-3)", lineHeight: 1.7, maxWidth: "640px" }}>
           Replay the on-chain audit log at any historical point in time. Select a date and time to see the approval rate, denial breakdown, and gate activity as it stood at that moment.
@@ -191,7 +191,7 @@ export default function TimeMachinePage() {
             <button
               key={p.label}
               onClick={() => applyPreset(p.offset)}
-              style={{ ...m, fontSize: "10px", letterSpacing: "0.08em", padding: "7px 14px", background: "var(--bg-2)", border: "1px solid var(--border)", color: "var(--text-3)", cursor: "pointer" }}
+              style={{ ...m, fontSize: "12px", letterSpacing: "0.08em", padding: "7px 14px", background: "var(--bg-2)", border: "1px solid var(--border)", color: "var(--text-3)", cursor: "pointer" }}
             >
               {p.label}
             </button>
@@ -200,7 +200,7 @@ export default function TimeMachinePage() {
 
         <div style={{ display: "flex", gap: "12px", alignItems: "flex-end", flexWrap: "wrap" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Date &amp; time (local)</div>
+            <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Date &amp; time (local)</div>
             <input
               type="datetime-local"
               value={dateInput}
@@ -218,12 +218,12 @@ export default function TimeMachinePage() {
         </div>
 
         {fetched && (
-          <div style={{ ...m, fontSize: "10px", color: "var(--success)", marginTop: "12px" }}>
+          <div style={{ ...m, fontSize: "12px", color: "var(--success)", marginTop: "12px" }}>
             {allEntries?.length ?? 0} audit entries loaded. Change the date and click Replay → to re-slice instantly.
           </div>
         )}
         {error && (
-          <div style={{ ...m, fontSize: "10px", color: "var(--danger)", marginTop: "12px", padding: "10px 14px", background: "var(--danger-bg)", border: "1px solid var(--danger-border)" }}>
+          <div style={{ ...m, fontSize: "12px", color: "var(--danger)", marginTop: "12px", padding: "10px 14px", background: "var(--danger-bg)", border: "1px solid var(--danger-border)" }}>
             {error}
           </div>
         )}
@@ -234,9 +234,9 @@ export default function TimeMachinePage() {
         <>
           {/* Snapshot header */}
           <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "16px" }}>
-            <div style={{ ...m, fontSize: "10px", color: "var(--text-4)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Snapshot as of</div>
+            <div style={{ ...m, fontSize: "12px", color: "var(--text-4)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Snapshot as of</div>
             <div style={{ ...m, fontSize: "13px", color: "var(--accent)", fontWeight: 600 }}>{asOfDisplay}</div>
-            <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", padding: "3px 10px", border: "1px solid var(--border)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", padding: "3px 10px", border: "1px solid var(--border)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
               {snapshot.totalCalls} gate calls
             </div>
           </div>
@@ -289,9 +289,9 @@ export default function TimeMachinePage() {
                     const pct = snapshot.denied > 0 ? Math.round((count / snapshot.denied) * 100) : 0;
                     return (
                       <div key={code} style={{ display: "grid", gridTemplateColumns: "1fr 30px 40px", gap: "10px", alignItems: "center", padding: "10px 0", borderTop: "1px solid var(--border)" }}>
-                        <span style={{ ...m, fontSize: "10px", color: "var(--text-2)", lineHeight: 1.4 }}>{REASON_CODES[parseInt(code)] || `Code ${code}`}</span>
+                        <span style={{ ...m, fontSize: "12px", color: "var(--text-2)", lineHeight: 1.4 }}>{REASON_CODES[parseInt(code)] || `Code ${code}`}</span>
                         <span style={{ ...m, fontSize: "12px", color: "var(--text-1)", fontWeight: 600, textAlign: "right" }}>{count}</span>
-                        <span style={{ ...m, fontSize: "9px", color: "var(--text-4)", textAlign: "right" }}>{pct}%</span>
+                        <span style={{ ...m, fontSize: "11px", color: "var(--text-4)", textAlign: "right" }}>{pct}%</span>
                       </div>
                     );
                   })
@@ -321,13 +321,13 @@ export default function TimeMachinePage() {
                     const timeAgo = d < 60 ? `${d}s ago` : d < 3600 ? `${Math.floor(d / 60)}m ago` : d < 86400 ? `${Math.floor(d / 3600)}h ago` : `${Math.floor(d / 86400)}d ago`;
                     return (
                       <div key={i} style={{ display: "grid", gridTemplateColumns: "60px 1fr 160px 80px 100px", gap: "12px", padding: "12px 24px", borderBottom: i < snapshot.entries.length - 1 ? "1px solid var(--border)" : "none", ...m, fontSize: "11px", alignItems: "center", borderLeft: `3px solid ${e.outcome === "approved" ? "var(--success)" : "var(--danger)"}` }}>
-                        <span style={{ color: e.outcome === "approved" ? "var(--success)" : "var(--danger)", fontWeight: 700, letterSpacing: "0.06em", fontSize: "9px", textTransform: "uppercase" }}>
+                        <span style={{ color: e.outcome === "approved" ? "var(--success)" : "var(--danger)", fontWeight: 700, letterSpacing: "0.06em", fontSize: "11px", textTransform: "uppercase" }}>
                           {e.outcome === "approved" ? "PASS" : "DENY"}
                         </span>
                         <a href={addressUrl(e.wallet)} target="_blank" rel="noreferrer" style={{ color: "var(--accent)", textDecoration: "none" }}>{shortAddr(e.wallet, 6)}</a>
                         <span style={{ color: "var(--text-3)" }}>{REASON_CODES[e.reasonCode] || `Code ${e.reasonCode}`}</span>
                         <span style={{ color: "var(--text-3)" }}>{e.tier > 0 ? `Tier ${e.tier}` : "—"}</span>
-                        <span style={{ color: "var(--text-4)", fontSize: "10px" }}>{timeAgo}</span>
+                        <span style={{ color: "var(--text-4)", fontSize: "12px" }}>{timeAgo}</span>
                       </div>
                     );
                   })}
@@ -350,9 +350,9 @@ export default function TimeMachinePage() {
                   const pct = allApproved.length > 0 ? Math.round((count / allApproved.length) * 100) : 0;
                   return (
                     <div key={tier} style={{ flex: 1, minWidth: "160px", border: "1px solid var(--border)", padding: "16px 20px", background: "var(--bg-2)" }}>
-                      <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "8px" }}>{tierLabel(tier)}</div>
+                      <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "8px" }}>{tierLabel(tier)}</div>
                       <div style={{ ...f, fontSize: "24px", fontWeight: 700, color: count > 0 ? "var(--success)" : "var(--text-4)", marginBottom: "4px" }}>{count}</div>
-                      <div style={{ ...m, fontSize: "10px", color: "var(--text-4)" }}>{pct}% of approved</div>
+                      <div style={{ ...m, fontSize: "12px", color: "var(--text-4)" }}>{pct}% of approved</div>
                     </div>
                   );
                 })}
@@ -362,7 +362,7 @@ export default function TimeMachinePage() {
 
           {/* FATF note */}
           <div style={{ padding: "18px 24px", border: "1px solid var(--border)", background: "var(--bg-1)", display: "flex", gap: "16px", alignItems: "flex-start" }}>
-            <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.1em", textTransform: "uppercase", flexShrink: 0, marginTop: "2px" }}>FATF note</div>
+            <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.1em", textTransform: "uppercase", flexShrink: 0, marginTop: "2px" }}>FATF note</div>
             <div style={{ ...m, fontSize: "11px", color: "var(--text-3)", lineHeight: 1.75 }}>
               All data displayed here is sourced directly from the on-chain append-only audit log. Records cannot be modified or deleted. This snapshot is suitable for presenting to regulators under FATF Recommendation 16 as evidence of access controls at any historical point in time.
             </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect, useCallback } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Connection, PublicKey } from "@solana/web3.js";
@@ -129,11 +129,11 @@ function urgencyBorder(u: ProposalUrgency) {
 }
 
 function SectionLabel({ children }: { children: string }) {
-  return <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>{children}</div>;
+  return <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>{children}</div>;
 }
 
 function DeltaTag({ label }: { label: string }) {
-  return <span style={{ ...m, fontSize: "9px", background: "var(--accent-bg)", color: "var(--accent)", border: "1px solid var(--accent)", padding: "3px 8px", letterSpacing: "0.06em" }}>{label}</span>;
+  return <span style={{ ...m, fontSize: "11px", background: "var(--accent-bg)", color: "var(--accent)", border: "1px solid var(--accent)", padding: "3px 8px", letterSpacing: "0.06em" }}>{label}</span>;
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -251,7 +251,7 @@ export default function RegulatoryPage() {
       {/* Header */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid var(--border)" }}>
         <div>
-          <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "8px" }}>/08 — Regulatory Intelligence</div>
+          <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "8px" }}>08 — Regulatory Intelligence</div>
           <h1 style={{ ...f, fontSize: "26px", fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text-1)", marginBottom: "8px" }}>Regulatory Intelligence</h1>
           <p style={{ ...m, fontSize: "11px", color: "var(--text-3)", lineHeight: 1.7, maxWidth: "580px" }}>
             AI-monitored regulatory feed for your vault's jurisdictions. Proposals are reviewed by the operator and applied on-chain — AI proposes, you sign.
@@ -261,10 +261,10 @@ export default function RegulatoryPage() {
           <button
             onClick={handleScan}
             disabled={scanning || !vaultConfig}
-            style={{ ...m, fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", background: scanning ? "var(--bg-2)" : "var(--accent)", color: scanning ? "var(--accent)" : "white", border: "1px solid var(--accent)", padding: "12px 20px", cursor: scanning || !vaultConfig ? "not-allowed" : "pointer", fontWeight: 600, display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap" }}>
+            style={{ ...m, fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", background: scanning ? "var(--bg-2)" : "var(--accent)", color: scanning ? "var(--accent)" : "white", border: "1px solid var(--accent)", padding: "12px 20px", cursor: scanning || !vaultConfig ? "not-allowed" : "pointer", fontWeight: 600, display: "flex", alignItems: "center", gap: "8px", whiteSpace: "nowrap" }}>
             {scanning ? "⟳ Scanning..." : "Scan Regulatory Updates →"}
           </button>
-          {scanError && <span style={{ ...m, fontSize: "9px", color: "var(--danger)" }}>{scanError}</span>}
+          {scanError && <span style={{ ...m, fontSize: "11px", color: "var(--danger)" }}>{scanError}</span>}
         </div>
       </div>
 
@@ -305,12 +305,12 @@ export default function RegulatoryPage() {
                     <span style={{ ...m, fontSize: "8px", fontWeight: 700, color: urgencyColor(proposal.urgency), border: `1px solid ${urgencyBorder(proposal.urgency)}`, padding: "3px 8px", letterSpacing: "0.1em", textTransform: "uppercase", flexShrink: 0 }}>
                       {proposal.urgency.toUpperCase()}
                     </span>
-                    <span style={{ ...m, fontSize: "9px", color: "var(--text-4)", flexShrink: 0 }}>{proposal.source}</span>
+                    <span style={{ ...m, fontSize: "11px", color: "var(--text-4)", flexShrink: 0 }}>{proposal.source}</span>
                     <span style={{ ...f, fontSize: "13px", fontWeight: 600, color: "var(--text-1)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{proposal.title}</span>
                   </div>
                   <div style={{ display: "flex", gap: "8px", alignItems: "center", flexShrink: 0, marginLeft: "16px" }}>
-                    <span style={{ ...m, fontSize: "9px", color: "var(--text-4)" }}>Effective {proposal.effectiveDate}</span>
-                    <button onClick={() => setExpanded(expanded === proposal.id ? null : proposal.id)} style={{ ...m, fontSize: "9px", color: "var(--accent)", background: "none", border: "none", cursor: "pointer", padding: 0, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                    <span style={{ ...m, fontSize: "11px", color: "var(--text-4)" }}>Effective {proposal.effectiveDate}</span>
+                    <button onClick={() => setExpanded(expanded === proposal.id ? null : proposal.id)} style={{ ...m, fontSize: "11px", color: "var(--accent)", background: "none", border: "none", cursor: "pointer", padding: 0, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                       {expanded === proposal.id ? "Collapse" : "Details"}
                     </button>
                   </div>
@@ -324,7 +324,7 @@ export default function RegulatoryPage() {
 
                   {expanded === proposal.id && (
                     <>
-                      <p style={{ ...m, fontSize: "10px", color: "var(--text-3)", lineHeight: 1.8, margin: 0, marginBottom: "16px" }}>
+                      <p style={{ ...m, fontSize: "12px", color: "var(--text-3)", lineHeight: 1.8, margin: 0, marginBottom: "16px" }}>
                         {proposal.fullText}
                       </p>
 
@@ -344,7 +344,7 @@ export default function RegulatoryPage() {
                             ))}
                           </div>
                           {vaultConfig && proposal.proposedChange.min_tier != null && (
-                            <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", marginTop: "10px" }}>
+                            <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", marginTop: "10px" }}>
                               Current: min_tier = {vaultConfig.minTier} → Proposed: {proposal.proposedChange.min_tier}
                             </div>
                           )}
@@ -358,12 +358,12 @@ export default function RegulatoryPage() {
                     {(proposal.proposedChange.min_tier != null || (proposal.proposedChange.add_jurisdictions?.length ?? 0) > 0) && (
                       <>
                         {!publicKey ? (
-                          <span style={{ ...m, fontSize: "9px", color: "var(--text-4)" }}>Connect wallet to apply</span>
+                          <span style={{ ...m, fontSize: "11px", color: "var(--text-4)" }}>Connect wallet to apply</span>
                         ) : (
                           <button
                             onClick={() => handleApply(proposal)}
                             disabled={applying === proposal.id}
-                            style={{ ...m, fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase", background: applying === proposal.id ? "var(--bg-2)" : "var(--accent)", color: applying === proposal.id ? "var(--accent)" : "white", border: "1px solid var(--accent)", padding: "9px 18px", cursor: applying === proposal.id ? "not-allowed" : "pointer", fontWeight: 600 }}>
+                            style={{ ...m, fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", background: applying === proposal.id ? "var(--bg-2)" : "var(--accent)", color: applying === proposal.id ? "var(--accent)" : "white", border: "1px solid var(--accent)", padding: "9px 18px", cursor: applying === proposal.id ? "not-allowed" : "pointer", fontWeight: 600 }}>
                             {applying === proposal.id ? "⟳ Applying..." : "Apply On-Chain →"}
                           </button>
                         )}
@@ -371,10 +371,10 @@ export default function RegulatoryPage() {
                     )}
                     <button
                       onClick={() => setDismissTarget(proposal.id)}
-                      style={{ ...m, fontSize: "9px", letterSpacing: "0.08em", textTransform: "uppercase", background: "none", border: "1px solid var(--border)", color: "var(--text-3)", padding: "9px 16px", cursor: "pointer" }}>
+                      style={{ ...m, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", background: "none", border: "1px solid var(--border)", color: "var(--text-3)", padding: "9px 16px", cursor: "pointer" }}>
                       Dismiss
                     </button>
-                    <span style={{ ...m, fontSize: "9px", color: "var(--text-4)", marginLeft: "auto" }}>
+                    <span style={{ ...m, fontSize: "11px", color: "var(--text-4)", marginLeft: "auto" }}>
                       {proposal.jurisdiction} · {proposal.scanned ? "AI-detected" : "Seeded"}
                     </span>
                   </div>
@@ -383,11 +383,11 @@ export default function RegulatoryPage() {
                   {applyResult?.id === proposal.id && (
                     <div style={{ marginTop: "12px", padding: "12px 16px", border: `1px solid ${applyResult.error ? "var(--danger-border)" : "rgba(15,110,86,0.2)"}`, background: applyResult.error ? "var(--danger-bg)" : "rgba(15,110,86,0.04)" }}>
                       {applyResult.sig ? (
-                        <div style={{ ...m, fontSize: "10px", color: "var(--success)" }}>
+                        <div style={{ ...m, fontSize: "12px", color: "var(--success)" }}>
                           ✓ Applied — <a href={`https://explorer.solana.com/tx/${applyResult.sig}?cluster=devnet`} target="_blank" rel="noreferrer" style={{ color: "var(--accent)" }}>{shortAddr(applyResult.sig, 10)} →</a>
                         </div>
                       ) : (
-                        <div style={{ ...m, fontSize: "10px", color: "var(--danger)" }}>✕ {applyResult.error}</div>
+                        <div style={{ ...m, fontSize: "12px", color: "var(--danger)" }}>✕ {applyResult.error}</div>
                       )}
                     </div>
                   )}
@@ -409,13 +409,13 @@ export default function RegulatoryPage() {
                     <span style={{ ...m, fontSize: "8px", fontWeight: 700, color: p.status === "applied" ? "var(--success)" : "var(--text-4)", border: "1px solid var(--border)", padding: "2px 7px", letterSpacing: "0.08em", textTransform: "uppercase", flexShrink: 0 }}>
                       {p.status === "applied" ? "APPLIED" : "DISMISSED"}
                     </span>
-                    <span style={{ ...m, fontSize: "10px", color: "var(--text-3)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.title}</span>
+                    <span style={{ ...m, fontSize: "12px", color: "var(--text-3)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.title}</span>
                   </div>
                   <div style={{ display: "flex", gap: "8px", alignItems: "center", flexShrink: 0 }}>
-                    <span style={{ ...m, fontSize: "9px", color: "var(--text-4)" }}>{p.source} · {p.jurisdiction}</span>
+                    <span style={{ ...m, fontSize: "11px", color: "var(--text-4)" }}>{p.source} · {p.jurisdiction}</span>
                     <button
                       onClick={() => updateProposal(p.id, { status: "pending", dismissNote: undefined })}
-                      style={{ ...m, fontSize: "9px", color: "var(--text-4)", background: "none", border: "none", cursor: "pointer", padding: 0, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                      style={{ ...m, fontSize: "11px", color: "var(--text-4)", background: "none", border: "none", cursor: "pointer", padding: 0, letterSpacing: "0.06em", textTransform: "uppercase" }}>
                       Restore
                     </button>
                   </div>
@@ -433,7 +433,7 @@ export default function RegulatoryPage() {
             <SectionLabel>Active vault config</SectionLabel>
             <div style={{ ...f, fontSize: "13px", fontWeight: 600, color: "var(--text-1)", marginBottom: "14px" }}>Current state</div>
             {loadingVc ? (
-              <div style={{ ...m, fontSize: "10px", color: "var(--text-4)" }}>Loading...</div>
+              <div style={{ ...m, fontSize: "12px", color: "var(--text-4)" }}>Loading...</div>
             ) : vaultConfig ? (
               <>
                 {[
@@ -443,13 +443,13 @@ export default function RegulatoryPage() {
                   ["Issuers",       `${vaultConfig.trustedIssuers.length} trusted`],
                 ].map(([l, v]) => (
                   <div key={l} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid var(--border)" }}>
-                    <span style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.06em", textTransform: "uppercase" }}>{l}</span>
-                    <span style={{ ...m, fontSize: "10px", color: l === "Gate status" && vaultConfig.paused ? "var(--danger)" : "var(--text-1)", fontWeight: 500 }}>{v}</span>
+                    <span style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.06em", textTransform: "uppercase" }}>{l}</span>
+                    <span style={{ ...m, fontSize: "12px", color: l === "Gate status" && vaultConfig.paused ? "var(--danger)" : "var(--text-1)", fontWeight: 500 }}>{v}</span>
                   </div>
                 ))}
               </>
             ) : (
-              <div style={{ ...m, fontSize: "10px", color: "var(--danger)" }}>VaultConfig not found</div>
+              <div style={{ ...m, fontSize: "12px", color: "var(--danger)" }}>VaultConfig not found</div>
             )}
           </div>
 
@@ -463,11 +463,11 @@ export default function RegulatoryPage() {
               ["4. Chain enforces", "The new config takes effect immediately on-chain. Audit log records the change."],
             ].map(([step, desc]) => (
               <div key={step} style={{ marginBottom: "14px" }}>
-                <div style={{ ...m, fontSize: "9px", color: "var(--accent)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "4px" }}>{step}</div>
-                <div style={{ ...m, fontSize: "10px", color: "var(--text-3)", lineHeight: 1.7 }}>{desc}</div>
+                <div style={{ ...m, fontSize: "11px", color: "var(--accent)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "4px" }}>{step}</div>
+                <div style={{ ...m, fontSize: "12px", color: "var(--text-3)", lineHeight: 1.7 }}>{desc}</div>
               </div>
             ))}
-            <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", lineHeight: 1.7, borderTop: "1px solid var(--border)", paddingTop: "12px", marginTop: "4px" }}>
+            <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", lineHeight: 1.7, borderTop: "1px solid var(--border)", paddingTop: "12px", marginTop: "4px" }}>
               AI never signs transactions. Every on-chain change requires your explicit signature. Proposals dismissed with a note are stored locally.
             </div>
           </div>
@@ -479,7 +479,7 @@ export default function RegulatoryPage() {
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setDismissTarget(null)}>
           <div style={{ background: "var(--bg-1)", border: "1px solid var(--border)", padding: "28px", width: "420px", maxWidth: "90vw" }} onClick={e => e.stopPropagation()}>
             <div style={{ ...f, fontSize: "16px", fontWeight: 700, color: "var(--text-1)", marginBottom: "6px" }}>Dismiss proposal</div>
-            <div style={{ ...m, fontSize: "10px", color: "var(--text-4)", marginBottom: "18px" }}>Add an optional note explaining why this was dismissed.</div>
+            <div style={{ ...m, fontSize: "12px", color: "var(--text-4)", marginBottom: "18px" }}>Add an optional note explaining why this was dismissed.</div>
             <textarea
               value={dismissNote}
               onChange={e => setDismissNote(e.target.value)}
@@ -488,10 +488,10 @@ export default function RegulatoryPage() {
               style={{ ...m, fontSize: "11px", background: "var(--bg-2)", border: "1px solid var(--border)", color: "var(--text-1)", padding: "10px 12px", width: "100%", resize: "vertical", outline: "none" }}
             />
             <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
-              <button onClick={() => handleDismiss(dismissTarget)} style={{ ...m, fontSize: "10px", letterSpacing: "0.08em", textTransform: "uppercase", background: "var(--bg-2)", color: "var(--text-2)", border: "1px solid var(--border)", padding: "10px 20px", cursor: "pointer", flex: 1 }}>
+              <button onClick={() => handleDismiss(dismissTarget)} style={{ ...m, fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", background: "var(--bg-2)", color: "var(--text-2)", border: "1px solid var(--border)", padding: "10px 20px", cursor: "pointer", flex: 1 }}>
                 Dismiss
               </button>
-              <button onClick={() => setDismissTarget(null)} style={{ ...m, fontSize: "10px", letterSpacing: "0.08em", textTransform: "uppercase", background: "var(--accent)", color: "white", border: "1px solid var(--accent)", padding: "10px 20px", cursor: "pointer", flex: 1 }}>
+              <button onClick={() => setDismissTarget(null)} style={{ ...m, fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", background: "var(--accent)", color: "white", border: "1px solid var(--accent)", padding: "10px 20px", cursor: "pointer", flex: 1 }}>
                 Cancel
               </button>
             </div>

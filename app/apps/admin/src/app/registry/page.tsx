@@ -30,7 +30,7 @@ const STATUS_COLORS: Record<string,{bg:string;color:string;border:string}> = {
 
 function Badge({label,bg,color,border}:{label:string;bg:string;color:string;border:string}) {
   return (
-    <span style={{...m,fontSize:"9px",padding:"3px 8px",background:bg,color,border:`1px solid ${border}`,display:"inline-block",letterSpacing:"0.06em",textTransform:"uppercase",fontWeight:500}}>
+    <span style={{...m,fontSize:"11px",padding:"3px 8px",background:bg,color,border:`1px solid ${border}`,display:"inline-block",letterSpacing:"0.06em",textTransform:"uppercase",fontWeight:500}}>
       {label}
     </span>
   );
@@ -58,7 +58,7 @@ export default function RegistryPage() {
     <AdminShell current="/registry">
       <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:"28px"}}>
         <div>
-          <div style={{...m,fontSize:"9px",color:"var(--text-4)",letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:"10px"}}>/04 ? KYC Issuer</div>
+          <div style={{...m,fontSize:"11px",color:"var(--text-4)",letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:"10px"}}>03 — Attestation Registry</div>
           <h1 style={{...f,fontSize:"26px",fontWeight:700,letterSpacing:"-0.02em",marginBottom:"4px",color:"var(--text-1)"}}>Attestation Registry</h1>
           <p style={{...m,fontSize:"11px",color:"var(--text-3)",lineHeight:1.6}}>All on-chain credentials issued through this console.</p>
         </div>
@@ -66,7 +66,7 @@ export default function RegistryPage() {
           {[["All",ATTESTATIONS.length],["Active",ATTESTATIONS.filter(a=>a.status==="active").length],["Revoked",ATTESTATIONS.filter(a=>a.status==="revoked").length]].map(([l,v])=>(
             <div key={l} style={{textAlign:"center",padding:"10px 16px",border:"1px solid var(--border)",background:"var(--bg-1)"}}>
               <div style={{...f,fontSize:"18px",fontWeight:700,color:"var(--text-1)"}}>{v}</div>
-              <div style={{...m,fontSize:"9px",color:"var(--text-4)",letterSpacing:"0.08em",textTransform:"uppercase",marginTop:"2px"}}>{l}</div>
+              <div style={{...m,fontSize:"11px",color:"var(--text-4)",letterSpacing:"0.08em",textTransform:"uppercase",marginTop:"2px"}}>{l}</div>
             </div>
           ))}
         </div>
@@ -81,40 +81,40 @@ export default function RegistryPage() {
         </div>
         <div style={{display:"flex",gap:"4px"}}>
           {(["all","active","revoked","expired"] as const).map(s=>(
-            <button key={s} onClick={()=>setStatusF(s)} style={{...m,fontSize:"9px",letterSpacing:"0.08em",textTransform:"uppercase",padding:"8px 12px",background:statusF===s?"var(--accent)":"var(--bg-1)",color:statusF===s?"white":"var(--text-3)",border:`1px solid ${statusF===s?"var(--accent)":"var(--border)"}`,cursor:"pointer"}}>
+            <button key={s} onClick={()=>setStatusF(s)} style={{...m,fontSize:"11px",letterSpacing:"0.08em",textTransform:"uppercase",padding:"8px 12px",background:statusF===s?"var(--accent)":"var(--bg-1)",color:statusF===s?"white":"var(--text-3)",border:`1px solid ${statusF===s?"var(--accent)":"var(--border)"}`,cursor:"pointer"}}>
               {s}
             </button>
           ))}
         </div>
         <div style={{display:"flex",gap:"4px"}}>
           {(["all","1","2","3"] as const).map(t=>(
-            <button key={t} onClick={()=>setTierF(t)} style={{...m,fontSize:"9px",letterSpacing:"0.08em",textTransform:"uppercase",padding:"8px 12px",background:tierF===t?"var(--accent)":"var(--bg-1)",color:tierF===t?"white":"var(--text-3)",border:`1px solid ${tierF===t?"var(--accent)":"var(--border)"}`,cursor:"pointer"}}>
+            <button key={t} onClick={()=>setTierF(t)} style={{...m,fontSize:"11px",letterSpacing:"0.08em",textTransform:"uppercase",padding:"8px 12px",background:tierF===t?"var(--accent)":"var(--bg-1)",color:tierF===t?"white":"var(--text-3)",border:`1px solid ${tierF===t?"var(--accent)":"var(--border)"}`,cursor:"pointer"}}>
               {t==="all"?"All Tiers":`T${t}`}
             </button>
           ))}
         </div>
         {(search||statusF!=="all"||tierF!=="all") && (
-          <button onClick={()=>{setSearch("");setStatusF("all");setTierF("all");}} style={{display:"flex",alignItems:"center",gap:"6px",...m,fontSize:"9px",color:"var(--text-3)",background:"none",border:"1px solid var(--border)",padding:"8px 12px",cursor:"pointer"}}>
+          <button onClick={()=>{setSearch("");setStatusF("all");setTierF("all");}} style={{display:"flex",alignItems:"center",gap:"6px",...m,fontSize:"11px",color:"var(--text-3)",background:"none",border:"1px solid var(--border)",padding:"8px 12px",cursor:"pointer"}}>
             <RotateCcw size={11}/> Reset
           </button>
         )}
-        <span style={{...m,fontSize:"9px",color:"var(--text-4)",marginLeft:"auto"}}>{filtered.length} records</span>
+        <span style={{...m,fontSize:"11px",color:"var(--text-4)",marginLeft:"auto"}}>{filtered.length} records</span>
       </div>
 
       <div style={{display:"grid",gridTemplateColumns:selected?"1fr 340px":"1fr",gap:"2px"}}>
         {/* Table */}
         <div style={{border:"1px solid var(--border)",background:"var(--bg-1)"}}>
-          <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 60px 80px 100px 90px 80px",gap:"12px",padding:"10px 16px",...m,fontSize:"9px",color:"var(--text-4)",letterSpacing:"0.1em",textTransform:"uppercase",borderBottom:"1px solid var(--border)"}}>
+          <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 60px 80px 100px 90px 80px",gap:"12px",padding:"10px 16px",...m,fontSize:"11px",color:"var(--text-4)",letterSpacing:"0.1em",textTransform:"uppercase",borderBottom:"1px solid var(--border)"}}>
             <span>Wallet</span><span>Issuer</span><span>Tier</span><span>Jurisdiction</span><span>Status</span><span>Expires</span><span></span>
           </div>
           {filtered.length===0 ? (
             <div style={{padding:"40px",textAlign:"center",...m,fontSize:"11px",color:"var(--text-4)"}}>No attestations match filters</div>
           ) : filtered.map((a,i) => (
             <div key={i} onClick={()=>setSelected(selected===a.wallet?null:a.wallet)}
-              style={{display:"grid",gridTemplateColumns:"2fr 1fr 60px 80px 100px 90px 80px",gap:"12px",padding:"13px 16px",borderBottom:i<filtered.length-1?"1px solid var(--border)":"none",...m,fontSize:"10px",alignItems:"center",cursor:"pointer",background:selected===a.wallet?"var(--accent-bg)":"transparent",borderLeft:`2px solid ${selected===a.wallet?"var(--accent)":a.status==="active"?"var(--accent)":a.status==="revoked"?"var(--danger)":"var(--border-2)"}`,transition:"background 0.1s"}}>
+              style={{display:"grid",gridTemplateColumns:"2fr 1fr 60px 80px 100px 90px 80px",gap:"12px",padding:"13px 16px",borderBottom:i<filtered.length-1?"1px solid var(--border)":"none",...m,fontSize:"12px",alignItems:"center",cursor:"pointer",background:selected===a.wallet?"var(--accent-bg)":"transparent",borderLeft:`2px solid ${selected===a.wallet?"var(--accent)":a.status==="active"?"var(--accent)":a.status==="revoked"?"var(--danger)":"var(--border-2)"}`,transition:"background 0.1s"}}>
               <div>
-                <a href={`/profile?wallet=${a.wallet}`} style={{...m,fontSize:"10px",color:"var(--accent)",fontWeight:500,textDecoration:"none"}}>{shortAddr(a.wallet,8)}</a>
-                <div style={{...m,fontSize:"9px",color:"var(--text-4)",marginTop:"2px"}}>{a.kycRef}</div>
+                <a href={`/profile?wallet=${a.wallet}`} style={{...m,fontSize:"12px",color:"var(--accent)",fontWeight:500,textDecoration:"none"}}>{shortAddr(a.wallet,8)}</a>
+                <div style={{...m,fontSize:"11px",color:"var(--text-4)",marginTop:"2px"}}>{a.kycRef}</div>
               </div>
               <span style={{color:"var(--text-3)"}}>{shortAddr(a.issuer,6)}</span>
               <Badge label={`T${a.tier}`} {...TIER_COLORS[a.tier]}/>
@@ -126,7 +126,7 @@ export default function RegistryPage() {
               <span style={{color:a.status==="expired"?"var(--danger)":"var(--text-3)"}}>{a.expires}</span>
               <div style={{display:"flex",justifyContent:"flex-end"}}>
                 {a.status==="active" && publicKey && (
-                  <button onClick={e=>{e.stopPropagation();}} style={{...m,fontSize:"9px",color:"var(--danger)",background:"none",border:"1px solid var(--danger-border)",padding:"4px 8px",cursor:"pointer",letterSpacing:"0.06em"}}>
+                  <button onClick={e=>{e.stopPropagation();}} style={{...m,fontSize:"11px",color:"var(--danger)",background:"none",border:"1px solid var(--danger-border)",padding:"4px 8px",cursor:"pointer",letterSpacing:"0.06em"}}>
                     Revoke
                   </button>
                 )}
@@ -139,7 +139,7 @@ export default function RegistryPage() {
         {selectedAttestation && (
           <div style={{border:"1px solid var(--border)",background:"var(--bg-1)",padding:"24px",position:"sticky",top:"80px",alignSelf:"start"}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"20px"}}>
-              <div style={{...m,fontSize:"9px",color:"var(--text-4)",letterSpacing:"0.1em",textTransform:"uppercase"}}>Attestation Detail</div>
+              <div style={{...m,fontSize:"11px",color:"var(--text-4)",letterSpacing:"0.1em",textTransform:"uppercase"}}>Attestation Detail</div>
               <button onClick={()=>setSelected(null)} style={{background:"none",border:"none",color:"var(--text-4)",cursor:"pointer",fontSize:"18px",lineHeight:1}}>?</button>
             </div>
             <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"20px",padding:"14px",background:"var(--bg-2)",border:"1px solid var(--border)"}}>
@@ -150,7 +150,7 @@ export default function RegistryPage() {
                 <div style={{...f,fontSize:"13px",fontWeight:600,color:"var(--text-1)",marginBottom:"2px"}}>
                   {selectedAttestation.status==="active" ? "Valid Credential" : selectedAttestation.status==="revoked" ? "Revoked" : "Expired"}
                 </div>
-                <div style={{...m,fontSize:"9px",color:"var(--text-4)"}}>Tier {selectedAttestation.tier} ? {selectedAttestation.jurisdiction}</div>
+                <div style={{...m,fontSize:"11px",color:"var(--text-4)"}}>Tier {selectedAttestation.tier} ? {selectedAttestation.jurisdiction}</div>
               </div>
             </div>
             {[
@@ -164,22 +164,22 @@ export default function RegistryPage() {
               ["Status",    selectedAttestation.status.toUpperCase()],
             ].map(([l,v])=>(
               <div key={l} style={{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:"1px solid var(--border)"}}>
-                <span style={{...m,fontSize:"9px",color:"var(--text-4)",letterSpacing:"0.06em",textTransform:"uppercase"}}>{l}</span>
-                <span style={{...m,fontSize:"10px",color:"var(--text-2)",fontWeight:500}}>{v}</span>
+                <span style={{...m,fontSize:"11px",color:"var(--text-4)",letterSpacing:"0.06em",textTransform:"uppercase"}}>{l}</span>
+                <span style={{...m,fontSize:"12px",color:"var(--text-2)",fontWeight:500}}>{v}</span>
               </div>
             ))}
             <div style={{marginTop:"16px",display:"flex",flexDirection:"column",gap:"8px"}}>
               {selectedAttestation.status==="active" && (
-                <button style={{...m,fontSize:"10px",letterSpacing:"0.08em",textTransform:"uppercase",background:"var(--danger-bg)",color:"var(--danger)",border:"1px solid var(--danger-border)",padding:"10px",cursor:"pointer",width:"100%",fontWeight:600}}>
+                <button style={{...m,fontSize:"12px",letterSpacing:"0.08em",textTransform:"uppercase",background:"var(--danger-bg)",color:"var(--danger)",border:"1px solid var(--danger-border)",padding:"10px",cursor:"pointer",width:"100%",fontWeight:600}}>
                   Revoke Attestation
                 </button>
               )}
               <a href={`/profile?wallet=${selectedAttestation.wallet}`}
-                style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",...m,fontSize:"10px",letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--accent)",border:"1px solid var(--accent-border)",padding:"10px",background:"var(--accent-bg)"}}>
+                style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",...m,fontSize:"12px",letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--accent)",border:"1px solid var(--accent-border)",padding:"10px",background:"var(--accent-bg)"}}>
                 <Shield size={11}/> View Compliance Profile
               </a>
               <a href={`https://explorer.solana.com/address/${selectedAttestation.wallet}?cluster=devnet`} target="_blank" rel="noreferrer"
-                style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",...m,fontSize:"10px",letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--text-3)",border:"1px solid var(--border)",padding:"10px",background:"var(--bg-2)"}}>
+                style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",...m,fontSize:"12px",letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--text-3)",border:"1px solid var(--border)",padding:"10px",background:"var(--bg-2)"}}>
                 <ExternalLink size={11}/> View on Explorer
               </a>
             </div>

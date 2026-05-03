@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { AdminShell } from "@/components/AdminShell";
@@ -88,7 +88,7 @@ function toCSV(entries: AuditEntry[]): string {
 }
 
 function SectionLabel({ children }: { children: string }) {
-  return <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>{children}</div>;
+  return <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>{children}</div>;
 }
 
 type ReportStatus = "idle" | "generating" | "done" | "error";
@@ -192,7 +192,7 @@ export default function ExportPage() {
     <AdminShell current="/export">
       {/* Header */}
       <div style={{ marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid var(--border)" }}>
-        <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "8px" }}>/07 — Compliance Export</div>
+        <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "8px" }}>07 — Compliance Export</div>
         <h1 style={{ ...f, fontSize: "26px", fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text-1)", marginBottom: "8px" }}>Compliance Export</h1>
         <p style={{ ...m, fontSize: "11px", color: "var(--text-3)", lineHeight: 1.7 }}>
           Export FATF R.16 aligned audit records for regulatory reporting. All data sourced directly from Solana — tamper-proof.
@@ -210,15 +210,15 @@ export default function ExportPage() {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px" }}>
               <div>
-                <label style={{ ...m, fontSize: "9px", color: "var(--text-3)", letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>From</label>
+                <label style={{ ...m, fontSize: "11px", color: "var(--text-3)", letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>From</label>
                 <input type="date" value={from} onChange={e => setFrom(e.target.value)} style={{ ...inp, colorScheme: "dark" }} />
               </div>
               <div>
-                <label style={{ ...m, fontSize: "9px", color: "var(--text-3)", letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>To</label>
+                <label style={{ ...m, fontSize: "11px", color: "var(--text-3)", letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>To</label>
                 <input type="date" value={to} onChange={e => setTo(e.target.value)} style={{ ...inp, colorScheme: "dark" }} />
               </div>
               <div>
-                <label style={{ ...m, fontSize: "9px", color: "var(--text-3)", letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>Outcome</label>
+                <label style={{ ...m, fontSize: "11px", color: "var(--text-3)", letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>Outcome</label>
                 <select value={outcomeF} onChange={e => setOutcomeF(e.target.value as any)} style={inp}>
                   <option value="all">All outcomes</option>
                   <option value="approved">Approved only</option>
@@ -266,16 +266,16 @@ export default function ExportPage() {
             ) : (
               <>
                 {filtered.slice(0, 6).map((e, i) => (
-                  <div key={i} style={{ display: "grid", gridTemplateColumns: "160px 1fr 80px 80px 160px", gap: "10px", padding: "11px 20px", borderBottom: i < 5 && i < filtered.length - 1 ? "1px solid var(--border)" : "none", ...m, fontSize: "10px", color: "var(--text-2)", alignItems: "center", borderLeft: `3px solid ${e.outcome === "approved" ? "var(--success)" : "var(--danger)"}` }}>
+                  <div key={i} style={{ display: "grid", gridTemplateColumns: "160px 1fr 80px 80px 160px", gap: "10px", padding: "11px 20px", borderBottom: i < 5 && i < filtered.length - 1 ? "1px solid var(--border)" : "none", ...m, fontSize: "12px", color: "var(--text-2)", alignItems: "center", borderLeft: `3px solid ${e.outcome === "approved" ? "var(--success)" : "var(--danger)"}` }}>
                     <span style={{ color: "var(--text-4)" }}>{new Date(e.timestamp * 1000).toISOString().slice(0, 16).replace("T", " ")}</span>
                     <span>{shortAddr(e.wallet, 10)}</span>
-                    <span style={{ color: e.outcome === "approved" ? "var(--success)" : "var(--danger)", fontWeight: 700, textTransform: "uppercase", fontSize: "9px", letterSpacing: "0.06em" }}>{e.outcome === "approved" ? "PASS" : "DENY"}</span>
+                    <span style={{ color: e.outcome === "approved" ? "var(--success)" : "var(--danger)", fontWeight: 700, textTransform: "uppercase", fontSize: "11px", letterSpacing: "0.06em" }}>{e.outcome === "approved" ? "PASS" : "DENY"}</span>
                     <span>{e.tier > 0 ? `Tier ${e.tier}` : "—"}</span>
                     <span style={{ color: "var(--text-3)" }}>{REASON_CODES[e.reasonCode] || `Code ${e.reasonCode}`}</span>
                   </div>
                 ))}
                 {filtered.length > 6 && (
-                  <div style={{ padding: "12px 20px", ...m, fontSize: "10px", color: "var(--text-4)", borderTop: "1px solid var(--border)" }}>
+                  <div style={{ padding: "12px 20px", ...m, fontSize: "12px", color: "var(--text-4)", borderTop: "1px solid var(--border)" }}>
                     + {filtered.length - 6} more records included in export
                   </div>
                 )}
@@ -310,7 +310,7 @@ export default function ExportPage() {
                   </div>
                 </div>
                 {reportStatus === "done" && (
-                  <button onClick={copyReport} style={{ ...m, fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase", background: copied ? "var(--success)" : "var(--bg-2)", color: copied ? "white" : "var(--accent)", border: `1px solid ${copied ? "var(--success)" : "var(--accent)"}`, padding: "8px 16px", cursor: "pointer" }}>
+                  <button onClick={copyReport} style={{ ...m, fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", background: copied ? "var(--success)" : "var(--bg-2)", color: copied ? "white" : "var(--accent)", border: `1px solid ${copied ? "var(--success)" : "var(--accent)"}`, padding: "8px 16px", cursor: "pointer" }}>
                     {copied ? "✓ Copied" : "Copy Text"}
                   </button>
                 )}
@@ -329,23 +329,23 @@ export default function ExportPage() {
                   {reportMetrics && (
                     <div style={{ margin: "0 20px 0", padding: "16px 20px", background: "rgba(22,163,74,0.05)", border: "1px solid rgba(22,163,74,0.2)", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "24px" }}>
                       <div>
-                        <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "4px" }}>Generated in</div>
+                        <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "4px" }}>Generated in</div>
                         <div style={{ ...f, fontSize: "20px", fontWeight: 800, color: "var(--success)", lineHeight: 1 }}>{reportMetrics.seconds}s</div>
                       </div>
                       <div>
-                        <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "4px" }}>Manual equivalent</div>
+                        <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "4px" }}>Manual equivalent</div>
                         <div style={{ ...f, fontSize: "20px", fontWeight: 800, color: "var(--text-1)", lineHeight: 1 }}>{reportMetrics.analystHours} analyst hrs</div>
                       </div>
                       <div>
-                        <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "4px" }}>Estimated value</div>
+                        <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "4px" }}>Estimated value</div>
                         <div style={{ ...f, fontSize: "20px", fontWeight: 800, color: "var(--text-1)", lineHeight: 1 }}>${reportMetrics.costSaved.toLocaleString()}</div>
-                        <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", marginTop: "3px" }}>at $300/hr blended analyst rate</div>
+                        <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", marginTop: "3px" }}>at $300/hr blended analyst rate</div>
                       </div>
                     </div>
                   )}
                   <div style={{ padding: "12px 20px", borderTop: "1px solid var(--border)", display: "flex", gap: "16px", alignItems: "center" }}>
-                    <span style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.08em", textTransform: "uppercase" }}>Generated by Claude Haiku · FATF R.16 aligned · {new Date().toISOString().slice(0, 10)}</span>
-                    <button onClick={() => { setReportText(""); setReportStatus("idle"); setReportMetrics(null); }} style={{ ...m, fontSize: "9px", color: "var(--text-4)", background: "none", border: "none", cursor: "pointer", padding: 0, letterSpacing: "0.08em", textTransform: "uppercase", marginLeft: "auto" }}>Clear</button>
+                    <span style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.08em", textTransform: "uppercase" }}>Generated by Claude Haiku · FATF R.16 aligned · {new Date().toISOString().slice(0, 10)}</span>
+                    <button onClick={() => { setReportText(""); setReportStatus("idle"); setReportMetrics(null); }} style={{ ...m, fontSize: "11px", color: "var(--text-4)", background: "none", border: "none", cursor: "pointer", padding: 0, letterSpacing: "0.08em", textTransform: "uppercase", marginLeft: "auto" }}>Clear</button>
                   </div>
                 </>
               )}
@@ -363,14 +363,14 @@ export default function ExportPage() {
             <div key={i} style={{ padding: "10px 0", borderBottom: i < FATF_FIELDS.length - 1 ? "1px solid var(--border)" : "none" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "3px" }}>
                 <div style={{ width: "5px", height: "5px", borderRadius: "50%", background: "var(--accent)", flexShrink: 0 }} />
-                <span style={{ ...m, fontSize: "10px", color: "var(--text-1)", fontWeight: 500 }}>{field.field}</span>
+                <span style={{ ...m, fontSize: "12px", color: "var(--text-1)", fontWeight: 500 }}>{field.field}</span>
               </div>
-              <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", paddingLeft: "13px", lineHeight: 1.5 }}>{field.desc}</div>
+              <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", paddingLeft: "13px", lineHeight: 1.5 }}>{field.desc}</div>
             </div>
           ))}
           <div style={{ marginTop: "20px", padding: "14px", background: "var(--bg-2)", border: "1px solid var(--border)" }}>
-            <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", marginBottom: "6px", letterSpacing: "0.08em", textTransform: "uppercase" }}>Format</div>
-            <div style={{ ...m, fontSize: "10px", color: "var(--text-2)", lineHeight: 1.7 }}>
+            <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", marginBottom: "6px", letterSpacing: "0.08em", textTransform: "uppercase" }}>Format</div>
+            <div style={{ ...m, fontSize: "12px", color: "var(--text-2)", lineHeight: 1.7 }}>
               UTF-8 CSV · ISO 8601 timestamps<br />
               On-chain source — tamper-proof<br />
               Suitable for FINMA, FCA, MAS submission

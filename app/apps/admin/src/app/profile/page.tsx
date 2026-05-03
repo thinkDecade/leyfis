@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { AdminShell } from "@/components/AdminShell";
@@ -14,7 +14,7 @@ const f = { fontFamily: "'Inter', sans-serif" };
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.14em",
+    <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.14em",
       textTransform: "uppercase", marginBottom: "6px" }}>
       {children}
     </div>
@@ -27,7 +27,7 @@ function StatCard({ label, value, sub, accent }: { label: string; value: string;
       <SectionLabel>{label}</SectionLabel>
       <div style={{ ...f, fontSize: "28px", fontWeight: 800, color: accent ?? "var(--text-1)",
         lineHeight: 1, marginBottom: "6px" }}>{value}</div>
-      {sub && <div style={{ ...m, fontSize: "9px", color: "var(--text-4)" }}>{sub}</div>}
+      {sub && <div style={{ ...m, fontSize: "11px", color: "var(--text-4)" }}>{sub}</div>}
     </div>
   );
 }
@@ -37,7 +37,7 @@ function TierBadge({ tier }: { tier: number }) {
   const labels: Record<number, string> = { 3: "Institutional", 2: "Enhanced DD", 1: "Basic KYC" };
   const c = colors[tier] ?? "var(--text-4)";
   return (
-    <span style={{ ...m, fontSize: "9px", fontWeight: 700, color: c, letterSpacing: "0.08em",
+    <span style={{ ...m, fontSize: "11px", fontWeight: 700, color: c, letterSpacing: "0.08em",
       textTransform: "uppercase", border: `1px solid ${c}`, padding: "3px 8px", borderRadius: "2px" }}>
       {tier > 0 ? `Tier ${tier} — ${labels[tier] ?? "Unknown"}` : "No Tier"}
     </span>
@@ -78,12 +78,12 @@ function DenialChart({ breakdown, total }: { breakdown: ComplianceProfile["denia
     <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
       {entries.map(({ label, value, code }) => (
         <div key={code} style={{ display: "grid", gridTemplateColumns: "160px 1fr 40px", gap: "12px", alignItems: "center" }}>
-          <span style={{ ...m, fontSize: "10px", color: "var(--text-3)" }}>{label}</span>
+          <span style={{ ...m, fontSize: "12px", color: "var(--text-3)" }}>{label}</span>
           <div style={{ background: "var(--bg-2)", borderRadius: "2px", height: "8px", overflow: "hidden" }}>
             <div style={{ height: "100%", width: `${(value / max) * 100}%`,
               background: "var(--danger)", borderRadius: "2px", transition: "width 0.6s ease" }}/>
           </div>
-          <span style={{ ...m, fontSize: "10px", color: "var(--danger)", textAlign: "right" }}>{value}</span>
+          <span style={{ ...m, fontSize: "12px", color: "var(--danger)", textAlign: "right" }}>{value}</span>
         </div>
       ))}
     </div>
@@ -96,7 +96,7 @@ function AttestationTable({ attestations }: { attestations: AttestationSummary[]
   if (attestations.length === 0) return (
     <div style={{ padding: "24px 0" }}>
       <div style={{ ...f, fontSize: "14px", fontWeight: 600, color: "var(--text-2)", marginBottom: "6px" }}>No attestations found.</div>
-      <div style={{ ...m, fontSize: "10px", color: "var(--text-4)", lineHeight: 1.7 }}>This wallet has not been issued a KYC credential by any registered issuer.</div>
+      <div style={{ ...m, fontSize: "12px", color: "var(--text-4)", lineHeight: 1.7 }}>This wallet has not been issued a KYC credential by any registered issuer.</div>
     </div>
   );
 
@@ -119,17 +119,17 @@ function AttestationTable({ attestations }: { attestations: AttestationSummary[]
             borderLeft: `3px solid ${statusColor}`,
             background: i % 2 === 1 ? "var(--bg-2)" : "transparent",
           }}>
-            <span style={{ ...m, fontSize: "9px", fontWeight: 700, color: statusColor,
+            <span style={{ ...m, fontSize: "11px", fontWeight: 700, color: statusColor,
               letterSpacing: "0.08em", textTransform: "uppercase" }}>{att.status}</span>
             <a href={addressUrl(att.pda)} target="_blank" rel="noreferrer"
-              style={{ ...m, fontSize: "10px", color: "var(--accent)", textDecoration: "none" }}
+              style={{ ...m, fontSize: "12px", color: "var(--accent)", textDecoration: "none" }}
               title={att.issuer}>
               {shortAddr(att.issuer, 6)}
             </a>
             <TierBadge tier={att.tier} />
-            <span style={{ ...m, fontSize: "10px", color: "var(--text-3)" }}>{att.jurisdiction || "—"}</span>
-            <span style={{ ...m, fontSize: "10px", color: "var(--text-3)" }}>{att.expires_at > 0 ? formatTs(att.expires_at) : "Never"}</span>
-            <span style={{ ...m, fontSize: "10px", color: "var(--text-4)" }}>{timeAgo(att.issued_at)}</span>
+            <span style={{ ...m, fontSize: "12px", color: "var(--text-3)" }}>{att.jurisdiction || "—"}</span>
+            <span style={{ ...m, fontSize: "12px", color: "var(--text-3)" }}>{att.expires_at > 0 ? formatTs(att.expires_at) : "Never"}</span>
+            <span style={{ ...m, fontSize: "12px", color: "var(--text-4)" }}>{timeAgo(att.issued_at)}</span>
           </div>
         );
       })}
@@ -146,7 +146,7 @@ function GateHistoryTable({ profile }: { profile: ComplianceProfile }) {
       <div style={{ display: "flex", gap: "8px", marginBottom: "12px", alignItems: "center" }}>
         {(["all", "approved", "denied"] as const).map(f2 => (
           <button key={f2} onClick={() => setFilter(f2)} style={{
-            ...m, fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase",
+            ...m, fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase",
             padding: "8px 14px",
             background: filter === f2 ? "var(--accent)" : "var(--bg-1)",
             color: filter === f2 ? "white" : "var(--text-3)",
@@ -156,7 +156,7 @@ function GateHistoryTable({ profile }: { profile: ComplianceProfile }) {
             {f2 === "denied" ? "rejected" : f2}
           </button>
         ))}
-        <a href="/audit" style={{ ...m, fontSize: "9px", color: "var(--accent)", marginLeft: "auto",
+        <a href="/audit" style={{ ...m, fontSize: "11px", color: "var(--accent)", marginLeft: "auto",
           textDecoration: "none", letterSpacing: "0.08em", textTransform: "uppercase" }}>
           Full audit log →
         </a>
@@ -188,17 +188,17 @@ function GateHistoryTable({ profile }: { profile: ComplianceProfile }) {
                 background: i % 2 === 1 ? "var(--bg-2)" : "transparent",
               }}>
                 <a href={addressUrl(v.vault)} target="_blank" rel="noreferrer"
-                  style={{ ...m, fontSize: "10px", color: "var(--accent)", textDecoration: "none" }}>
+                  style={{ ...m, fontSize: "12px", color: "var(--accent)", textDecoration: "none" }}>
                   {shortAddr(v.vault, 8)}
                 </a>
-                <span style={{ ...m, fontSize: "10px", color: "var(--text-2)" }}>{v.total_calls}</span>
-                <span style={{ ...m, fontSize: "10px", color: "var(--success)" }}>{v.approved_calls}</span>
-                <span style={{ ...m, fontSize: "10px",
+                <span style={{ ...m, fontSize: "12px", color: "var(--text-2)" }}>{v.total_calls}</span>
+                <span style={{ ...m, fontSize: "12px", color: "var(--success)" }}>{v.approved_calls}</span>
+                <span style={{ ...m, fontSize: "12px",
                   color: v.approval_rate >= 0.9 ? "var(--success)" : v.approval_rate >= 0.5 ? "var(--muted)" : "var(--danger)" }}>
                   {Math.round(v.approval_rate * 100)}%
                 </span>
-                <span style={{ ...m, fontSize: "10px", color: "var(--text-4)" }}>{timeAgo(v.first_interaction)}</span>
-                <span style={{ ...m, fontSize: "10px", color: "var(--text-4)" }}>{timeAgo(v.last_interaction)}</span>
+                <span style={{ ...m, fontSize: "12px", color: "var(--text-4)" }}>{timeAgo(v.first_interaction)}</span>
+                <span style={{ ...m, fontSize: "12px", color: "var(--text-4)" }}>{timeAgo(v.last_interaction)}</span>
               </div>
             ))}
         </div>
@@ -237,7 +237,7 @@ function VaultFootprintGrid({ vaults }: { vaults: VaultFootprint[] }) {
               </div>
             ))}
           </div>
-          <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", marginTop: "10px" }}>
+          <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", marginTop: "10px" }}>
             First seen {timeAgo(v.first_interaction)}
           </div>
         </div>
@@ -302,7 +302,7 @@ function ProfileInner() {
     <>
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <div style={{ marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid var(--border)" }}>
-        <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.16em",
+        <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.16em",
           textTransform: "uppercase", marginBottom: "10px" }}>
           /bureau — Compliance Profile
         </div>
@@ -311,23 +311,23 @@ function ProfileInner() {
             letterSpacing: "0.04em", margin: 0 }}>
             {shortAddr(pubkey, 12)}
           </h1>
-          <button onClick={handleCopy} style={{ ...m, fontSize: "9px", color: "var(--accent)",
+          <button onClick={handleCopy} style={{ ...m, fontSize: "11px", color: "var(--accent)",
             background: "none", border: "1px solid var(--accent)", padding: "4px 10px",
             cursor: "pointer", letterSpacing: "0.08em", textTransform: "uppercase" }}>
             {copied ? "Copied ✓" : "Copy"}
           </button>
           <a href={`https://explorer.solana.com/address/${pubkey}?cluster=devnet`}
             target="_blank" rel="noreferrer"
-            style={{ ...m, fontSize: "9px", color: "var(--text-3)", border: "1px solid var(--border)",
+            style={{ ...m, fontSize: "11px", color: "var(--text-3)", border: "1px solid var(--border)",
               padding: "4px 10px", textDecoration: "none", letterSpacing: "0.08em", textTransform: "uppercase" }}>
             Explorer ↗
           </a>
-          <span style={{ ...m, fontSize: "9px", color: "var(--text-4)", padding: "4px 10px",
+          <span style={{ ...m, fontSize: "11px", color: "var(--text-4)", padding: "4px 10px",
             border: "1px solid var(--border)", background: "var(--bg-1)" }}>
             Wallet
           </span>
         </div>
-        <div style={{ ...m, fontSize: "10px", color: "var(--text-4)", lineHeight: 1.7 }}>
+        <div style={{ ...m, fontSize: "12px", color: "var(--text-4)", lineHeight: 1.7 }}>
           Compliance profile derived from immutable on-chain data. Any counterparty can independently
           verify this profile from the same AuditEntry and attestation accounts.
         </div>
@@ -338,7 +338,7 @@ function ProfileInner() {
           <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", marginBottom: "8px" }}>
             Fetching on-chain compliance data...
           </div>
-          <div style={{ ...m, fontSize: "9px", color: "var(--text-5)" }}>
+          <div style={{ ...m, fontSize: "11px", color: "var(--text-5)" }}>
             Scanning audit entries · Reading attestation accounts
           </div>
         </div>
@@ -389,7 +389,7 @@ function ProfileInner() {
           <div style={{ marginBottom: "32px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
               <h2 style={{ ...f, fontSize: "15px", fontWeight: 700, color: "var(--text-1)", margin: 0 }}>Attestations</h2>
-              <span style={{ ...m, fontSize: "9px", color: "var(--text-4)" }}>
+              <span style={{ ...m, fontSize: "11px", color: "var(--text-4)" }}>
                 {profile.active_attestations} active · {profile.attestations.length} total
               </span>
             </div>
@@ -401,7 +401,7 @@ function ProfileInner() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
               <h2 style={{ ...f, fontSize: "15px", fontWeight: 700, color: "var(--text-1)", margin: 0 }}>Gate Interaction History</h2>
               {profile.last_seen_timestamp && (
-                <span style={{ ...m, fontSize: "9px", color: "var(--text-4)" }}>
+                <span style={{ ...m, fontSize: "11px", color: "var(--text-4)" }}>
                   Last activity {timeAgo(profile.last_seen_timestamp)}
                 </span>
               )}
@@ -422,7 +422,7 @@ function ProfileInner() {
             <div style={{ marginBottom: "32px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
                 <h2 style={{ ...f, fontSize: "15px", fontWeight: 700, color: "var(--text-1)", margin: 0 }}>Denial Analysis</h2>
-                <span style={{ ...m, fontSize: "9px", color: "var(--text-4)" }}>
+                <span style={{ ...m, fontSize: "11px", color: "var(--text-4)" }}>
                   {profile.denied_calls} rejection{profile.denied_calls !== 1 ? "s" : ""} on record
                 </span>
               </div>
@@ -433,7 +433,7 @@ function ProfileInner() {
           )}
 
           {/* Footer */}
-          <div style={{ ...m, fontSize: "9px", color: "var(--text-5)", padding: "16px 0",
+          <div style={{ ...m, fontSize: "11px", color: "var(--text-5)", padding: "16px 0",
             borderTop: "1px solid var(--border)", display: "flex", gap: "24px", flexWrap: "wrap" }}>
             <span>Profile computed {formatTs(profile.profile_timestamp)}</span>
             <span>·</span>
@@ -458,7 +458,7 @@ export default function ProfilePage() {
   return (
     <AdminShell current="/profile">
       <div style={{ marginBottom: "32px", paddingBottom: "24px" }}>
-        <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.16em",
+        <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.16em",
           textTransform: "uppercase", marginBottom: "10px" }}>/bureau — Compliance Profile</div>
       </div>
       <Suspense fallback={

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { AdminShell } from "@/components/AdminShell";
@@ -69,7 +69,7 @@ function timeAgo(ts: number) {
 }
 
 function SectionLabel({ children }: { children: string }) {
-  return <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>{children}</div>;
+  return <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>{children}</div>;
 }
 
 export default function FeedPage() {
@@ -139,7 +139,7 @@ export default function FeedPage() {
       {/* Header */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid var(--border)" }}>
         <div>
-          <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "8px" }}>/06 — Live Feed</div>
+          <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "8px" }}>06 — Live Feed</div>
           <h1 style={{ ...f, fontSize: "26px", fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text-1)", marginBottom: "8px" }}>Live Gate Activity</h1>
           <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -148,12 +148,12 @@ export default function FeedPage() {
                 {live ? "Polling every 10s" : "Paused"}
               </span>
             </div>
-            {lastPoll && <span style={{ ...m, fontSize: "10px", color: "var(--text-4)" }}>· {timeAgo(Math.floor(lastPoll.getTime() / 1000))}</span>}
+            {lastPoll && <span style={{ ...m, fontSize: "12px", color: "var(--text-4)" }}>· {timeAgo(Math.floor(lastPoll.getTime() / 1000))}</span>}
           </div>
         </div>
         <button
           onClick={() => setLive(l => !l)}
-          style={{ ...m, fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", background: live ? "var(--accent-bg)" : "var(--bg-1)", color: live ? "var(--accent)" : "var(--text-3)", border: `1px solid ${live ? "var(--accent)" : "var(--border)"}`, padding: "10px 20px", cursor: "pointer", fontWeight: 600 }}>
+          style={{ ...m, fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", background: live ? "var(--accent-bg)" : "var(--bg-1)", color: live ? "var(--accent)" : "var(--text-3)", border: `1px solid ${live ? "var(--accent)" : "var(--border)"}`, padding: "10px 20px", cursor: "pointer", fontWeight: 600 }}>
           {live ? "⏸ Pause" : "▶ Resume"}
         </button>
       </div>
@@ -169,7 +169,7 @@ export default function FeedPage() {
           <div key={i} style={{ border: "1px solid var(--border)", padding: "18px 24px", background: "var(--bg-1)" }}>
             <SectionLabel>{s.label}</SectionLabel>
             <div style={{ ...f, fontSize: "28px", fontWeight: 800, color: s.color, lineHeight: 1, marginBottom: "4px" }}>{s.value}</div>
-            <div style={{ ...m, fontSize: "9px", color: "var(--text-4)" }}>{s.sub}</div>
+            <div style={{ ...m, fontSize: "11px", color: "var(--text-4)" }}>{s.sub}</div>
           </div>
         ))}
       </div>
@@ -184,7 +184,7 @@ export default function FeedPage() {
             </div>
           </div>
           {newCount > 0 && (
-            <span style={{ ...m, fontSize: "9px", padding: "3px 10px", background: "var(--accent-bg)", color: "var(--accent)", border: "1px solid var(--accent)", letterSpacing: "0.08em" }}>
+            <span style={{ ...m, fontSize: "11px", padding: "3px 10px", background: "var(--accent-bg)", color: "var(--accent)", border: "1px solid var(--accent)", letterSpacing: "0.08em" }}>
               +{newCount} new
             </span>
           )}
@@ -222,24 +222,24 @@ export default function FeedPage() {
               transition: "background 1s ease",
             }}>
               <div style={{ width: "5px", height: "5px", borderRadius: "50%", background: e.isNew ? (e.outcome === "approved" ? "var(--success)" : "var(--danger)") : "transparent" }} />
-              <span style={{ ...m, fontSize: "9px", fontWeight: 700, color: e.outcome === "approved" ? "var(--success)" : "var(--danger)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              <span style={{ ...m, fontSize: "11px", fontWeight: 700, color: e.outcome === "approved" ? "var(--success)" : "var(--danger)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
                 {e.outcome === "approved" ? "PASS" : "DENY"}
               </span>
               <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <a href={`/profile?wallet=${e.wallet}`} style={{ ...m, fontSize: "10px", color: "var(--accent)", textDecoration: "none" }}>
+                <a href={`/profile?wallet=${e.wallet}`} style={{ ...m, fontSize: "12px", color: "var(--accent)", textDecoration: "none" }}>
                   {shortAddr(e.wallet, 8)}
                 </a>
                 <a href={addressUrl(e.wallet)} target="_blank" rel="noreferrer" style={{ color: "var(--text-4)", display: "flex", alignItems: "center" }} title="View on Explorer">
                   <svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M7 1h4v4M11 1L5 7M2 3H1v8h8V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </a>
               </span>
-              <span style={{ ...m, fontSize: "10px", color: "var(--text-3)" }}>
+              <span style={{ ...m, fontSize: "12px", color: "var(--text-3)" }}>
                 {REASON_CODES[e.reasonCode] || `Code ${e.reasonCode}`}
               </span>
-              <span style={{ ...m, fontSize: "10px", color: "var(--text-3)" }}>
+              <span style={{ ...m, fontSize: "12px", color: "var(--text-3)" }}>
                 {e.tier > 0 ? `Tier ${e.tier}` : "—"}
               </span>
-              <span style={{ ...m, fontSize: "10px", color: "var(--text-4)" }}>
+              <span style={{ ...m, fontSize: "12px", color: "var(--text-4)" }}>
                 {timeAgo(e.timestamp)}
               </span>
             </div>

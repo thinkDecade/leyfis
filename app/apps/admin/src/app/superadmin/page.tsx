@@ -110,7 +110,7 @@ function TreasuryPanel() {
 
   const inp: any = { ...m, fontSize:"12px", background:"var(--bg-2)", border:"1px solid var(--border)",
     color:"var(--text-1)", padding:"8px 12px", width:"140px", outline:"none" };
-  const btn: any = (disabled?: boolean) => ({ ...m, fontSize:"9px", letterSpacing:"0.1em", textTransform:"uppercase",
+  const btn: any = (disabled?: boolean) => ({ ...m, fontSize:"11px", letterSpacing:"0.1em", textTransform:"uppercase",
     background: disabled ? "var(--accent-bg)" : "var(--accent)", color: disabled ? "var(--accent)" : "white",
     border:"1px solid var(--accent)", padding:"8px 16px", cursor: disabled ? "not-allowed" : "pointer", fontWeight:600 });
 
@@ -119,10 +119,10 @@ function TreasuryPanel() {
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"16px" }}>
         <div style={{ display:"flex", alignItems:"center", gap:"8px" }}>
           <Coins size={14} color="var(--accent)" />
-          <span style={{ ...m, fontSize:"9px", color:"var(--text-4)", letterSpacing:"0.1em", textTransform:"uppercase" }}>Protocol Treasury</span>
+          <span style={{ ...m, fontSize:"11px", color:"var(--text-4)", letterSpacing:"0.1em", textTransform:"uppercase" }}>Protocol Treasury</span>
         </div>
         {data?.initialized && (
-          <span style={{ ...m, fontSize:"9px", padding:"3px 10px", background:"var(--accent-bg)", color:"var(--accent)", border:"1px solid var(--accent-border)" }}>LIVE</span>
+          <span style={{ ...m, fontSize:"11px", padding:"3px 10px", background:"var(--accent-bg)", color:"var(--accent)", border:"1px solid var(--accent-border)" }}>LIVE</span>
         )}
       </div>
 
@@ -144,9 +144,9 @@ function TreasuryPanel() {
               { label:"Last Updated",      value:data.lastUpdated ? new Date(data.lastUpdated*1000).toLocaleDateString() : "—", sub:"UTC" },
             ].map((s,i) => (
               <div key={i} style={{ padding:"14px 16px", background:"var(--bg-2)", border:"1px solid var(--border)" }}>
-                <div style={{ ...m, fontSize:"9px", color:"var(--text-4)", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:"8px" }}>{s.label}</div>
+                <div style={{ ...m, fontSize:"11px", color:"var(--text-4)", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:"8px" }}>{s.label}</div>
                 <div style={{ ...m, fontSize:"15px", color:"var(--text-1)", fontWeight:700, marginBottom:"4px" }}>{s.value}</div>
-                <div style={{ ...m, fontSize:"9px", color:"var(--text-3)" }}>{s.sub}</div>
+                <div style={{ ...m, fontSize:"11px", color:"var(--text-3)" }}>{s.sub}</div>
               </div>
             ))}
           </div>
@@ -162,10 +162,10 @@ function TreasuryPanel() {
               </button>
             </div>
           </div>
-          {msg && <div style={{ ...m, fontSize:"10px", color: msg.startsWith("✓") ? "var(--accent)" : "var(--danger)", marginTop:"12px" }}>{msg}</div>}
+          {msg && <div style={{ ...m, fontSize:"12px", color: msg.startsWith("✓") ? "var(--accent)" : "var(--danger)", marginTop:"12px" }}>{msg}</div>}
         </>
       )}
-      <div style={{ ...m, fontSize:"9px", color:"var(--text-4)", marginTop:"12px", paddingTop:"12px", borderTop:"1px solid var(--border)" }}>
+      <div style={{ ...m, fontSize:"11px", color:"var(--text-4)", marginTop:"12px", paddingTop:"12px", borderTop:"1px solid var(--border)" }}>
         Treasury PDA: {shortAddr(treasuryKey.toBase58(), 8)} · collected from approved gate() calls only
       </div>
     </div>
@@ -181,12 +181,12 @@ function RegisterModal({onClose}:{onClose:()=>void}){
       <div style={{background:"var(--bg-1)",border:"1px solid var(--border-2)",padding:"40px",width:"100%",maxWidth:"480px",position:"relative"}}>
         <button onClick={onClose} style={{position:"absolute",top:"16px",right:"16px",background:"none",border:"none",color:"var(--text-3)",cursor:"pointer",fontSize:"20px",lineHeight:1}}>x</button>
         {!done?(<>
-          <div style={{...m,fontSize:"9px",color:"var(--accent)",letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:"12px"}}>Register KYC Issuer</div>
+          <div style={{...m,fontSize:"11px",color:"var(--accent)",letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:"12px"}}>Register KYC Issuer</div>
           <h2 style={{...f,fontSize:"20px",fontWeight:700,marginBottom:"24px",color:"var(--text-1)"}}>Add New Issuer</h2>
           <div style={{display:"flex",flexDirection:"column",gap:"16px"}}>
-            <div><label style={{...m,fontSize:"9px",color:"var(--text-3)",letterSpacing:"0.1em",textTransform:"uppercase",display:"block",marginBottom:"6px"}}>Issuer Wallet</label><input value={wallet} onChange={e=>setWallet(e.target.value)} placeholder="Solana pubkey..." style={inp}/></div>
-            <div><label style={{...m,fontSize:"9px",color:"var(--text-3)",letterSpacing:"0.1em",textTransform:"uppercase",display:"block",marginBottom:"6px"}}>Institution Name</label><input value={name} onChange={e=>setName(e.target.value)} placeholder="e.g. AMINA Bank KYC Service" style={inp}/></div>
-            <div><label style={{...m,fontSize:"9px",color:"var(--text-3)",letterSpacing:"0.1em",textTransform:"uppercase",display:"block",marginBottom:"6px"}}>Max Clearance Tier</label>
+            <div><label style={{...m,fontSize:"11px",color:"var(--text-3)",letterSpacing:"0.1em",textTransform:"uppercase",display:"block",marginBottom:"6px"}}>Issuer Wallet</label><input value={wallet} onChange={e=>setWallet(e.target.value)} placeholder="Solana pubkey..." style={inp}/></div>
+            <div><label style={{...m,fontSize:"11px",color:"var(--text-3)",letterSpacing:"0.1em",textTransform:"uppercase",display:"block",marginBottom:"6px"}}>Institution Name</label><input value={name} onChange={e=>setName(e.target.value)} placeholder="e.g. AMINA Bank KYC Service" style={inp}/></div>
+            <div><label style={{...m,fontSize:"11px",color:"var(--text-3)",letterSpacing:"0.1em",textTransform:"uppercase",display:"block",marginBottom:"6px"}}>Max Clearance Tier</label>
               <select value={tier} onChange={e=>setTier(parseInt(e.target.value))} style={inp}><option value={1}>Tier 1 - Basic KYC</option><option value={2}>Tier 2 - Enhanced Due Diligence</option><option value={3}>Tier 3 - Institutional / FATF</option></select></div>
             <div style={{height:"1px",background:"var(--border)"}}/>
             <div style={{display:"flex",gap:"12px"}}>
@@ -199,8 +199,8 @@ function RegisterModal({onClose}:{onClose:()=>void}){
             <div style={{width:"48px",height:"48px",background:"var(--accent-bg)",border:"1px solid var(--accent-border)",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}><UserPlus size={20} color="var(--accent)"/></div>
             <div style={{...f,fontSize:"16px",fontWeight:700,color:"var(--text-1)",marginBottom:"8px"}}>Issuer Registered</div>
             <div style={{...m,fontSize:"11px",color:"var(--text-2)",marginBottom:"4px"}}>{name}</div>
-            <div style={{...m,fontSize:"9px",color:"var(--text-4)",marginBottom:"24px"}}>Demo mode - on-chain registration pending devnet redeploy</div>
-            <button onClick={onClose} style={{...m,fontSize:"10px",color:"var(--text-3)",background:"none",border:"none",cursor:"pointer"}}>Close</button>
+            <div style={{...m,fontSize:"11px",color:"var(--text-4)",marginBottom:"24px"}}>Demo mode - on-chain registration pending devnet redeploy</div>
+            <button onClick={onClose} style={{...m,fontSize:"12px",color:"var(--text-3)",background:"none",border:"none",cursor:"pointer"}}>Close</button>
           </div>
         )}
       </div>
@@ -219,7 +219,7 @@ export default function SuperAdminPage(){
       {showRegister&&<RegisterModal onClose={()=>setShowRegister(false)}/>}
       <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:"28px"}}>
         <div>
-          <div style={{...m,fontSize:"9px",color:"var(--text-4)",letterSpacing:"0.16em",textTransform:"uppercase",marginBottom:"10px"}}>/01 - Super Admin</div>
+          <div style={{...m,fontSize:"11px",color:"var(--text-4)",letterSpacing:"0.12em",textTransform:"uppercase",marginBottom:"10px"}}>01 — Protocol Administration</div>
           <h1 style={{...f,fontSize:"26px",fontWeight:700,letterSpacing:"-0.02em",marginBottom:"4px",color:"var(--text-1)"}}>Protocol Overview</h1>
           <p style={{...m,fontSize:"11px",color:"var(--text-3)"}}>Institutional Middleware Control Centre{publicKey&&<span style={{color:"var(--text-4)",marginLeft:"12px"}}>- {shortAddr(publicKey.toBase58(),8)}</span>}</p>
         </div>
@@ -229,12 +229,12 @@ export default function SuperAdminPage(){
         {STATS.map((s,i)=>{const Icon=s.icon;return(
           <div key={i} style={{border:"1px solid var(--border)",padding:"20px 24px",background:"var(--bg-1)",position:"relative",overflow:"hidden"}}>
             <div style={{position:"absolute",top:"16px",right:"16px",opacity:0.12}}><Icon size={28} color="var(--accent)"/></div>
-            <div style={{...m,fontSize:"9px",color:"var(--text-3)",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"10px"}}>{s.label}</div>
+            <div style={{...m,fontSize:"11px",color:"var(--text-3)",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"10px"}}>{s.label}</div>
             <div style={{...f,fontSize:"28px",fontWeight:800,letterSpacing:"-0.02em",lineHeight:1,marginBottom:"10px",color:"var(--text-1)"}}>{s.value}</div>
             <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
               {s.trend==="up"?<TrendingUp size={12} color="var(--accent)"/>:s.trend==="down"?<TrendingDown size={12} color="var(--danger)"/>:<Minus size={12} color="var(--muted)"/>}
-              <span style={{...m,fontSize:"9px",color:s.trend==="up"?"var(--accent)":s.trend==="down"?"var(--danger)":"var(--muted)",fontWeight:600}}>{s.delta}</span>
-              <span style={{...m,fontSize:"9px",color:"var(--text-4)"}}>{s.sub}</span>
+              <span style={{...m,fontSize:"11px",color:s.trend==="up"?"var(--accent)":s.trend==="down"?"var(--danger)":"var(--muted)",fontWeight:600}}>{s.delta}</span>
+              <span style={{...m,fontSize:"11px",color:"var(--text-4)"}}>{s.sub}</span>
             </div>
           </div>
         );})}
@@ -242,61 +242,61 @@ export default function SuperAdminPage(){
       <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",border:"1px solid var(--border)",marginBottom:"24px",background:"var(--bg-1)"}}>
         {[["Gate Program",shortAddr(GATE_PROGRAM_ID,10)],["Test Vault",shortAddr(VAULT_PROGRAM_ID,10)],["Network","Solana Devnet"],["Version","v0.1.0 - 7 checks"]].map(([l,v],i)=>(
           <div key={i} style={{padding:"14px 20px",borderRight:i<3?"1px solid var(--border)":"none"}}>
-            <div style={{...m,fontSize:"9px",color:"var(--text-4)",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:"4px"}}>{l}</div>
+            <div style={{...m,fontSize:"11px",color:"var(--text-4)",letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:"4px"}}>{l}</div>
             <div style={{...m,fontSize:"11px",color:"var(--text-2)",fontWeight:500}}>{v}</div>
           </div>
         ))}
       </div>
       <div style={{display:"flex",borderBottom:"1px solid var(--border)"}}>
         {(["issuers","activity"] as const).map(t=>(
-          <button key={t} onClick={()=>setTab(t)} style={{...m,fontSize:"10px",letterSpacing:"0.1em",textTransform:"uppercase",padding:"11px 20px",background:"none",border:"none",cursor:"pointer",color:tab===t?"var(--text-1)":"var(--text-3)",borderBottom:tab===t?"2px solid var(--accent)":"2px solid transparent",marginBottom:"-1px",fontWeight:tab===t?600:400}}>
+          <button key={t} onClick={()=>setTab(t)} style={{...m,fontSize:"12px",letterSpacing:"0.1em",textTransform:"uppercase",padding:"11px 20px",background:"none",border:"none",cursor:"pointer",color:tab===t?"var(--text-1)":"var(--text-3)",borderBottom:tab===t?"2px solid var(--accent)":"2px solid transparent",marginBottom:"-1px",fontWeight:tab===t?600:400}}>
             {t==="issuers"?"Active Issuers":"Recent Activity"}
           </button>
         ))}
       </div>
       {tab==="issuers"&&(
         <div style={{border:"1px solid var(--border)",borderTop:"none",background:"var(--bg-1)"}}>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 140px 60px 100px 90px 100px",gap:"12px",padding:"10px 20px",...m,fontSize:"9px",color:"var(--text-4)",letterSpacing:"0.1em",textTransform:"uppercase",borderBottom:"1px solid var(--border)"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 140px 60px 100px 90px 100px",gap:"12px",padding:"10px 20px",...m,fontSize:"11px",color:"var(--text-4)",letterSpacing:"0.1em",textTransform:"uppercase",borderBottom:"1px solid var(--border)"}}>
             <span>Institution</span><span>Address</span><span>Tier</span><span>Attestations</span><span>Status</span><span>Registered</span>
           </div>
           {ISSUERS.map((iss,i)=>(
             <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 140px 60px 100px 90px 100px",gap:"12px",padding:"15px 20px",borderBottom:i<ISSUERS.length-1?"1px solid var(--border)":"none",alignItems:"center",borderLeft:`2px solid ${iss.status==="active"?"var(--accent)":"var(--danger)"}`,background:"var(--bg-1)"}}>
-              <div><div style={{...f,fontSize:"13px",fontWeight:600,color:"var(--text-1)",marginBottom:"2px"}}>{iss.name}</div><div style={{...m,fontSize:"9px",color:"var(--text-4)"}}>{iss.addr}</div></div>
-              <span style={{...m,fontSize:"10px",color:"var(--text-3)"}}>{iss.addr}</span>
-              <span style={{...m,fontSize:"9px",padding:"3px 8px",background:"var(--accent-bg)",color:"var(--accent)",border:"1px solid var(--accent-border)",display:"inline-block",textAlign:"center",letterSpacing:"0.06em"}}>T{iss.tier}</span>
+              <div><div style={{...f,fontSize:"13px",fontWeight:600,color:"var(--text-1)",marginBottom:"2px"}}>{iss.name}</div><div style={{...m,fontSize:"11px",color:"var(--text-4)"}}>{iss.addr}</div></div>
+              <span style={{...m,fontSize:"12px",color:"var(--text-3)"}}>{iss.addr}</span>
+              <span style={{...m,fontSize:"11px",padding:"3px 8px",background:"var(--accent-bg)",color:"var(--accent)",border:"1px solid var(--accent-border)",display:"inline-block",textAlign:"center",letterSpacing:"0.06em"}}>T{iss.tier}</span>
               <span style={{...f,fontSize:"13px",color:"var(--text-2)",fontWeight:500}}>{iss.attestations.toLocaleString()}</span>
-              <span style={{...m,fontSize:"9px",padding:"3px 8px",background:iss.status==="active"?"rgba(22,163,74,0.08)":"var(--danger-bg)",color:iss.status==="active"?"var(--success)":"var(--danger)",border:`1px solid ${iss.status==="active"?"rgba(22,163,74,0.2)":"var(--danger-border)"}`,display:"inline-block",letterSpacing:"0.06em",textTransform:"uppercase"}}>{iss.status}</span>
-              <span style={{...m,fontSize:"10px",color:"var(--text-3)"}}>{iss.registered}</span>
+              <span style={{...m,fontSize:"11px",padding:"3px 8px",background:iss.status==="active"?"var(--success-bg)":"var(--danger-bg)",color:iss.status==="active"?"var(--success)":"var(--danger)",border:`1px solid ${iss.status==="active"?"var(--success-border)":"var(--danger-border)"}`,display:"inline-block",letterSpacing:"0.06em",textTransform:"uppercase"}}>{iss.status}</span>
+              <span style={{...m,fontSize:"12px",color:"var(--text-3)"}}>{iss.registered}</span>
             </div>
           ))}
           <div style={{padding:"12px 20px",borderTop:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <span style={{...m,fontSize:"9px",color:"var(--text-4)"}}>{ISSUERS.length} registered - {ISSUERS.filter(x=>x.status==="active").length} active</span>
-            <button onClick={()=>setShowRegister(true)} style={{display:"flex",alignItems:"center",gap:"6px",...m,fontSize:"9px",letterSpacing:"0.08em",textTransform:"uppercase",background:"transparent",color:"var(--accent)",border:"1px solid var(--accent-border)",padding:"6px 14px",cursor:"pointer"}}><UserPlus size={11}/> Register New</button>
+            <span style={{...m,fontSize:"11px",color:"var(--text-4)"}}>{ISSUERS.length} registered - {ISSUERS.filter(x=>x.status==="active").length} active</span>
+            <button onClick={()=>setShowRegister(true)} style={{display:"flex",alignItems:"center",gap:"6px",...m,fontSize:"11px",letterSpacing:"0.08em",textTransform:"uppercase",background:"transparent",color:"var(--accent)",border:"1px solid var(--accent-border)",padding:"6px 14px",cursor:"pointer"}}><UserPlus size={11}/> Register New</button>
           </div>
         </div>
       )}
       {tab==="activity"&&(
         <div style={{border:"1px solid var(--border)",borderTop:"none",background:"var(--bg-1)"}}>
-          <div style={{display:"grid",gridTemplateColumns:"160px 1fr 1fr 80px",gap:"12px",padding:"10px 20px",...m,fontSize:"9px",color:"var(--text-4)",letterSpacing:"0.1em",textTransform:"uppercase",borderBottom:"1px solid var(--border)"}}>
+          <div style={{display:"grid",gridTemplateColumns:"160px 1fr 1fr 80px",gap:"12px",padding:"10px 20px",...m,fontSize:"11px",color:"var(--text-4)",letterSpacing:"0.1em",textTransform:"uppercase",borderBottom:"1px solid var(--border)"}}>
             <span>Event</span><span>Actor</span><span>Target</span><span>When</span>
           </div>
           {RECENT_TX.map((tx,i)=>(
             <div key={i} style={{display:"grid",gridTemplateColumns:"160px 1fr 1fr 80px",gap:"12px",padding:"13px 20px",borderBottom:i<RECENT_TX.length-1?"1px solid var(--border)":"none",alignItems:"center",borderLeft:`2px solid ${TX_META[tx.type].color}`}}>
-              <span style={{...m,fontSize:"9px",color:TX_META[tx.type].color,fontWeight:600,letterSpacing:"0.04em",textTransform:"uppercase"}}>{TX_META[tx.type].label}</span>
-              <span style={{...m,fontSize:"10px",color:"var(--text-2)"}}>{tx.actor}</span>
-              <span style={{...m,fontSize:"10px",color:"var(--text-3)"}}>{tx.target}</span>
-              <span style={{...m,fontSize:"10px",color:"var(--text-4)"}}>{timeAgo(tx.ts)}</span>
+              <span style={{...m,fontSize:"11px",color:TX_META[tx.type].color,fontWeight:600,letterSpacing:"0.04em",textTransform:"uppercase"}}>{TX_META[tx.type].label}</span>
+              <span style={{...m,fontSize:"12px",color:"var(--text-2)"}}>{tx.actor}</span>
+              <span style={{...m,fontSize:"12px",color:"var(--text-3)"}}>{tx.target}</span>
+              <span style={{...m,fontSize:"12px",color:"var(--text-4)"}}>{timeAgo(tx.ts)}</span>
             </div>
           ))}
         </div>
       )}
       <div style={{marginTop:"20px",border:"1px solid var(--border)",background:"var(--bg-1)",padding:"20px"}}>
-        <div style={{...m,fontSize:"9px",color:"var(--text-4)",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"14px"}}>Network Integrity</div>
+        <div style={{...m,fontSize:"11px",color:"var(--text-4)",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:"14px"}}>Network Integrity</div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"2px"}}>
           {[{label:"RPC Latency",value:"14ms",ok:true},{label:"Block Production",value:"99.98%",ok:true},{label:"Devnet Status",value:"Degraded",ok:false}].map((r,i)=>(
             <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 16px",background:"var(--bg-2)",border:"1px solid var(--border)"}}>
-              <span style={{...m,fontSize:"10px",color:"var(--text-2)"}}>{r.label}</span>
-              <span style={{...m,fontSize:"10px",color:r.ok?"var(--success)":"var(--danger)",fontWeight:700}}>{r.value}</span>
+              <span style={{...m,fontSize:"12px",color:"var(--text-2)"}}>{r.label}</span>
+              <span style={{...m,fontSize:"12px",color:r.ok?"var(--success)":"var(--danger)",fontWeight:700}}>{r.value}</span>
             </div>
           ))}
         </div>

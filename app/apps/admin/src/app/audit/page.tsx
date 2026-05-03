@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect, useCallback } from "react";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { AdminShell } from "@/components/AdminShell";
@@ -63,7 +63,7 @@ function timeAgo(ts: number) {
 }
 
 function SectionLabel({ children }: { children: string }) {
-  return <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>{children}</div>;
+  return <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>{children}</div>;
 }
 
 export default function AuditPage() {
@@ -104,17 +104,17 @@ export default function AuditPage() {
       {/* Header */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid var(--border)" }}>
         <div>
-          <div style={{ ...m, fontSize: "9px", color: "var(--text-4)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "8px" }}>/05 — Audit Log</div>
+          <div style={{ ...m, fontSize: "11px", color: "var(--text-4)", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: "8px" }}>05 — Audit Log</div>
           <h1 style={{ ...f, fontSize: "26px", fontWeight: 700, letterSpacing: "-0.02em", color: "var(--text-1)", marginBottom: "8px" }}>On-Chain Audit Log</h1>
           <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
             <span style={{ ...m, fontSize: "11px", color: "var(--text-3)" }}>Approved interactions recorded permanently on Solana. Rejected calls leave no on-chain footprint — by design.</span>
-            {lastRefresh && <span style={{ ...m, fontSize: "10px", color: "var(--text-4)" }}>· {timeAgo(Math.floor(lastRefresh.getTime() / 1000))}</span>}
-            <button onClick={refresh} disabled={loading} style={{ ...m, fontSize: "9px", color: "var(--accent)", background: "none", border: "none", cursor: "pointer", padding: 0, letterSpacing: "0.08em", textTransform: "uppercase", opacity: loading ? 0.4 : 1 }}>
+            {lastRefresh && <span style={{ ...m, fontSize: "12px", color: "var(--text-4)" }}>· {timeAgo(Math.floor(lastRefresh.getTime() / 1000))}</span>}
+            <button onClick={refresh} disabled={loading} style={{ ...m, fontSize: "11px", color: "var(--accent)", background: "none", border: "none", cursor: "pointer", padding: 0, letterSpacing: "0.08em", textTransform: "uppercase", opacity: loading ? 0.4 : 1 }}>
               {loading ? "Loading..." : "↻ Refresh"}
             </button>
           </div>
         </div>
-        <a href="/export" style={{ ...m, fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--accent)", border: "1px solid var(--accent)", padding: "10px 18px", background: "var(--accent-bg)", textDecoration: "none" }}>
+        <a href="/export" style={{ ...m, fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--accent)", border: "1px solid var(--accent)", padding: "10px 18px", background: "var(--accent-bg)", textDecoration: "none" }}>
           Export CSV →
         </a>
       </div>
@@ -135,7 +135,7 @@ export default function AuditPage() {
       </div>
 
       {/* Atomicity note */}
-      <div style={{ ...m, fontSize: "10px", color: "var(--text-4)", padding: "10px 16px", background: "var(--bg-1)", border: "1px solid var(--border)", marginBottom: "12px", lineHeight: 1.6 }}>
+      <div style={{ ...m, fontSize: "12px", color: "var(--text-4)", padding: "10px 16px", background: "var(--bg-1)", border: "1px solid var(--border)", marginBottom: "12px", lineHeight: 1.6 }}>
         <span style={{ color: "var(--text-3)" }}>ℹ︎ </span>
         Solana transactions are atomic. Rejected wallets are stopped before any state is committed — no on-chain footprint is created. Denials are visible in transaction logs on Solana Explorer.
       </div>
@@ -151,12 +151,12 @@ export default function AuditPage() {
         </div>
         <div style={{ display: "flex", gap: "2px" }}>
           {(["all", "approved", "denied"] as const).map(f2 => (
-            <button key={f2} onClick={() => setFilter(f2)} style={{ ...m, fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase", padding: "9px 16px", background: filter === f2 ? "var(--accent)" : "var(--bg-1)", color: filter === f2 ? "white" : "var(--text-3)", border: `1px solid ${filter === f2 ? "var(--accent)" : "var(--border)"}`, cursor: "pointer" }}>
+            <button key={f2} onClick={() => setFilter(f2)} style={{ ...m, fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", padding: "9px 16px", background: filter === f2 ? "var(--accent)" : "var(--bg-1)", color: filter === f2 ? "white" : "var(--text-3)", border: `1px solid ${filter === f2 ? "var(--accent)" : "var(--border)"}`, cursor: "pointer" }}>
               {f2 === "denied" ? "rejected" : f2}
             </button>
           ))}
         </div>
-        <span style={{ ...m, fontSize: "9px", color: "var(--text-4)", marginLeft: "auto" }}>{filtered.length} records</span>
+        <span style={{ ...m, fontSize: "11px", color: "var(--text-4)", marginLeft: "auto" }}>{filtered.length} records</span>
       </div>
 
       {/* Table */}
@@ -188,30 +188,30 @@ export default function AuditPage() {
               borderLeft: `3px solid ${e.outcome === "approved" ? "var(--success)" : "var(--danger)"}`,
               background: i % 2 === 1 ? "var(--bg-2)" : "transparent",
             }}>
-              <span style={{ ...m, fontSize: "9px", fontWeight: 700, color: e.outcome === "approved" ? "var(--success)" : "var(--danger)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              <span style={{ ...m, fontSize: "11px", fontWeight: 700, color: e.outcome === "approved" ? "var(--success)" : "var(--danger)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
                 {e.outcome === "approved" ? "PASS" : "DENY"}
               </span>
               <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <a href={`/profile?wallet=${e.wallet}`} style={{ ...m, fontSize: "10px", color: "var(--accent)", textDecoration: "none" }}>
+                <a href={`/profile?wallet=${e.wallet}`} style={{ ...m, fontSize: "12px", color: "var(--accent)", textDecoration: "none" }}>
                   {shortAddr(e.wallet, 8)}
                 </a>
                 <a href={addressUrl(e.wallet)} target="_blank" rel="noreferrer" style={{ color: "var(--text-4)", display: "flex", alignItems: "center" }} title="View on Explorer">
                   <svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M7 1h4v4M11 1L5 7M2 3H1v8h8V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </a>
               </span>
-              <span style={{ ...m, fontSize: "10px", color: "var(--text-3)" }}>
+              <span style={{ ...m, fontSize: "12px", color: "var(--text-3)" }}>
                 {REASON_CODES[e.reasonCode] || `Code ${e.reasonCode}`}
               </span>
-              <a href={addressUrl(e.attestationId)} target="_blank" rel="noreferrer" style={{ ...m, fontSize: "10px", color: "var(--accent)", textDecoration: "none" }}>
+              <a href={addressUrl(e.attestationId)} target="_blank" rel="noreferrer" style={{ ...m, fontSize: "12px", color: "var(--accent)", textDecoration: "none" }}>
                 {shortAddr(e.attestationId, 8)}
               </a>
-              <span style={{ ...m, fontSize: "10px", color: "var(--text-3)" }}>
+              <span style={{ ...m, fontSize: "12px", color: "var(--text-3)" }}>
                 {e.tier > 0 ? `Tier ${e.tier}` : "—"}
               </span>
-              <span style={{ ...m, fontSize: "10px", color: "var(--text-4)" }}>
+              <span style={{ ...m, fontSize: "12px", color: "var(--text-4)" }}>
                 {timeAgo(e.timestamp)}
               </span>
-              <span style={{ ...m, fontSize: "9px", color: "var(--text-4)" }}>
+              <span style={{ ...m, fontSize: "11px", color: "var(--text-4)" }}>
                 {e.slot.toString().slice(-6)}
               </span>
             </div>
