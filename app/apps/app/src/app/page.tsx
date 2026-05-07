@@ -341,7 +341,10 @@ export default function LandingPage() {
       </section>
 
       {/* ── THE GAP ─────────────────────────────────────────── */}
-      <section id="problem" style={{ padding:"96px 8vw",borderTop:`1px solid ${D.rule}`,background:D.bg1 }}>
+      <section id="problem" style={{ padding:"96px 8vw",borderTop:`1px solid ${D.rule}`,background:D.bg1,position:"relative",overflow:"hidden" }}>
+        {/* Section background image — padlock: compliance locked away from DeFi */}
+        <div style={{ position:"absolute",bottom:"-5%",right:"-2%",width:"340px",height:"340px",backgroundImage:"url('/img-gap.png')",backgroundSize:"contain",backgroundRepeat:"no-repeat",backgroundPosition:"right bottom",opacity:0.13,pointerEvents:"none",zIndex:0 }}/>
+        <div style={{ position:"relative",zIndex:1 }}>
         <Fade>
           <div style={{ fontFamily:D.mono,fontSize:"11px",letterSpacing:".14em",color:D.ink30,textTransform:"uppercase",marginBottom:48 }}>01 — The Gap</div>
           <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6vw",alignItems:"start",marginBottom:40 }}>
@@ -396,10 +399,14 @@ export default function LandingPage() {
             </div>
           </div>
         </Fade>
+        </div>{/* end z-index wrapper */}
       </section>
 
       {/* ── HOW THE GATE WORKS ──────────────────────────────── */}
-      <section id="how" style={{ padding:"96px 8vw",borderTop:`1px solid ${D.rule}`,background:D.bg2 }}>
+      <section id="how" style={{ padding:"96px 8vw",borderTop:`1px solid ${D.rule}`,background:D.bg2,position:"relative",overflow:"hidden" }}>
+        {/* Section background image — document + checkmark: attestation/verification */}
+        <div style={{ position:"absolute",top:"5%",right:"-3%",width:"320px",height:"320px",backgroundImage:"url('/img-gate.png')",backgroundSize:"contain",backgroundRepeat:"no-repeat",backgroundPosition:"right top",opacity:0.10,pointerEvents:"none",zIndex:0 }}/>
+        <div style={{ position:"relative",zIndex:1 }}>
         <Fade>
           <div style={{ fontFamily:D.mono,fontSize:"11px",letterSpacing:".14em",color:D.ink30,textTransform:"uppercase",marginBottom:48 }}>02 — The Gate</div>
           <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6vw",alignItems:"start",marginBottom:56 }}>
@@ -481,10 +488,14 @@ export default function LandingPage() {
             </div>
           </div>
         </Fade>
+        </div>{/* end z-index wrapper */}
       </section>
 
       {/* ── FIVE STAKEHOLDERS BENTO ──────────────────────────── */}
-      <section id="roles" style={{ padding:"96px 8vw",borderTop:`1px solid ${D.rule}`,background:D.bg1 }}>
+      <section id="roles" style={{ padding:"96px 8vw",borderTop:`1px solid ${D.rule}`,background:D.bg1,position:"relative",overflow:"hidden" }}>
+        {/* Section background image — three people: five stakeholders */}
+        <div style={{ position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:"500px",height:"500px",backgroundImage:"url('/img-roles.png')",backgroundSize:"contain",backgroundRepeat:"no-repeat",backgroundPosition:"center",opacity:0.05,pointerEvents:"none",zIndex:0 }}/>
+        <div style={{ position:"relative",zIndex:1 }}>
         <Fade>
           <div style={{ fontFamily:D.mono,fontSize:"11px",letterSpacing:".14em",color:D.ink30,textTransform:"uppercase",marginBottom:14 }}>03 — Built For</div>
           <div style={{ display:"grid",gridTemplateColumns:"1fr auto",gap:32,alignItems:"end",marginBottom:44 }}>
@@ -566,10 +577,14 @@ export default function LandingPage() {
             </Fade>
           ))}
         </div>
+        </div>{/* end z-index wrapper */}
       </section>
 
       {/* ── MCP SECTION ─────────────────────────────────────── */}
-      <section id="mcp" style={{ padding:"96px 8vw",borderTop:`1px solid ${D.rule}`,background:D.bg }}>
+      <section id="mcp" style={{ padding:"96px 8vw",borderTop:`1px solid ${D.rule}`,background:D.bg,position:"relative",overflow:"hidden" }}>
+        {/* Section background image — magnifying glass + bars: query and analysis */}
+        <div style={{ position:"absolute",bottom:"-5%",right:"-2%",width:"380px",height:"380px",backgroundImage:"url('/img-mcp.png')",backgroundSize:"contain",backgroundRepeat:"no-repeat",backgroundPosition:"right bottom",opacity:0.09,pointerEvents:"none",zIndex:0 }}/>
+        <div style={{ position:"relative",zIndex:1 }}>
         <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8vw",alignItems:"center" }}>
           <Fade>
             <div style={{ fontFamily:D.mono,fontSize:"11px",letterSpacing:".14em",color:D.ink30,textTransform:"uppercase",marginBottom:14 }}>04 — Natural Language Operations</div>
@@ -595,10 +610,14 @@ export default function LandingPage() {
             <McpTerminal/>
           </Fade>
         </div>
+        </div>{/* end z-index wrapper */}
       </section>
 
       {/* ── AUDIT FEED ──────────────────────────────────────── */}
-      <section id="audit" style={{ padding:"96px 8vw",borderTop:`1px solid ${D.rule}`,background:D.bg1 }}>
+      <section id="audit" style={{ padding:"96px 8vw",borderTop:`1px solid ${D.rule}`,background:D.bg1,position:"relative",overflow:"hidden" }}>
+        {/* Section background image — pie chart: aggregated audit data */}
+        <div style={{ position:"absolute",top:"50%",right:"-4%",transform:"translateY(-50%)",width:"360px",height:"360px",backgroundImage:"url('/img-audit.png')",backgroundSize:"contain",backgroundRepeat:"no-repeat",backgroundPosition:"right center",opacity:0.11,pointerEvents:"none",zIndex:0 }}/>
+        <div style={{ position:"relative",zIndex:1 }}>
         <Fade>
           <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6vw",alignItems:"start",marginBottom:40 }}>
             <div>
@@ -626,6 +645,7 @@ export default function LandingPage() {
           </div>
           <AuditFeed/>
         </Fade>
+        </div>{/* end z-index wrapper */}
       </section>
 
       {/* ── TECH STRIP ──────────────────────────────────────── */}
@@ -651,6 +671,10 @@ export default function LandingPage() {
       <section style={{ padding:"120px 8vw",background:D.indigo,position:"relative",overflow:"hidden" }}>
         <div style={{ position:"absolute",inset:0,backgroundImage:"linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px)",backgroundSize:"60px 60px",pointerEvents:"none" }}/>
         <div style={{ position:"absolute",top:"-20%",right:"-10%",width:"50%",height:"140%",background:"radial-gradient(ellipse at 60% 50%,rgba(255,255,255,0.06) 0%,transparent 65%)",pointerEvents:"none" }}/>
+        {/* Bank building — institutional finance destination */}
+        <div style={{ position:"absolute",bottom:"-8%",left:"4%",width:"300px",height:"300px",backgroundImage:"url('/img-cta.png')",backgroundSize:"contain",backgroundRepeat:"no-repeat",backgroundPosition:"left bottom",opacity:0.14,pointerEvents:"none" }}/>
+        {/* Shield/identity — compliance protection, right side */}
+        <div style={{ position:"absolute",top:"-5%",right:"5%",width:"260px",height:"260px",backgroundImage:"url('/img-identity.png')",backgroundSize:"contain",backgroundRepeat:"no-repeat",backgroundPosition:"right top",opacity:0.12,pointerEvents:"none" }}/>
         <Fade>
           <div style={{ position:"relative",textAlign:"center",maxWidth:780,margin:"0 auto" }}>
             <h2 style={{ fontFamily:D.display,fontSize:"clamp(28px,4.2vw,60px)",fontWeight:700,lineHeight:1.0,letterSpacing:"-.025em",color:"#fff",marginBottom:24 }}>
