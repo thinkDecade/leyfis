@@ -1,6 +1,6 @@
 [build]
   command   = "yarn workspace @leyfis/admin build && cd packages/leyfis-mcp && npm install && npm run build"
-  publish   = "apps/admin/.next"
+  publish   = "apps/admin/out"
   base      = "app"
 
 [build.environment]
